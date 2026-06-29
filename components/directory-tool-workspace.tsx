@@ -11,6 +11,15 @@ import { toolIcons } from "@/lib/tool-icons";
 
 function sampleFor(tool: DirectoryTool) {
   const name = tool.name.toLowerCase();
+  if (name.includes("find and replace")) return "old\nnew\nThis old text has old words.";
+  if (name.includes("character remover")) return "aeiou\nRemove vowels from this sentence.";
+  if (name.includes("repeat text")) return "3\nRepeat this line";
+  if (name.includes("roman numeral")) return "2026";
+  if (name.includes("nato") || name.includes("phonetic")) return "Code Tools";
+  if (name.includes("pig latin")) return "hello developer world";
+  if (name.includes("remove line breaks")) return "This paragraph\nwas copied\nwith line breaks.\n\nThis should become one clean line.";
+  if (name.includes("word frequency") || name.includes("word cloud")) return "code tools code text tools converter code";
+  if (tool.category === "Text") return "Paste clean text here.\nAdd another line here.";
   if (name.includes(" to ") && name.includes("converter")) return "function greet(name) {\n  return `Hello ${name}`;\n}";
   if (name.includes("unit test")) return "function add(a, b) {\n  return a + b;\n}";
   if (name.includes("api code")) return "Create a JSON API endpoint for a tasks list.";
@@ -75,6 +84,85 @@ function explainRegex(patternLine: string) {
     : "No common tokens detected. Try a pattern such as /\\w+@\\w+\\.com/g.";
 }
 
+function toTitleCase(value: string) {
+  return value.toLowerCase().replace(/\b[a-z]/g, (letter) => letter.toUpperCase());
+}
+
+function toSentenceCase(value: string) {
+  return value
+    .toLowerCase()
+    .replace(/(^\s*[a-z])|([.!?]\s+[a-z])/g, (match) => match.toUpperCase());
+}
+
+function wordCounts(value: string) {
+  const counts = new Map<string, number>();
+  value.toLowerCase().match(/[a-z0-9']+/g)?.forEach((word) => {
+    counts.set(word, (counts.get(word) ?? 0) + 1);
+  });
+  return Array.from(counts.entries()).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+}
+
+function toRoman(value: number) {
+  const parts: Array<[number, string]> = [
+    [1000, "M"],
+    [900, "CM"],
+    [500, "D"],
+    [400, "CD"],
+    [100, "C"],
+    [90, "XC"],
+    [50, "L"],
+    [40, "XL"],
+    [10, "X"],
+    [9, "IX"],
+    [5, "V"],
+    [4, "IV"],
+    [1, "I"]
+  ];
+  let rest = Math.max(1, Math.min(3999, Math.floor(value)));
+  return parts.reduce((output, [number, numeral]) => {
+    while (rest >= number) {
+      output += numeral;
+      rest -= number;
+    }
+    return output;
+  }, "");
+}
+
+function pigLatinWord(word: string) {
+  const match = word.match(/^([^aeiou]*)(.*)$/i);
+  if (!match || !match[2]) return `${word}way`;
+  return `${match[2]}${match[1]}ay`;
+}
+
+const natoWords: Record<string, string> = {
+  a: "Alpha",
+  b: "Bravo",
+  c: "Charlie",
+  d: "Delta",
+  e: "Echo",
+  f: "Foxtrot",
+  g: "Golf",
+  h: "Hotel",
+  i: "India",
+  j: "Juliett",
+  k: "Kilo",
+  l: "Lima",
+  m: "Mike",
+  n: "November",
+  o: "Oscar",
+  p: "Papa",
+  q: "Quebec",
+  r: "Romeo",
+  s: "Sierra",
+  t: "Tango",
+  u: "Uniform",
+  v: "Victor",
+  w: "Whiskey",
+  x: "X-ray",
+  y: "Yankee",
+  z: "Zulu"
+};
+
 function processTool(tool: DirectoryTool, input: string) {
   const value = input.trim() || sampleFor(tool);
   const name = tool.name.toLowerCase();
@@ -107,6 +195,47 @@ function processTool(tool: DirectoryTool, input: string) {
   if (name.includes("remove duplicates")) return Array.from(new Set(value.split(/\r?\n/))).join("\n");
   if (name.includes("sort lines")) return value.split(/\r?\n/).sort((a, b) => a.localeCompare(b)).join("\n");
   if (name.includes("text reverser")) return value.split("").reverse().join("");
+  if (name.includes("remove line breaks")) return value.split(/\r?\n/).map((line) => line.trim()).filter(Boolean).join(" ");
+  if (name.includes("duplicate line remover")) return Array.from(new Set(value.split(/\r?\n/).filter(Boolean))).join("\n");
+  if (name.includes("remove text formatting") || name.includes("plain text converter")) return value.replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim();
+  if (name.includes("remove underscores")) return value.replace(/_/g, " ");
+  if (name.includes("whitespace remover")) return value.replace(/\s+/g, " ").trim();
+  if (name.includes("em dash remover")) return value.replace(/—/g, "-").replace(/–/g, "-");
+  if (name.includes("reverse text generator")) return value.split("").reverse().join("");
+  if (name.includes("sentence case converter")) return toSentenceCase(value);
+  if (name.includes("title case converter")) return toTitleCase(value);
+  if (name.includes("sort words alphabetically")) return value.split(/\s+/).filter(Boolean).sort((a, b) => a.localeCompare(b)).join(" ");
+  if (name.includes("online sentence counter")) return `Sentences: ${value.split(/[.!?]+/).filter((part) => part.trim()).length}`;
+  if (name.includes("word frequency counter") || name.includes("word cloud generator")) {
+    return wordCounts(value).map(([word, count]) => `${word}: ${count}`).join("\n") || "No words found.";
+  }
+  if (name.includes("duplicate word finder")) {
+    const duplicates = wordCounts(value).filter(([, count]) => count > 1);
+    return duplicates.length ? duplicates.map(([word, count]) => `${word}: ${count}`).join("\n") : "No duplicate words found.";
+  }
+  if (name.includes("find and replace text")) {
+    const [find = "", replace = "", ...text] = value.split(/\r?\n/);
+    return text.join("\n").split(find).join(replace);
+  }
+  if (name.includes("character remover")) {
+    const [chars = "", ...text] = value.split(/\r?\n/);
+    const escaped = chars.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    return text.join("\n").replace(new RegExp(`[${escaped}]`, "g"), "");
+  }
+  if (name.includes("repeat text generator")) {
+    const [countLine = "3", ...text] = value.split(/\r?\n/);
+    const count = Math.max(1, Math.min(100, Number.parseInt(countLine, 10) || 3));
+    return Array.from({ length: count }, () => text.join("\n") || countLine).join("\n");
+  }
+  if (name.includes("invisible text generator")) return "\u200B".repeat(Math.max(1, Math.min(200, Number.parseInt(value, 10) || 24)));
+  if (name.includes("nato phonetic alphabet translator") || name.includes("phonetic spelling tool")) {
+    return value.toLowerCase().split("").map((char) => natoWords[char] ?? char).join(" ");
+  }
+  if (name.includes("pig latin translator")) return value.split(/\s+/).map(pigLatinWord).join(" ");
+  if (name.includes("roman numeral dates")) return value.match(/\d{1,4}/g)?.map((number) => `${number}: ${toRoman(Number(number))}`).join("\n") ?? "Enter a year or number.";
+  if (name.includes("wingdings translator")) return Array.from(value).map((char) => `&#${10000 + char.charCodeAt(0)};`).join(" ");
+  if (name.includes("apa citation generator")) return `${value.replace(/\.$/, "")}. (2026). CodeTools AI. https://example.com`;
+  if (name.includes("online notepad")) return value;
   if (name.includes("code formatter") || name.includes("code beautifier")) {
     return value
       .replace(/\{/g, "{\n  ")

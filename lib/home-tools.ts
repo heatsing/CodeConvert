@@ -29,7 +29,7 @@ const internalToolMap: Partial<Record<ToolSlug, string>> = {
   "code-to-pdf": "Prepare code documents"
 };
 
-export const categories = ["Popular", "Encode", "Decode", "Convert", "Utility", "Format", "Security", "Network", "Regex", "Code"] as const;
+export const categories = ["Popular", "Text", "Encode", "Decode", "Convert", "Utility", "Format", "Security", "Network", "Regex", "Code"] as const;
 
 const rawDirectoryTools: DirectoryTool[] = [
   { name: "Code Converter", description: internalToolMap["code-converter"]!, category: "Code", href: "/tools/code-converter", iconName: "code", accent: "text-blue-600 bg-blue-50" },
@@ -209,7 +209,33 @@ const rawDirectoryTools: DirectoryTool[] = [
   { name: "Query String Parser", description: "Parse query params", category: "Network", href: "/tools/code-explainer", iconName: "message", accent: "text-green-700 bg-green-50" },
   { name: "CIDR Calculator", description: "Calculate CIDR ranges", category: "Network", href: "/tools/code-checker", iconName: "bug", accent: "text-indigo-700 bg-indigo-50" },
   { name: "IPv4 Converter", description: "Convert IPv4 values", category: "Network", href: "/tools/code-converter", iconName: "code", accent: "text-blue-700 bg-blue-50" },
-  { name: "MAC Address Lookup", description: "Inspect MAC prefixes", category: "Network", href: "/tools/code-explainer", iconName: "message", accent: "text-slate-700 bg-slate-100" }
+  { name: "MAC Address Lookup", description: "Inspect MAC prefixes", category: "Network", href: "/tools/code-explainer", iconName: "message", accent: "text-slate-700 bg-slate-100" },
+  { name: "APA Citation Generator", description: "Draft APA citations", category: "Text", href: "/tools/code-generator", iconName: "fileText", accent: "text-blue-700 bg-blue-50" },
+  { name: "Character Remover", description: "Remove chosen chars", category: "Text", href: "/tools/comment-remover", iconName: "eraser", accent: "text-rose-600 bg-rose-50" },
+  { name: "Duplicate Line Remover", description: "Remove repeated lines", category: "Text", href: "/tools/comment-remover", iconName: "eraser", accent: "text-emerald-700 bg-emerald-50" },
+  { name: "Duplicate Word Finder", description: "Find repeated words", category: "Text", href: "/tools/code-checker", iconName: "bug", accent: "text-orange-700 bg-orange-50" },
+  { name: "Em Dash Remover", description: "Replace em dashes", category: "Text", href: "/tools/code-converter", iconName: "eraser", accent: "text-amber-700 bg-amber-50" },
+  { name: "Find and Replace Text", description: "Replace text matches", category: "Text", href: "/tools/code-converter", iconName: "code", accent: "text-cyan-700 bg-cyan-50" },
+  { name: "Invisible Text Generator", description: "Create blank text", category: "Text", href: "/tools/code-generator", iconName: "wand", accent: "text-slate-700 bg-slate-100" },
+  { name: "NATO Phonetic Alphabet Translator", description: "Spell with NATO words", category: "Text", href: "/tools/code-converter", iconName: "message", accent: "text-indigo-700 bg-indigo-50" },
+  { name: "Online Notepad", description: "Plain text scratchpad", category: "Text", href: "/tools/code-generator", iconName: "fileText", accent: "text-green-700 bg-green-50" },
+  { name: "Online Sentence Counter", description: "Count sentences", category: "Text", href: "/tools/code-checker", iconName: "fileText", accent: "text-teal-700 bg-teal-50" },
+  { name: "Phonetic Spelling Tool", description: "Spell words aloud", category: "Text", href: "/tools/code-converter", iconName: "message", accent: "text-purple-700 bg-purple-50" },
+  { name: "Pig Latin Translator", description: "Convert to Pig Latin", category: "Text", href: "/tools/code-converter", iconName: "message", accent: "text-pink-700 bg-pink-50" },
+  { name: "Plain Text Converter", description: "Strip rich text", category: "Text", href: "/tools/code-converter", iconName: "fileText", accent: "text-slate-700 bg-slate-100" },
+  { name: "Remove Line Breaks", description: "Join broken lines", category: "Text", href: "/tools/comment-remover", iconName: "eraser", accent: "text-blue-700 bg-blue-50" },
+  { name: "Remove Text Formatting", description: "Clean pasted text", category: "Text", href: "/tools/comment-remover", iconName: "eraser", accent: "text-violet-700 bg-violet-50" },
+  { name: "Remove Underscores", description: "Replace underscores", category: "Text", href: "/tools/code-converter", iconName: "eraser", accent: "text-cyan-700 bg-cyan-50" },
+  { name: "Repeat Text Generator", description: "Repeat text lines", category: "Text", href: "/tools/code-generator", iconName: "wand", accent: "text-orange-700 bg-orange-50" },
+  { name: "Reverse Text Generator", description: "Reverse text", category: "Text", href: "/tools/code-converter", iconName: "code", accent: "text-fuchsia-700 bg-fuchsia-50" },
+  { name: "Roman Numeral Dates", description: "Convert year numbers", category: "Text", href: "/tools/code-converter", iconName: "code", accent: "text-red-700 bg-red-50" },
+  { name: "Sentence Case Converter", description: "Fix sentence case", category: "Text", href: "/tools/code-converter", iconName: "code", accent: "text-green-700 bg-green-50" },
+  { name: "Sort Words Alphabetically", description: "Sort words A-Z", category: "Text", href: "/tools/code-checker", iconName: "fileText", accent: "text-indigo-700 bg-indigo-50" },
+  { name: "Title Case Converter", description: "Make title case", category: "Text", href: "/tools/code-converter", iconName: "code", accent: "text-blue-700 bg-blue-50" },
+  { name: "Whitespace Remover", description: "Remove extra spaces", category: "Text", href: "/tools/comment-remover", iconName: "eraser", accent: "text-slate-700 bg-slate-100" },
+  { name: "Wingdings Translator", description: "Map text symbols", category: "Text", href: "/tools/code-converter", iconName: "message", accent: "text-purple-700 bg-purple-50" },
+  { name: "Word Cloud Generator", description: "List top words", category: "Text", href: "/tools/code-generator", iconName: "wand", accent: "text-cyan-700 bg-cyan-50" },
+  { name: "Word Frequency Counter", description: "Count word usage", category: "Text", href: "/tools/code-checker", iconName: "fileText", accent: "text-emerald-700 bg-emerald-50" }
 ];
 
 export const directoryTools = rawDirectoryTools.map((tool) => ({
