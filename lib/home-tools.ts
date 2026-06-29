@@ -212,7 +212,7 @@ const rawDirectoryTools: DirectoryTool[] = [
   { name: "MAC Address Lookup", description: "Inspect MAC prefixes", category: "Network", href: "/tools/code-explainer", iconName: "message", accent: "text-slate-700 bg-slate-100" },
   { name: "APA Citation Generator", description: "Draft APA citations", category: "Text", href: "/tools/code-generator", iconName: "fileText", accent: "text-blue-700 bg-blue-50" },
   { name: "Character Remover", description: "Remove chosen chars", category: "Text", href: "/tools/comment-remover", iconName: "eraser", accent: "text-rose-600 bg-rose-50" },
-  { name: "Duplicate Line Remover", description: "Remove repeated lines", category: "Text", href: "/tools/comment-remover", iconName: "eraser", accent: "text-emerald-700 bg-emerald-50" },
+  { name: "Duplicate Line Remover", description: "Paste your text on the left to remove duplicate lines. The first occurrence of each line is kept and subsequent duplicates are removed, preserving the original order.", category: "Text", href: "/tools/comment-remover", iconName: "eraser", accent: "text-emerald-700 bg-emerald-50" },
   { name: "Duplicate Word Finder", description: "Find repeated words", category: "Text", href: "/tools/code-checker", iconName: "bug", accent: "text-orange-700 bg-orange-50" },
   { name: "Em Dash Remover", description: "Replace em dashes", category: "Text", href: "/tools/code-converter", iconName: "eraser", accent: "text-amber-700 bg-amber-50" },
   { name: "Find and Replace Text", description: "Replace text matches", category: "Text", href: "/tools/code-converter", iconName: "code", accent: "text-cyan-700 bg-cyan-50" },
