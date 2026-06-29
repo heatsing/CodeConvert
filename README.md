@@ -8,7 +8,7 @@ CodeTools AI is a Next.js developer tools directory and tool workspace. It provi
 - Root-level tool pages such as `/base64-encode`, `/json-formatter`, and `/ping-test`.
 - Language converter pages such as `/perl-to-typescript-converter` and `/python-to-rust-converter`.
 - Online developer workspace pages under `/online-tools/[slug]`.
-- Original six AI-style tool pages under `/tools/[slug]`.
+- Core AI-style tool pages also use root-level URLs such as `/comment-remover`.
 - Front-end MVP interactions for input, output, run, copy, clear, upload, and download flows.
 - SEO content sections on tool pages: how-to, examples, usage table, FAQ, related tools, and online workspaces.
 - Front-end i18n switcher for `EN`, `PT`, `ES`, `DE`, `RU`, `FR`, `TR`, `PL`, and `TW`.
@@ -85,16 +85,18 @@ Examples:
 /online-tools/postman
 ```
 
-### Original Tool Pages
+### Core Tool Pages
 
 ```text
-/tools/code-converter
-/tools/code-generator
-/tools/code-explainer
-/tools/comment-remover
-/tools/code-checker
-/tools/code-to-pdf
+/code-converter
+/code-generator
+/code-explainer
+/comment-remover
+/code-checker
+/code-to-pdf
 ```
+
+Legacy `/tools/[slug]` URLs redirect to the root-level version.
 
 ## Project Structure
 
@@ -102,7 +104,7 @@ Examples:
 app/
   [slug]/page.tsx                 Root-level directory and converter pages
   online-tools/[slug]/page.tsx    Online developer tools
-  tools/[slug]/page.tsx           Original six tool pages
+  tools/[slug]/page.tsx           Legacy redirects for old tool URLs
 components/
   home-directory.tsx              Homepage directory UI
   directory-tool-workspace.tsx    Root tool workspace

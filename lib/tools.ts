@@ -147,12 +147,12 @@ export const TOOLS: ToolConfig[] = [
 export const toolBySlug = Object.fromEntries(TOOLS.map((tool) => [tool.slug, tool])) as Record<ToolSlug, ToolConfig>;
 
 export const languageLinkTools = [
-  { href: "/tools/code-converter?from=JavaScript&to=Python", label: "JavaScript to Python" },
-  { href: "/tools/code-converter?from=Python&to=JavaScript", label: "Python to JavaScript" },
-  { href: "/tools/code-converter?from=Java&to=TypeScript", label: "Java to TypeScript" },
-  { href: "/tools/code-converter?from=SQL&to=Python", label: "SQL to Python" },
-  { href: "/tools/code-converter?from=C%23&to=Go", label: "C# to Go" },
-  { href: "/tools/code-converter?from=Ruby&to=PHP", label: "Ruby to PHP" },
-  { href: "/tools/code-converter?from=Bash&to=PowerShell", label: "Bash to PowerShell" },
-  { href: "/tools/code-converter?from=Swift&to=Kotlin", label: "Swift to Kotlin" }
+  { href: "/javascript-to-python-converter", label: "JavaScript to Python" },
+  { href: "/python-to-javascript-converter", label: "Python to JavaScript" },
+  { href: "/java-to-typescript-converter", label: "Java to TypeScript" },
+  { href: "/sql-to-python-converter", label: "SQL to Python" },
+  { href: "/csharp-to-go-converter", label: "C# to Go" },
+  { href: "/ruby-to-php-converter", label: "Ruby to PHP" },
+  { href: "/bash-to-powershell-converter", label: "Bash to PowerShell" },
+  { href: "/swift-to-kotlin-converter", label: "Swift to Kotlin" }
 ];

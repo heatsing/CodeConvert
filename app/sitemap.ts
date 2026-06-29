@@ -3,7 +3,6 @@ import { directoryTools } from "@/lib/home-tools";
 import { languageConverterTools } from "@/lib/language-converters";
 import { onlineTools } from "@/lib/online-tools";
 import { siteUrl } from "@/lib/site";
-import { TOOLS } from "@/lib/tools";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
@@ -14,12 +13,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "daily" as const,
       priority: 1
     },
-    ...TOOLS.map((tool) => ({
-      url: `${siteUrl}/tools/${tool.slug}`,
-      lastModified: now,
-      changeFrequency: "weekly" as const,
-      priority: 0.8
-    })),
     ...directoryTools.map((tool) => ({
       url: `${siteUrl}${tool.href}`,
       lastModified: now,

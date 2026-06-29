@@ -153,7 +153,7 @@ export function SiteHeader() {
                   return (
                     <DropdownMenu.Item key={tool.slug} asChild>
                       <Link
-                        href={`/tools/${tool.slug}`}
+                        href={`/${tool.slug}`}
                         className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold text-slate-700 outline-none hover:bg-slate-100"
                       >
                         <Icon className="h-4 w-4 text-violet-600" />

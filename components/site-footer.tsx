@@ -33,9 +33,9 @@ export function SiteFooter() {
         <div>
           <h2 className="font-black text-slate-950">{t("footer.resources")}</h2>
           <nav className="mt-3 grid gap-2">
-            <Link href="/tools/code-converter" className="hover:text-blue-700">Code Converter</Link>
-            <Link href="/tools/code-generator" className="hover:text-blue-700">Code Generator</Link>
-            <Link href="/tools/code-checker" className="hover:text-blue-700">Code Checker</Link>
+            <Link href="/code-converter" className="hover:text-blue-700">Code Converter</Link>
+            <Link href="/code-generator" className="hover:text-blue-700">Code Generator</Link>
+            <Link href="/code-checker" className="hover:text-blue-700">Code Checker</Link>
           </nav>
         </div>
 

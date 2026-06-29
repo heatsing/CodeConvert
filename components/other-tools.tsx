@@ -20,7 +20,7 @@ export function OtherTools({ currentSlug }: { currentSlug: ToolSlug }) {
             return (
               <Link
                 key={tool.slug}
-                href={`/tools/${tool.slug}`}
+                href={`/${tool.slug}`}
                 className="flex items-center justify-between rounded-md border bg-slate-50 p-4 text-sm font-semibold text-slate-800 transition hover:border-violet-300 hover:bg-white hover:shadow-sm"
               >
                 <span className="flex items-center gap-2">
