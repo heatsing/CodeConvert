@@ -18,6 +18,7 @@ function sampleFor(tool: DirectoryTool) {
   if (name.includes("nato") || name.includes("phonetic")) return "Code Tools";
   if (name.includes("pig latin")) return "hello developer world";
   if (name.includes("remove line breaks")) return "This paragraph\nwas copied\nwith line breaks.\n\nThis should become one clean line.";
+  if (name.includes("duplicate word finder")) return "code tools help code writers find repeated repeated words in tools";
   if (name.includes("word frequency") || name.includes("word cloud")) return "code tools code text tools converter code";
   if (tool.category === "Text") return "Paste clean text here.\nAdd another line here.";
   if (name.includes(" to ") && name.includes("converter")) return "function greet(name) {\n  return `Hello ${name}`;\n}";
@@ -456,7 +457,7 @@ function processTool(tool: DirectoryTool, input: string) {
   }
   if (name.includes("duplicate word finder")) {
     const duplicates = wordCounts(value).filter(([, count]) => count > 1);
-    return duplicates.length ? duplicates.map(([word, count]) => `${word}: ${count}`).join("\n") : "No duplicate words found.";
+    return duplicates.length ? `Duplicate words found\n\n${duplicates.map(([word, count]) => `${word}: ${count}`).join("\n")}` : "No duplicate words found.";
   }
   if (name.includes("find and replace text")) {
     const [find = "", replace = "", ...text] = value.split(/\r?\n/);
