@@ -1,0 +1,234 @@
+"use client";
+
+import { useMemo, useState } from "react";
+import Link from "next/link";
+import { Flame, Search } from "lucide-react";
+import { categories, directoryTools, featuredTools, frequentTools } from "@/lib/home-tools";
+import { developerOnlineTools, languageOnlineTools, onlineTools } from "@/lib/online-tools";
+import { toolIcons } from "@/lib/tool-icons";
+
+function ToolTile({ tool, compact = false }: { tool: (typeof directoryTools)[number]; compact?: boolean }) {
+  const Icon = toolIcons[tool.iconName];
+
+  return (
+    <Link
+      href={tool.href}
+      className={`group flex items-center gap-3 rounded-md border bg-white shadow-sm transition hover:border-blue-200 hover:shadow-md ${
+        compact ? "min-h-11 px-3 py-2" : "min-h-20 px-4 py-3"
+      }`}
+    >
+      <span className={`grid h-8 w-8 shrink-0 place-items-center rounded-md ${tool.accent}`}>
+        <Icon className="h-[15px] w-[15px]" />
+      </span>
+      <span className="min-w-0">
+        <span className="block whitespace-normal break-words text-[13px] font-bold leading-5 text-slate-950">{tool.name}</span>
+        {!compact && <span className="mt-1 block whitespace-normal break-words text-[12px] leading-5 text-slate-500">{tool.description}</span>}
+      </span>
+    </Link>
+  );
+}
+
+export function HomeDirectory() {
+  const [query, setQuery] = useState("");
+  const normalizedQuery = query.trim().toLowerCase();
+
+  const visibleGroups = useMemo(() => {
+    return categories
+      .filter((category) => category !== "Popular")
+      .map((category) => ({
+        category,
+        tools: directoryTools.filter((tool) => {
+          const matchesCategory = tool.category === category;
+          const matchesQuery =
+            !normalizedQuery ||
+            tool.name.toLowerCase().includes(normalizedQuery) ||
+            tool.description.toLowerCase().includes(normalizedQuery) ||
+            tool.category.toLowerCase().includes(normalizedQuery);
+          return matchesCategory && matchesQuery;
+        })
+      }))
+      .filter((group) => group.tools.length > 0);
+  }, [normalizedQuery]);
+
+  const visibleOnlineTools = useMemo(() => {
+    return developerOnlineTools.filter((tool) => {
+      return (
+        !normalizedQuery ||
+        tool.name.toLowerCase().includes(normalizedQuery) ||
+        tool.description.toLowerCase().includes(normalizedQuery) ||
+        tool.mode.toLowerCase().includes(normalizedQuery)
+      );
+    });
+  }, [normalizedQuery]);
+
+  const visibleLanguageTools = useMemo(() => {
+    return languageOnlineTools.filter((tool) => {
+      return (
+        !normalizedQuery ||
+        tool.name.toLowerCase().includes(normalizedQuery) ||
+        tool.description.toLowerCase().includes(normalizedQuery)
+      );
+    });
+  }, [normalizedQuery]);
+
+  const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+  const sidebarItems = [
+    { label: "Overview", href: "#top" },
+    { label: "Popular Tools", href: "#popular" },
+    { label: "Language Tools", href: "#language-tools" },
+    { label: "Online Tools", href: "#online" },
+    ...categories
+      .filter((category) => category !== "Popular")
+      .map((category) => ({ label: category, href: `#${category.toLowerCase()}` })),
+    { label: "All Tools A-Z", href: "#all-tools" }
+  ];
+
+  return (
+    <main id="top" className="grid min-h-[calc(100vh-3rem)] w-full gap-3 bg-slate-50 px-3 py-3 text-[13px] lg:grid-cols-[170px_minmax(0,1fr)] lg:px-4">
+      <aside className="hidden lg:block">
+        <div className="sticky top-[4rem] max-h-[calc(100vh-5rem)] overflow-auto rounded-md border bg-white p-2 shadow-sm">
+          <p className="px-2 pb-2 pt-1 text-[11px] font-black uppercase tracking-[0.16em] text-slate-500">Tool Navigation</p>
+          <nav className="grid gap-1">
+            {sidebarItems.map((item) => (
+              <a
+                key={item.href}
+                href={item.href}
+                className="rounded px-2 py-1.5 text-[12px] font-semibold text-slate-700 hover:bg-slate-100 hover:text-blue-700"
+              >
+                {item.label}
+              </a>
+            ))}
+          </nav>
+        </div>
+      </aside>
+
+      <div className="grid min-w-0 gap-3">
+        <nav className="flex gap-2 overflow-x-auto rounded-md border bg-white p-2 shadow-sm lg:hidden">
+          {sidebarItems.map((item) => (
+            <a
+              key={item.href}
+              href={item.href}
+              className="shrink-0 rounded bg-slate-100 px-3 py-1.5 text-[12px] font-bold text-slate-700 hover:bg-blue-50 hover:text-blue-700"
+            >
+              {item.label}
+            </a>
+          ))}
+        </nav>
+
+        <section className="rounded-lg border bg-white px-5 py-6 text-center shadow-soft sm:px-6">
+          <h1 className="text-2xl font-black tracking-tight text-slate-950 sm:text-3xl">
+            All-in-One Online <span className="text-orange-600">Code Tools</span>
+          </h1>
+          <p className="mx-auto mt-2 max-w-2xl text-[13px] leading-5 text-slate-600">
+            Convert, format, inspect, clean, and generate developer text from one fast workspace.
+          </p>
+          <div className="mx-auto mt-4 flex max-w-2xl overflow-hidden rounded-md border bg-white shadow-sm">
+            <div className="grid w-10 place-items-center text-slate-400">
+              <Search className="h-4 w-4" />
+            </div>
+            <input
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder="Search tools... e.g. Base64, JSON, Python"
+              className="h-10 min-w-0 flex-1 text-[13px] outline-none"
+            />
+            <button className="w-16 bg-orange-600 text-white transition hover:bg-orange-700" type="button" aria-label="Search tools">
+              <Search className="mx-auto h-4 w-4" />
+            </button>
+          </div>
+
+          <div className="mt-5 text-left">
+            <p className="mb-2 text-[12px] font-black text-slate-600">Frequently Used</p>
+            <div className="grid gap-2 [grid-template-columns:repeat(auto-fit,minmax(150px,1fr))]">
+              {frequentTools.map((tool) => (
+                <ToolTile key={tool.name} tool={tool} compact />
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section id="popular" className="grid gap-2">
+          <div className="flex items-center gap-2 text-[15px] font-black text-slate-950">
+            <Flame className="h-4 w-4 text-orange-600" />
+            Popular Tools
+          </div>
+          <div className="grid gap-3 [grid-template-columns:repeat(auto-fit,minmax(230px,1fr))]">
+            {featuredTools.map((tool) => (
+              <ToolTile key={tool.name} tool={tool} />
+            ))}
+          </div>
+        </section>
+
+        <section id="language-tools" className="rounded-lg border bg-white p-4 shadow-soft">
+          <h2 className="text-[15px] font-black text-slate-950">Language Online Tools</h2>
+          <div className="mt-3 grid gap-3 [grid-template-columns:repeat(auto-fit,minmax(190px,1fr))]">
+            {visibleLanguageTools.map((tool) => {
+              const Icon = toolIcons[tool.iconName];
+              return (
+                <Link
+                  key={tool.slug}
+                  href={`/online-tools/${tool.slug}`}
+                  className="group flex min-h-14 items-center gap-3 rounded-md bg-slate-50 px-3 py-2 transition hover:bg-white hover:shadow-md"
+                >
+                  <span className={`grid h-8 w-8 shrink-0 place-items-center rounded-sm ${tool.accent}`}>
+                    <Icon className="h-[15px] w-[15px]" />
+                  </span>
+                  <span className="min-w-0 whitespace-normal break-words text-[13px] font-semibold leading-5 text-slate-950 group-hover:text-blue-700">
+                    {tool.name}
+                  </span>
+                </Link>
+              );
+            })}
+          </div>
+        </section>
+
+        <section id="online" className="rounded-lg border bg-white p-4 shadow-soft">
+          <h2 className="text-[15px] font-black text-slate-950">Online Developer Tools</h2>
+          <div className="mt-3 grid gap-3 [grid-template-columns:repeat(auto-fit,minmax(220px,1fr))]">
+            {visibleOnlineTools.map((tool) => {
+              const Icon = toolIcons[tool.iconName];
+              return (
+                <Link
+                  key={tool.slug}
+                  href={`/online-tools/${tool.slug}`}
+                  className="group flex min-h-20 gap-3 rounded-md bg-slate-50 px-3 py-2.5 transition hover:bg-white hover:shadow-md"
+                >
+                  <span className={`grid h-9 w-9 shrink-0 place-items-center rounded-md ${tool.accent}`}>
+                    <Icon className="h-4 w-4" />
+                  </span>
+                  <span className="min-w-0">
+                    <span className="block whitespace-normal break-words text-[13px] font-bold leading-5 text-slate-950 group-hover:text-blue-700">{tool.name}</span>
+                    <span className="mt-1 block whitespace-normal break-words text-[12px] font-medium leading-5 text-slate-500">{tool.description}</span>
+                  </span>
+                </Link>
+              );
+            })}
+          </div>
+        </section>
+
+        {visibleGroups.map((group) => (
+          <section key={group.category} id={group.category.toLowerCase()} className="rounded-lg border bg-white p-4 shadow-soft">
+            <h2 className="text-[15px] font-black text-slate-950">{group.category}</h2>
+            <div className="mt-3 grid gap-2 [grid-template-columns:repeat(auto-fit,minmax(170px,1fr))]">
+              {group.tools.map((tool) => (
+                <ToolTile key={tool.name} tool={tool} compact />
+              ))}
+            </div>
+          </section>
+        ))}
+
+        <section id="all-tools" className="flex flex-wrap items-center gap-2 rounded-lg border bg-white px-4 py-3 text-[12px] shadow-soft">
+          <span className="font-black text-slate-900">All Tools A-Z</span>
+          <Link href="/" className="rounded bg-slate-100 px-2 py-1 font-bold text-slate-600">
+            ALL
+          </Link>
+          {alphabet.map((letter) => (
+            <a key={letter} href="#popular" className="px-1 font-bold text-slate-500 hover:text-blue-700">
+              {letter}
+            </a>
+          ))}
+        </section>
+      </div>
+    </main>
+  );
+}
