@@ -642,6 +642,7 @@ export function DirectoryToolWorkspace({ tool }: { tool: DirectoryTool }) {
   const [loading, setLoading] = useState(false);
   const { t } = useI18n();
   const Icon = toolIcons[tool.iconName];
+  const pageDescription = tool.headerDescription ?? tool.description;
 
   const run = async () => {
     setLoading(true);
@@ -686,7 +687,7 @@ export function DirectoryToolWorkspace({ tool }: { tool: DirectoryTool }) {
           <div>
             <p className="text-sm font-black uppercase tracking-[0.18em] text-blue-700">{tool.category}</p>
             <h1 className="mt-2 text-3xl font-black text-slate-950">{tool.name}</h1>
-            <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">{tool.description}</p>
+            <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">{pageDescription}</p>
           </div>
         </div>
 
@@ -732,7 +733,7 @@ export function DirectoryToolWorkspace({ tool }: { tool: DirectoryTool }) {
         </div>
         </section>
       </main>
-      <ToolSeoContent title={tool.name} description={tool.description} category={tool.category} />
+      <ToolSeoContent title={tool.name} description={pageDescription} category={tool.category} />
     </>
   );
 }

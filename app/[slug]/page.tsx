@@ -48,16 +48,17 @@ export function generateMetadata({ params }: RootToolPageProps): Metadata {
 
   const tool = getTool(normalizedSlug);
   if (!tool) return {};
+  const description = tool.headerDescription ?? tool.description;
 
   return {
     title: `${tool.name} Online`,
-    description: tool.description,
+    description,
     alternates: {
       canonical: `${siteUrl}${tool.href}`
     },
     openGraph: {
       title: `${tool.name} Online | CodeTools AI`,
-      description: tool.description,
+      description,
       url: `${siteUrl}${tool.href}`,
       siteName: "CodeTools AI",
       type: "website"
