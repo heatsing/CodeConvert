@@ -12,6 +12,13 @@ import { toolIcons } from "@/lib/tool-icons";
 function sampleFor(tool: DirectoryTool) {
   const name = tool.name.toLowerCase();
   if (name.includes(" to ") && name.includes("converter")) return "function greet(name) {\n  return `Hello ${name}`;\n}";
+  if (name.includes("regex replace")) return "/cat/gi\ndog\nThe cat sat with another Cat.";
+  if (name.includes("regex split")) return "/[,;\\s]+/g\nred, green; blue yellow";
+  if (name.includes("regex escape")) return "https://example.com/search?q=(code tools)+ai";
+  if (name.includes("regex unescape")) return "https:\\/\\/example\\.com\\/search\\?q=\\(code tools\\)\\+ai";
+  if (name.includes("regex") || name.includes("email regex") || name.includes("url regex") || name.includes("phone regex") || name.includes("password regex")) {
+    return "/\\w+@\\w+\\.com/g\nEmail us at hello@example.com or support@codetools.dev.";
+  }
   if (name.includes("json")) return '{"name":"CodeTools","items":[1,2,3]}';
   if (name.includes("url")) return "https://example.com/search?q=code tools";
   if (name.includes("base64")) return "CodeTools AI";
@@ -20,9 +27,44 @@ function sampleFor(tool: DirectoryTool) {
   if (name.includes("hex")) return "Hello";
   if (name.includes("binary")) return "Hello";
   if (name.includes("password")) return "CorrectHorseBatteryStaple!";
-  if (name.includes("regex")) return "\\w+@\\w+\\.com";
   if (name.includes("ping")) return "example.com";
   return `Paste input for ${tool.name}`;
+}
+
+function regexFromLine(line: string) {
+  const trimmed = line.trim();
+  const literal = trimmed.match(/^\/(.+)\/([dgimsuvy]*)$/);
+  if (literal) return new RegExp(literal[1], literal[2].includes("g") ? literal[2] : `${literal[2]}g`);
+  return new RegExp(trimmed, "g");
+}
+
+function regexParts(value: string) {
+  const lines = value.split(/\r?\n/);
+  const patternLine = lines[0] || "";
+  const text = lines.slice(1).join("\n") || "Email us at hello@example.com or support@codetools.dev.";
+  return { regex: regexFromLine(patternLine), patternLine, text };
+}
+
+function explainRegex(patternLine: string) {
+  const pattern = patternLine.replace(/^\/|\/[dgimsuvy]*$/g, "");
+  const notes = [
+    ["\\d", "digit"],
+    ["\\w", "word character"],
+    ["\\s", "whitespace"],
+    [".", "any character except newline"],
+    ["+", "one or more"],
+    ["*", "zero or more"],
+    ["?", "optional or lazy marker"],
+    ["^", "start of text"],
+    ["$", "end of text"],
+    ["[]", "character set"],
+    ["()", "capture group"],
+    ["|", "either/or"]
+  ];
+  const found = notes.filter(([token]) => pattern.includes(token));
+  return found.length
+    ? found.map(([token, meaning]) => `${token}: ${meaning}`).join("\n")
+    : "No common tokens detected. Try a pattern such as /\\w+@\\w+\\.com/g.";
 }
 
 function processTool(tool: DirectoryTool, input: string) {
@@ -57,6 +99,48 @@ function processTool(tool: DirectoryTool, input: string) {
   if (name.includes("remove duplicates")) return Array.from(new Set(value.split(/\r?\n/))).join("\n");
   if (name.includes("sort lines")) return value.split(/\r?\n/).sort((a, b) => a.localeCompare(b)).join("\n");
   if (name.includes("text reverser")) return value.split("").reverse().join("");
+  if (name.includes("regex cheat sheet")) {
+    return "\\d digit\n\\w word character\n\\s whitespace\n. any character\n+ one or more\n* zero or more\n? optional\n^ start\n$ end\n[] character set\n() capture group\n| either/or";
+  }
+  if (name.includes("email regex")) return "/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/";
+  if (name.includes("url regex")) return "/https?:\\/\\/[^\\s/$.?#].[^\\s]*/gi";
+  if (name.includes("phone regex")) return "/\\+?[0-9][0-9\\s().-]{7,}[0-9]/g";
+  if (name.includes("password regex")) return "/^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,}$/";
+  if (name.includes("regex escape")) return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  if (name.includes("regex unescape")) return value.replace(/\\([.*+?^${}()|[\]\\])/g, "$1");
+  if (name.includes("regex replace")) {
+    const lines = value.split(/\r?\n/);
+    const regex = regexFromLine(lines[0] || "");
+    const replacement = lines[1] ?? "";
+    const text = lines.slice(2).join("\n");
+    return text.replace(regex, replacement);
+  }
+  if (name.includes("regex split")) {
+    const { regex, text } = regexParts(value);
+    return text.split(regex).filter(Boolean).join("\n");
+  }
+  if (name.includes("regex validator")) {
+    const { regex } = regexParts(value);
+    return `Valid regex\nPattern: ${regex.toString()}`;
+  }
+  if (name.includes("regex explainer")) {
+    const { patternLine } = regexParts(value);
+    return explainRegex(patternLine);
+  }
+  if (name.includes("regex groups")) {
+    const { regex, text } = regexParts(value);
+    const matches = Array.from(text.matchAll(regex));
+    return matches.length
+      ? matches.map((match, index) => `Match ${index + 1}: ${match[0]}\nGroups: ${match.slice(1).join(", ") || "none"}`).join("\n\n")
+      : "No matches found.";
+  }
+  if (name.includes("regex")) {
+    const { regex, text } = regexParts(value);
+    const matches = Array.from(text.matchAll(regex)).map((match) => match[0]);
+    return matches.length
+      ? `Matches: ${matches.length}\n\n${matches.map((match, index) => `${index + 1}. ${match}`).join("\n")}`
+      : "No matches found.";
+  }
   if (name.includes(" to ") && name.includes("converter")) {
     return `// Mock ${tool.name}\n// Replace this processor with an API-backed converter when ready.\n\n${value}`;
   }
