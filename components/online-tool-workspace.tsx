@@ -4,6 +4,8 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, Copy, Loader2, Play, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ToolSeoContent } from "@/components/tool-seo-content";
+import { useI18n } from "@/lib/i18n";
 import type { OnlineTool } from "@/lib/online-tools";
 import { toolIcons } from "@/lib/tool-icons";
 
@@ -76,15 +78,16 @@ export function OnlineToolWorkspace({ tool }: { tool: OnlineTool }) {
   const [output, setOutput] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const { t } = useI18n();
   const Icon = toolIcons[tool.iconName];
 
   const helperLabel = useMemo(() => {
-    if (tool.mode === "regex") return "Test text";
-    if (tool.mode === "api") return "Request";
-    if (tool.mode === "redis") return "Commands";
-    if (tool.mode === "database") return "Query or schema";
-    return "Input";
-  }, [tool.mode]);
+    if (tool.mode === "regex") return t("online.testText");
+    if (tool.mode === "api") return t("online.request");
+    if (tool.mode === "redis") return t("online.commands");
+    if (tool.mode === "database") return t("online.queryOrSchema");
+    return t("online.input");
+  }, [tool.mode, t]);
 
   const run = async () => {
     setLoading(true);
@@ -94,7 +97,7 @@ export function OnlineToolWorkspace({ tool }: { tool: OnlineTool }) {
     try {
       setOutput(runOnlineTool(tool, input, sampleText));
     } catch (err) {
-      setError(err instanceof Error ? err.message : "The tool could not process that input.");
+      setError(err instanceof Error ? err.message : t("online.processError"));
     } finally {
       setLoading(false);
     }
@@ -111,19 +114,20 @@ export function OnlineToolWorkspace({ tool }: { tool: OnlineTool }) {
   };
 
   return (
-    <main className="mx-auto max-w-[1200px] px-4 py-8">
-      <Link href="/" className="inline-flex items-center gap-2 text-sm font-bold text-slate-600 hover:text-blue-700">
-        <ArrowLeft className="h-4 w-4" />
-        Back to all tools
-      </Link>
+    <>
+      <main className="mx-auto max-w-[1200px] px-4 py-8">
+        <Link href="/" className="inline-flex items-center gap-2 text-sm font-bold text-slate-600 hover:text-blue-700">
+          <ArrowLeft className="h-4 w-4" />
+          {t("online.back")}
+        </Link>
 
-      <section className="mt-5 rounded-lg border bg-white p-5 shadow-soft sm:p-7">
+        <section className="mt-5 rounded-lg border bg-white p-5 shadow-soft sm:p-7">
         <div className="flex gap-4">
           <span className={`grid h-12 w-12 shrink-0 place-items-center rounded-md ${tool.accent}`}>
             <Icon className="h-6 w-6" />
           </span>
           <div>
-            <p className="text-sm font-black uppercase tracking-[0.18em] text-blue-700">Online developer tool</p>
+            <p className="text-sm font-black uppercase tracking-[0.18em] text-blue-700">{t("online.badge")}</p>
             <h1 className="mt-2 text-3xl font-black text-slate-950">{tool.name}</h1>
             <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">{tool.description}</p>
           </div>
@@ -141,7 +145,7 @@ export function OnlineToolWorkspace({ tool }: { tool: OnlineTool }) {
             />
             {tool.mode === "regex" && (
               <>
-                <label className="text-sm font-black text-slate-900">Text to search</label>
+                <label className="text-sm font-black text-slate-900">{t("online.textToSearch")}</label>
                 <textarea
                   value={sampleText}
                   onChange={(event) => setSampleText(event.target.value)}
@@ -153,14 +157,14 @@ export function OnlineToolWorkspace({ tool }: { tool: OnlineTool }) {
 
           <div className="grid gap-3">
             <div className="flex items-center justify-between gap-3">
-              <label className="text-sm font-black text-slate-900">Output</label>
+              <label className="text-sm font-black text-slate-900">{t("online.output")}</label>
               <Button type="button" variant="outline" size="sm" disabled={!output} onClick={copy}>
                 <Copy className="h-4 w-4" />
-                Copy
+                {t("online.copy")}
               </Button>
             </div>
             <pre className="code-scrollbar min-h-[320px] overflow-auto whitespace-pre-wrap rounded-md border bg-slate-950 p-4 font-mono text-sm leading-6 text-slate-100">
-              {output || <span className="text-slate-400">Run the tool to see output here.</span>}
+              {output || <span className="text-slate-400">{t("online.outputPlaceholder")}</span>}
             </pre>
             {error && <p className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm font-semibold text-red-700">{error}</p>}
           </div>
@@ -169,14 +173,16 @@ export function OnlineToolWorkspace({ tool }: { tool: OnlineTool }) {
         <div className="mt-6 flex flex-wrap gap-3">
           <Button type="button" variant="gradient" onClick={run} disabled={loading}>
             {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Play className="h-4 w-4" />}
-            {loading ? "Running..." : "Run Tool"}
+            {loading ? t("online.running") : t("online.runTool")}
           </Button>
           <Button type="button" variant="outline" onClick={clear}>
             <Trash2 className="h-4 w-4" />
-            Clear
+            {t("online.clear")}
           </Button>
         </div>
-      </section>
-    </main>
+        </section>
+      </main>
+      <ToolSeoContent title={tool.name} description={tool.description} category={tool.mode} />
+    </>
   );
 }

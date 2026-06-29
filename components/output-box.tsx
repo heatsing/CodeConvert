@@ -2,6 +2,7 @@
 
 import { Copy, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useI18n } from "@/lib/i18n";
 
 type OutputBoxProps = {
   label: string;
@@ -13,6 +14,8 @@ type OutputBoxProps = {
 };
 
 export function OutputBox({ label, placeholder, value, onCopy, onDownload }: OutputBoxProps) {
+  const { t } = useI18n();
+
   return (
     <div className="grid min-h-[360px] gap-3 rounded-lg border bg-white p-4 shadow-soft">
       <div className="flex flex-wrap items-center justify-between gap-2">
@@ -20,11 +23,11 @@ export function OutputBox({ label, placeholder, value, onCopy, onDownload }: Out
         <div className="flex gap-2">
           <Button type="button" variant="outline" size="sm" onClick={onCopy} disabled={!value}>
             <Copy className="h-4 w-4" />
-            Copy
+            {t("tool.copy")}
           </Button>
           <Button type="button" variant="outline" size="sm" onClick={onDownload} disabled={!value}>
             <Download className="h-4 w-4" />
-            Download
+            {t("tool.download")}
           </Button>
         </div>
       </div>

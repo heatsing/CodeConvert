@@ -29,6 +29,64 @@ body {
     Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
+.dark body {
+  background:
+    radial-gradient(circle at top left, rgba(37, 99, 235, 0.18), transparent 32rem),
+    linear-gradient(180deg, #0f172a 0%, #111827 42%, #0b1120 100%);
+  color: #e5e7eb;
+}
+
+.dark .bg-slate-50 {
+  background-color: #111827;
+}
+
+.dark .bg-white {
+  background-color: #111827;
+}
+
+.dark .bg-slate-100 {
+  background-color: #1f2937;
+}
+
+.dark .border,
+.dark .border-b,
+.dark .border-dashed {
+  border-color: #334155;
+}
+
+.dark .text-slate-950,
+.dark .text-slate-900,
+.dark .text-slate-800,
+.dark .text-slate-700 {
+  color: #f8fafc;
+}
+
+.dark .text-slate-600,
+.dark .text-slate-500 {
+  color: #cbd5e1;
+}
+
+.dark .text-slate-400 {
+  color: #94a3b8;
+}
+
+.dark .shadow-soft,
+.dark .shadow-sm,
+.dark .shadow-md {
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.28);
+}
+
+.dark input,
+.dark textarea,
+.dark select {
+  color: #f8fafc;
+}
+
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: #94a3b8;
+}
+
 textarea,
 select,
 button,

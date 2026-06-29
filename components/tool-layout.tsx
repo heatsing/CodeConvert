@@ -9,6 +9,8 @@ import { FileUpload } from "@/components/file-upload";
 import { LanguageSelect } from "@/components/language-select";
 import { OtherTools } from "@/components/other-tools";
 import { OutputBox } from "@/components/output-box";
+import { ToolSeoContent } from "@/components/tool-seo-content";
+import { useI18n } from "@/lib/i18n";
 import { mockResult } from "@/lib/mock-ai";
 import { toolIcons } from "@/lib/tool-icons";
 import type { ToolConfig } from "@/lib/tools";
@@ -25,6 +27,7 @@ export function ToolLayout({ tool }: ToolLayoutProps) {
   const [error, setError] = useState("");
   const [status, setStatus] = useState("");
   const [loading, setLoading] = useState(false);
+  const { t } = useI18n();
   const Icon = toolIcons[tool.iconName];
 
   const languageSummary = useMemo(() => {
@@ -35,7 +38,7 @@ export function ToolLayout({ tool }: ToolLayoutProps) {
 
   const runTool = async () => {
     if (!input.trim()) {
-      setError("Paste code or upload a file before running this tool.");
+      setError(t("tool.emptyInput"));
       setStatus("");
       return;
     }
@@ -46,9 +49,9 @@ export function ToolLayout({ tool }: ToolLayoutProps) {
     try {
       const result = await mockResult({ tool, input, sourceLanguage, targetLanguage });
       setOutput(result);
-      setStatus(`${tool.name} finished for ${languageSummary}.`);
+      setStatus(`${tool.name} ${t("tool.finished")} ${languageSummary}.`);
     } catch {
-      setError("Something went wrong while preparing the mock result.");
+      setError(t("tool.mockError"));
     } finally {
       setLoading(false);
     }
@@ -57,10 +60,10 @@ export function ToolLayout({ tool }: ToolLayoutProps) {
   const copyOutput = async () => {
     try {
       await navigator.clipboard.writeText(output);
-      setStatus("Output copied to clipboard.");
+      setStatus(t("tool.copied"));
       setError("");
     } catch {
-      setError("Clipboard access failed. Select the output and copy it manually.");
+      setError(t("tool.clipboardError"));
     }
   };
 
@@ -72,7 +75,7 @@ export function ToolLayout({ tool }: ToolLayoutProps) {
     anchor.download = tool.fileName;
     anchor.click();
     URL.revokeObjectURL(url);
-    setStatus("Download started.");
+    setStatus(t("tool.downloadStarted"));
   };
 
   const clearAll = () => {
@@ -91,17 +94,17 @@ export function ToolLayout({ tool }: ToolLayoutProps) {
               <Icon className="h-6 w-6" />
             </div>
             <div>
-              <p className="text-sm font-bold uppercase tracking-[0.18em] text-violet-700">Free developer tool</p>
+              <p className="text-sm font-bold uppercase tracking-[0.18em] text-violet-700">{t("tool.free")}</p>
               <h1 className="mt-2 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">{tool.title}</h1>
               <p className="mt-3 max-w-3xl text-base leading-7 text-slate-600">{tool.description}</p>
             </div>
           </div>
           <div className="grid gap-3 rounded-lg border bg-slate-50 p-4 sm:min-w-72">
             {tool.needsSourceLanguage && (
-              <LanguageSelect id="source-language" label="Input language" value={sourceLanguage} onChange={setSourceLanguage} />
+              <LanguageSelect id="source-language" label={t("tool.inputLanguage")} value={sourceLanguage} onChange={setSourceLanguage} />
             )}
             {tool.needsTargetLanguage && (
-              <LanguageSelect id="target-language" label="Output language" value={targetLanguage} onChange={setTargetLanguage} />
+              <LanguageSelect id="target-language" label={t("tool.outputLanguage")} value={targetLanguage} onChange={setTargetLanguage} />
             )}
           </div>
         </div>
@@ -111,7 +114,7 @@ export function ToolLayout({ tool }: ToolLayoutProps) {
             onLoad={(content, fileName) => {
               setInput(content);
               setError("");
-              setStatus(`${fileName} loaded.`);
+              setStatus(`${fileName} ${t("tool.fileLoaded")}`);
             }}
             onError={setError}
           />
@@ -143,17 +146,17 @@ export function ToolLayout({ tool }: ToolLayoutProps) {
         <div className="mt-6 flex flex-wrap items-center gap-3">
           <Button type="button" variant="gradient" onClick={runTool} disabled={loading}>
             {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
-            {loading ? "Working..." : tool.actionLabel}
+            {loading ? t("tool.working") : tool.actionLabel}
           </Button>
           <Button type="button" variant="outline" onClick={clearAll}>
             <Trash2 className="h-4 w-4" />
-            Clear
+            {t("tool.clear")}
           </Button>
         </div>
       </section>
 
       <section className="rounded-lg border bg-white p-6 shadow-soft">
-        <h2 className="text-xl font-bold text-slate-950">How to use this tool</h2>
+        <h2 className="text-xl font-bold text-slate-950">{t("tool.howTo")}</h2>
         <ol className="mt-5 grid gap-3 sm:grid-cols-3">
           {tool.howTo.map((step, index) => (
             <li key={step} className="rounded-md border bg-slate-50 p-4 text-sm leading-6 text-slate-700">
@@ -169,6 +172,7 @@ export function ToolLayout({ tool }: ToolLayoutProps) {
       <div id="faq">
         <FAQSection faqs={tool.faqs} />
       </div>
+      <ToolSeoContent title={tool.name} description={tool.description} category="Code" />
       <OtherTools currentSlug={tool.slug} />
     </main>
   );

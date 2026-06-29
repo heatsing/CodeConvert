@@ -1,5 +1,7 @@
 "use client";
 
+import { useI18n } from "@/lib/i18n";
+
 type CodeEditorBoxProps = {
   label: string;
   placeholder: string;
@@ -8,11 +10,15 @@ type CodeEditorBoxProps = {
 };
 
 export function CodeEditorBox({ label, placeholder, value, onChange }: CodeEditorBoxProps) {
+  const { t } = useI18n();
+
   return (
     <div className="grid min-h-[360px] gap-3 rounded-lg border bg-white p-4 shadow-soft">
       <div className="flex items-center justify-between">
         <h2 className="text-sm font-bold text-slate-900">{label}</h2>
-        <span className="text-xs font-medium text-slate-500">{value.length} chars</span>
+        <span className="text-xs font-medium text-slate-500">
+          {value.length} {t("tool.chars")}
+        </span>
       </div>
       <textarea
         value={value}

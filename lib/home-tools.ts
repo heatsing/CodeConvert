@@ -9,6 +9,17 @@ export type DirectoryTool = {
   accent: string;
 };
 
+export function directoryToolSlug(name: string) {
+  return name
+    .trim()
+    .replace(/#/g, "sharp")
+    .replace(/\+/g, "plus")
+    .replace(/&/g, "and")
+    .replace(/[^a-zA-Z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .toLowerCase();
+}
+
 const internalToolMap: Partial<Record<ToolSlug, string>> = {
   "code-converter": "Convert code between languages",
   "code-generator": "Generate code from prompts",
@@ -20,7 +31,7 @@ const internalToolMap: Partial<Record<ToolSlug, string>> = {
 
 export const categories = ["Popular", "Encode", "Decode", "Convert", "Utility", "Format", "Security", "Network", "Regex", "Code"] as const;
 
-export const directoryTools: DirectoryTool[] = [
+const rawDirectoryTools: DirectoryTool[] = [
   { name: "Code Converter", description: internalToolMap["code-converter"]!, category: "Code", href: "/tools/code-converter", iconName: "code", accent: "text-blue-600 bg-blue-50" },
   { name: "Code Generator", description: internalToolMap["code-generator"]!, category: "Code", href: "/tools/code-generator", iconName: "wand", accent: "text-violet-600 bg-violet-50" },
   { name: "Code Explainer", description: internalToolMap["code-explainer"]!, category: "Code", href: "/tools/code-explainer", iconName: "message", accent: "text-cyan-600 bg-cyan-50" },
@@ -34,24 +45,151 @@ export const directoryTools: DirectoryTool[] = [
   { name: "URL Decode", description: "Decode URL strings", category: "Decode", href: "/tools/code-explainer", iconName: "message", accent: "text-blue-600 bg-blue-50" },
   { name: "HTML Encode", description: "Escape HTML entities", category: "Encode", href: "/tools/code-converter", iconName: "code", accent: "text-yellow-600 bg-yellow-50" },
   { name: "HTML Decode", description: "Decode HTML entities", category: "Decode", href: "/tools/code-converter", iconName: "code", accent: "text-lime-600 bg-lime-50" },
+  { name: "JavaScript Encode", description: "Escape JavaScript strings", category: "Encode", href: "/tools/code-generator", iconName: "code", accent: "text-yellow-700 bg-yellow-50" },
+  { name: "JavaScript Decode", description: "Unescape JavaScript strings", category: "Decode", href: "/tools/code-explainer", iconName: "message", accent: "text-yellow-700 bg-yellow-50" },
+  { name: "Unicode Encode", description: "Encode text as Unicode escapes", category: "Encode", href: "/tools/code-generator", iconName: "code", accent: "text-violet-600 bg-violet-50" },
+  { name: "Unicode Decode", description: "Decode Unicode escape text", category: "Decode", href: "/tools/code-explainer", iconName: "message", accent: "text-violet-600 bg-violet-50" },
+  { name: "HTML Entity Encode", description: "Encode reserved HTML characters", category: "Encode", href: "/tools/code-converter", iconName: "code", accent: "text-orange-600 bg-orange-50" },
+  { name: "HTML Entity Decode", description: "Decode reserved HTML characters", category: "Decode", href: "/tools/code-converter", iconName: "message", accent: "text-orange-600 bg-orange-50" },
+  { name: "JWT Encode", description: "Create JWT-like token text", category: "Encode", href: "/tools/code-generator", iconName: "wand", accent: "text-pink-600 bg-pink-50" },
+  { name: "JWT Decode", description: "Decode JWT token sections", category: "Decode", href: "/tools/code-explainer", iconName: "message", accent: "text-pink-600 bg-pink-50" },
+  { name: "Quoted Printable Encode", description: "Encode email-safe text", category: "Encode", href: "/tools/code-generator", iconName: "code", accent: "text-amber-700 bg-amber-50" },
+  { name: "Quoted Printable Decode", description: "Decode email-safe text", category: "Decode", href: "/tools/code-explainer", iconName: "message", accent: "text-amber-700 bg-amber-50" },
+  { name: "Base32 Encode", description: "Encode text to Base32", category: "Encode", href: "/tools/code-generator", iconName: "wand", accent: "text-cyan-600 bg-cyan-50" },
+  { name: "Base32 Decode", description: "Decode Base32 text", category: "Decode", href: "/tools/code-explainer", iconName: "message", accent: "text-cyan-600 bg-cyan-50" },
+  { name: "Base58 Encode", description: "Encode text to Base58", category: "Encode", href: "/tools/code-generator", iconName: "wand", accent: "text-blue-600 bg-blue-50" },
+  { name: "Base58 Decode", description: "Decode Base58 text", category: "Decode", href: "/tools/code-explainer", iconName: "message", accent: "text-blue-600 bg-blue-50" },
+  { name: "Morse Encode", description: "Convert text to Morse code", category: "Encode", href: "/tools/code-generator", iconName: "code", accent: "text-slate-700 bg-slate-100" },
+  { name: "Morse Decode", description: "Convert Morse code to text", category: "Decode", href: "/tools/code-explainer", iconName: "message", accent: "text-slate-700 bg-slate-100" },
   { name: "JavaScript Minifier", description: "Minify JS code", category: "Format", href: "/tools/comment-remover", iconName: "eraser", accent: "text-yellow-700 bg-yellow-50" },
   { name: "CSS Minifier", description: "Minify CSS code", category: "Format", href: "/tools/comment-remover", iconName: "eraser", accent: "text-indigo-600 bg-indigo-50" },
   { name: "Text Diff", description: "Compare two texts", category: "Utility", href: "/tools/code-checker", iconName: "bug", accent: "text-fuchsia-600 bg-fuchsia-50" },
   { name: "JWT Decode", description: "Decode JWT tokens", category: "Security", href: "/tools/code-explainer", iconName: "message", accent: "text-pink-600 bg-pink-50" },
   { name: "Hash Generator", description: "Generate hash values", category: "Security", href: "/tools/code-generator", iconName: "wand", accent: "text-slate-700 bg-slate-100" },
   { name: "Password Generator", description: "Create random passwords", category: "Security", href: "/tools/code-generator", iconName: "wand", accent: "text-amber-600 bg-amber-50" },
+  { name: "MD5 Generator", description: "Generate MD5 hashes", category: "Security", href: "/tools/code-generator", iconName: "wand", accent: "text-slate-700 bg-slate-100" },
+  { name: "SHA1 Generator", description: "Generate SHA1 hashes", category: "Security", href: "/tools/code-generator", iconName: "wand", accent: "text-slate-700 bg-slate-100" },
+  { name: "SHA256 Generator", description: "Generate SHA256 hashes", category: "Security", href: "/tools/code-generator", iconName: "wand", accent: "text-slate-700 bg-slate-100" },
+  { name: "SHA512 Generator", description: "Generate SHA512 hashes", category: "Security", href: "/tools/code-generator", iconName: "wand", accent: "text-slate-700 bg-slate-100" },
+  { name: "HMAC Generator", description: "Generate HMAC values", category: "Security", href: "/tools/code-generator", iconName: "wand", accent: "text-blue-700 bg-blue-50" },
+  { name: "Hash Identifier", description: "Identify hash types", category: "Security", href: "/tools/code-checker", iconName: "bug", accent: "text-slate-700 bg-slate-100" },
+  { name: "Password Strength", description: "Check password strength", category: "Security", href: "/tools/code-checker", iconName: "bug", accent: "text-amber-700 bg-amber-50" },
+  { name: "SSL Checker", description: "Inspect SSL details", category: "Security", href: "/tools/code-checker", iconName: "bug", accent: "text-blue-700 bg-blue-50" },
+  { name: "WHOIS Lookup", description: "Lookup domain owner", category: "Security", href: "/tools/code-explainer", iconName: "message", accent: "text-slate-700 bg-slate-100" },
+  { name: "DNS Lookup", description: "Inspect DNS records", category: "Security", href: "/tools/code-explainer", iconName: "message", accent: "text-cyan-700 bg-cyan-50" },
+  { name: "IP Lookup", description: "Lookup IP details", category: "Security", href: "/tools/code-explainer", iconName: "message", accent: "text-indigo-700 bg-indigo-50" },
+  { name: "User Agent Parser", description: "Parse user agents", category: "Security", href: "/tools/code-explainer", iconName: "message", accent: "text-slate-700 bg-slate-100" },
+  { name: "MD5 Decrypt", description: "Lookup MD5 text", category: "Security", href: "/tools/code-checker", iconName: "bug", accent: "text-red-700 bg-red-50" },
+  { name: "Hash Cracker", description: "Mock hash cracking", category: "Security", href: "/tools/code-checker", iconName: "bug", accent: "text-red-700 bg-red-50" },
+  { name: "JWT Verify", description: "Verify JWT structure", category: "Security", href: "/tools/code-checker", iconName: "bug", accent: "text-pink-700 bg-pink-50" },
+  { name: "URL Scanner", description: "Scan URL text", category: "Security", href: "/tools/code-checker", iconName: "bug", accent: "text-blue-700 bg-blue-50" },
+  { name: "Security Headers", description: "Check header policy", category: "Security", href: "/tools/code-checker", iconName: "bug", accent: "text-slate-700 bg-slate-100" },
   { name: "QR Code Generator", description: "Create QR payload text", category: "Utility", href: "/tools/code-generator", iconName: "wand", accent: "text-slate-700 bg-slate-100" },
+  { name: "Lorem Ipsum", description: "Generate filler text", category: "Utility", href: "/tools/code-generator", iconName: "wand", accent: "text-green-600 bg-green-50" },
+  { name: "Text Compare", description: "Compare text blocks", category: "Utility", href: "/tools/code-checker", iconName: "bug", accent: "text-violet-600 bg-violet-50" },
+  { name: "Word Counter", description: "Count words quickly", category: "Utility", href: "/tools/code-checker", iconName: "fileText", accent: "text-cyan-600 bg-cyan-50" },
+  { name: "Character Counter", description: "Count characters", category: "Utility", href: "/tools/code-checker", iconName: "fileText", accent: "text-emerald-600 bg-emerald-50" },
+  { name: "Line Counter", description: "Count text lines", category: "Utility", href: "/tools/code-checker", iconName: "fileText", accent: "text-slate-700 bg-slate-100" },
+  { name: "Case Converter", description: "Change text case", category: "Utility", href: "/tools/code-converter", iconName: "code", accent: "text-teal-600 bg-teal-50" },
+  { name: "Random String", description: "Generate random text", category: "Utility", href: "/tools/code-generator", iconName: "wand", accent: "text-slate-700 bg-slate-100" },
+  { name: "UUID Generator", description: "Create UUID values", category: "Utility", href: "/tools/code-generator", iconName: "wand", accent: "text-indigo-600 bg-indigo-50" },
+  { name: "Barcode Generator", description: "Create barcode text", category: "Utility", href: "/tools/code-generator", iconName: "wand", accent: "text-slate-700 bg-slate-100" },
+  { name: "Slug Generator", description: "Make URL slugs", category: "Utility", href: "/tools/code-generator", iconName: "wand", accent: "text-amber-700 bg-amber-50" },
+  { name: "Username Generator", description: "Create usernames", category: "Utility", href: "/tools/code-generator", iconName: "wand", accent: "text-green-600 bg-green-50" },
+  { name: "HTACCESS Generator", description: "Draft htaccess rules", category: "Utility", href: "/tools/code-generator", iconName: "fileText", accent: "text-blue-600 bg-blue-50" },
+  { name: "Color Picker", description: "Pick color values", category: "Utility", href: "/tools/code-generator", iconName: "wand", accent: "text-rose-600 bg-rose-50" },
+  { name: "Image Resizer", description: "Plan image sizes", category: "Utility", href: "/tools/code-generator", iconName: "fileText", accent: "text-emerald-600 bg-emerald-50" },
+  { name: "Cron Generator", description: "Build cron syntax", category: "Utility", href: "/tools/code-generator", iconName: "code", accent: "text-slate-700 bg-slate-100" },
+  { name: "Text Reverser", description: "Reverse text order", category: "Utility", href: "/tools/code-converter", iconName: "code", accent: "text-violet-600 bg-violet-50" },
+  { name: "Remove Duplicates", description: "Deduplicate lines", category: "Utility", href: "/tools/code-checker", iconName: "eraser", accent: "text-blue-600 bg-blue-50" },
+  { name: "Sort Lines", description: "Sort text lines", category: "Utility", href: "/tools/code-checker", iconName: "fileText", accent: "text-cyan-600 bg-cyan-50" },
+  { name: "Lorem Faker", description: "Fake content data", category: "Utility", href: "/tools/code-generator", iconName: "wand", accent: "text-fuchsia-600 bg-fuchsia-50" },
   { name: "CSV to JSON", description: "Convert CSV data", category: "Convert", href: "/tools/code-converter", iconName: "code", accent: "text-green-600 bg-green-50" },
   { name: "JSON to CSV", description: "Convert JSON arrays", category: "Convert", href: "/tools/code-converter", iconName: "code", accent: "text-green-600 bg-green-50" },
   { name: "Markdown to HTML", description: "Convert Markdown", category: "Convert", href: "/tools/code-converter", iconName: "code", accent: "text-blue-600 bg-blue-50" },
   { name: "HTML to Markdown", description: "Convert HTML", category: "Convert", href: "/tools/code-converter", iconName: "code", accent: "text-cyan-600 bg-cyan-50" },
+  { name: "JSON to XML", description: "Convert JSON to XML", category: "Convert", href: "/tools/code-converter", iconName: "code", accent: "text-emerald-600 bg-emerald-50" },
+  { name: "XML to JSON", description: "Convert XML to JSON", category: "Convert", href: "/tools/code-converter", iconName: "code", accent: "text-blue-600 bg-blue-50" },
+  { name: "YAML to JSON", description: "Convert YAML to JSON", category: "Convert", href: "/tools/code-converter", iconName: "code", accent: "text-orange-600 bg-orange-50" },
+  { name: "JSON to YAML", description: "Convert JSON to YAML", category: "Convert", href: "/tools/code-converter", iconName: "code", accent: "text-orange-600 bg-orange-50" },
+  { name: "TOML to JSON", description: "Convert TOML to JSON", category: "Convert", href: "/tools/code-converter", iconName: "code", accent: "text-slate-700 bg-slate-100" },
+  { name: "JSON to TOML", description: "Convert JSON to TOML", category: "Convert", href: "/tools/code-converter", iconName: "code", accent: "text-slate-700 bg-slate-100" },
+  { name: "INI to JSON", description: "Convert INI to JSON", category: "Convert", href: "/tools/code-converter", iconName: "code", accent: "text-teal-600 bg-teal-50" },
+  { name: "JSON to INI", description: "Convert JSON to INI", category: "Convert", href: "/tools/code-converter", iconName: "code", accent: "text-teal-600 bg-teal-50" },
+  { name: "Text to CSV", description: "Convert plain text to CSV", category: "Convert", href: "/tools/code-converter", iconName: "fileText", accent: "text-green-600 bg-green-50" },
+  { name: "CSV to Text", description: "Convert CSV to plain text", category: "Convert", href: "/tools/code-converter", iconName: "fileText", accent: "text-green-600 bg-green-50" },
+  { name: "Base64 to Image", description: "Convert Base64 to image data", category: "Convert", href: "/tools/code-converter", iconName: "fileText", accent: "text-purple-600 bg-purple-50" },
+  { name: "Image to Base64", description: "Convert image data to Base64", category: "Convert", href: "/tools/code-converter", iconName: "fileText", accent: "text-purple-600 bg-purple-50" },
+  { name: "HEX to RGB", description: "Convert HEX colors to RGB", category: "Convert", href: "/tools/code-converter", iconName: "code", accent: "text-rose-600 bg-rose-50" },
+  { name: "RGB to HEX", description: "Convert RGB colors to HEX", category: "Convert", href: "/tools/code-converter", iconName: "code", accent: "text-rose-600 bg-rose-50" },
+  { name: "Text to HEX", description: "Encode text as HEX", category: "Convert", href: "/tools/code-converter", iconName: "code", accent: "text-red-600 bg-red-50" },
+  { name: "HEX to Text", description: "Decode HEX to text", category: "Convert", href: "/tools/code-converter", iconName: "message", accent: "text-red-600 bg-red-50" },
+  { name: "Decimal to HEX", description: "Convert decimal numbers to HEX", category: "Convert", href: "/tools/code-converter", iconName: "code", accent: "text-amber-700 bg-amber-50" },
+  { name: "HEX to Decimal", description: "Convert HEX numbers to decimal", category: "Convert", href: "/tools/code-converter", iconName: "message", accent: "text-amber-700 bg-amber-50" },
+  { name: "Binary to Text", description: "Convert binary to text", category: "Convert", href: "/tools/code-converter", iconName: "message", accent: "text-slate-700 bg-slate-100" },
+  { name: "Text to Binary", description: "Convert text to binary", category: "Convert", href: "/tools/code-converter", iconName: "code", accent: "text-slate-700 bg-slate-100" },
+  { name: "Octal to Decimal", description: "Convert octal numbers", category: "Convert", href: "/tools/code-converter", iconName: "message", accent: "text-indigo-600 bg-indigo-50" },
+  { name: "Decimal to Octal", description: "Convert decimal to octal", category: "Convert", href: "/tools/code-converter", iconName: "code", accent: "text-indigo-600 bg-indigo-50" },
+  { name: "Unix to Date", description: "Convert Unix timestamp to date", category: "Convert", href: "/tools/code-converter", iconName: "fileText", accent: "text-lime-700 bg-lime-50" },
+  { name: "Date to Unix", description: "Convert date to Unix timestamp", category: "Convert", href: "/tools/code-converter", iconName: "fileText", accent: "text-lime-700 bg-lime-50" },
+  { name: "HTML to Text", description: "Strip HTML into text", category: "Convert", href: "/tools/code-converter", iconName: "message", accent: "text-cyan-600 bg-cyan-50" },
+  { name: "Text to HTML", description: "Convert text to HTML", category: "Convert", href: "/tools/code-converter", iconName: "code", accent: "text-cyan-600 bg-cyan-50" },
+  { name: "Escape HTML", description: "Escape HTML markup", category: "Convert", href: "/tools/code-converter", iconName: "code", accent: "text-yellow-600 bg-yellow-50" },
+  { name: "Unescape HTML", description: "Unescape HTML markup", category: "Convert", href: "/tools/code-converter", iconName: "message", accent: "text-yellow-600 bg-yellow-50" },
+  { name: "CSS to Inline", description: "Convert CSS rules to inline styles", category: "Convert", href: "/tools/code-converter", iconName: "code", accent: "text-blue-600 bg-blue-50" },
+  { name: "Inline to CSS", description: "Extract inline styles to CSS", category: "Convert", href: "/tools/code-converter", iconName: "message", accent: "text-blue-600 bg-blue-50" },
   { name: "SQL Formatter", description: "Format SQL queries", category: "Format", href: "/tools/code-checker", iconName: "code", accent: "text-violet-600 bg-violet-50" },
   { name: "Python Formatter", description: "Format Python code", category: "Format", href: "/tools/code-checker", iconName: "code", accent: "text-blue-600 bg-blue-50" },
+  { name: "JSON Formatter", description: "Format JSON data", category: "Format", href: "/tools/code-checker", iconName: "code", accent: "text-emerald-600 bg-emerald-50" },
+  { name: "XML Formatter", description: "Format XML markup", category: "Format", href: "/tools/code-checker", iconName: "code", accent: "text-blue-600 bg-blue-50" },
+  { name: "HTML Formatter", description: "Format HTML markup", category: "Format", href: "/tools/code-checker", iconName: "code", accent: "text-orange-600 bg-orange-50" },
+  { name: "CSS Formatter", description: "Format CSS code", category: "Format", href: "/tools/code-checker", iconName: "code", accent: "text-cyan-600 bg-cyan-50" },
+  { name: "JavaScript Formatter", description: "Format JS code", category: "Format", href: "/tools/code-checker", iconName: "code", accent: "text-yellow-700 bg-yellow-50" },
+  { name: "PHP Formatter", description: "Format PHP code", category: "Format", href: "/tools/code-checker", iconName: "code", accent: "text-violet-600 bg-violet-50" },
+  { name: "Java Formatter", description: "Format Java code", category: "Format", href: "/tools/code-checker", iconName: "code", accent: "text-orange-600 bg-orange-50" },
+  { name: "C# Formatter", description: "Format C# code", category: "Format", href: "/tools/code-checker", iconName: "code", accent: "text-cyan-700 bg-cyan-50" },
+  { name: "C/C++ Formatter", description: "Format C/C++ code", category: "Format", href: "/tools/code-checker", iconName: "code", accent: "text-blue-700 bg-blue-50" },
+  { name: "Go Formatter", description: "Format Go code", category: "Format", href: "/tools/code-checker", iconName: "code", accent: "text-sky-600 bg-sky-50" },
+  { name: "XML Beautifier", description: "Beautify XML", category: "Format", href: "/tools/code-checker", iconName: "wand", accent: "text-blue-600 bg-blue-50" },
+  { name: "HTML Beautifier", description: "Beautify HTML", category: "Format", href: "/tools/code-checker", iconName: "wand", accent: "text-orange-600 bg-orange-50" },
+  { name: "CSS Beautifier", description: "Beautify CSS", category: "Format", href: "/tools/code-checker", iconName: "wand", accent: "text-cyan-600 bg-cyan-50" },
+  { name: "JS Beautifier", description: "Beautify JavaScript", category: "Format", href: "/tools/code-checker", iconName: "wand", accent: "text-yellow-700 bg-yellow-50" },
+  { name: "Minify HTML", description: "Minify HTML markup", category: "Format", href: "/tools/comment-remover", iconName: "eraser", accent: "text-orange-600 bg-orange-50" },
+  { name: "Minify JSON", description: "Minify JSON data", category: "Format", href: "/tools/comment-remover", iconName: "eraser", accent: "text-emerald-600 bg-emerald-50" },
+  { name: "Minify XML", description: "Minify XML markup", category: "Format", href: "/tools/comment-remover", iconName: "eraser", accent: "text-blue-600 bg-blue-50" },
+  { name: "Remove Comments", description: "Remove code comments", category: "Format", href: "/tools/comment-remover", iconName: "eraser", accent: "text-rose-600 bg-rose-50" },
+  { name: "Add Line Numbers", description: "Number code lines", category: "Format", href: "/tools/code-generator", iconName: "fileText", accent: "text-slate-700 bg-slate-100" },
+  { name: "Text Wrap", description: "Wrap long text", category: "Format", href: "/tools/code-converter", iconName: "fileText", accent: "text-violet-600 bg-violet-50" },
   { name: "Regex Tester", description: "Test regular expressions", category: "Regex", href: "/tools/code-checker", iconName: "bug", accent: "text-slate-700 bg-slate-100" },
   { name: "Regex Generator", description: "Draft regex patterns", category: "Regex", href: "/tools/code-generator", iconName: "wand", accent: "text-slate-700 bg-slate-100" },
   { name: "HTTP Headers", description: "Inspect header text", category: "Network", href: "/tools/code-explainer", iconName: "message", accent: "text-slate-700 bg-slate-100" },
-  { name: "URL Extractor", description: "Extract URLs from text", category: "Network", href: "/tools/code-generator", iconName: "wand", accent: "text-teal-600 bg-teal-50" }
+  { name: "URL Extractor", description: "Extract URLs from text", category: "Network", href: "/tools/code-generator", iconName: "wand", accent: "text-teal-600 bg-teal-50" },
+  { name: "Ping Test", description: "Mock ping results", category: "Network", href: "/tools/code-checker", iconName: "bug", accent: "text-blue-700 bg-blue-50" },
+  { name: "Traceroute", description: "Trace network hops", category: "Network", href: "/tools/code-checker", iconName: "bug", accent: "text-slate-700 bg-slate-100" },
+  { name: "Domain Checker", description: "Check domain text", category: "Network", href: "/tools/code-checker", iconName: "bug", accent: "text-green-700 bg-green-50" },
+  { name: "Port Scanner", description: "Scan port lists", category: "Network", href: "/tools/code-checker", iconName: "bug", accent: "text-slate-700 bg-slate-100" },
+  { name: "Subdomain Finder", description: "Find subdomain names", category: "Network", href: "/tools/code-generator", iconName: "wand", accent: "text-indigo-700 bg-indigo-50" },
+  { name: "HTTP Status Checker", description: "Check status codes", category: "Network", href: "/tools/code-checker", iconName: "bug", accent: "text-cyan-700 bg-cyan-50" },
+  { name: "Redirect Checker", description: "Inspect redirects", category: "Network", href: "/tools/code-explainer", iconName: "message", accent: "text-orange-700 bg-orange-50" },
+  { name: "DNS Propagation", description: "Check DNS spread", category: "Network", href: "/tools/code-checker", iconName: "bug", accent: "text-violet-700 bg-violet-50" },
+  { name: "Whois Lookup", description: "Lookup domain records", category: "Network", href: "/tools/code-explainer", iconName: "message", accent: "text-slate-700 bg-slate-100" },
+  { name: "IP Information", description: "Inspect IP details", category: "Network", href: "/tools/code-explainer", iconName: "message", accent: "text-blue-700 bg-blue-50" },
+  { name: "DNS Record Viewer", description: "View DNS records", category: "Network", href: "/tools/code-explainer", iconName: "message", accent: "text-cyan-700 bg-cyan-50" },
+  { name: "URL Parser", description: "Parse URL parts", category: "Network", href: "/tools/code-explainer", iconName: "message", accent: "text-teal-700 bg-teal-50" },
+  { name: "Query String Parser", description: "Parse query params", category: "Network", href: "/tools/code-explainer", iconName: "message", accent: "text-green-700 bg-green-50" },
+  { name: "CIDR Calculator", description: "Calculate CIDR ranges", category: "Network", href: "/tools/code-checker", iconName: "bug", accent: "text-indigo-700 bg-indigo-50" },
+  { name: "IPv4 Converter", description: "Convert IPv4 values", category: "Network", href: "/tools/code-converter", iconName: "code", accent: "text-blue-700 bg-blue-50" },
+  { name: "MAC Address Lookup", description: "Inspect MAC prefixes", category: "Network", href: "/tools/code-explainer", iconName: "message", accent: "text-slate-700 bg-slate-100" }
 ];
+
+export const directoryTools = rawDirectoryTools.map((tool) => ({
+  ...tool,
+  href: `/${directoryToolSlug(tool.name)}`
+}));
+
+export const directoryToolBySlug = Object.fromEntries(
+  directoryTools.map((tool) => [directoryToolSlug(tool.name), tool])
+) as Record<string, DirectoryTool>;
 
 export const featuredTools = directoryTools.slice(6, 18);
 export const frequentTools = directoryTools.slice(0, 24);

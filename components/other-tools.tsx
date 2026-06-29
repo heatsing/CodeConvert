@@ -1,15 +1,19 @@
+"use client";
+
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import { useI18n } from "@/lib/i18n";
 import { toolIcons } from "@/lib/tool-icons";
 import { languageLinkTools, TOOLS, type ToolSlug } from "@/lib/tools";
 
 export function OtherTools({ currentSlug }: { currentSlug: ToolSlug }) {
   const tools = TOOLS.filter((tool) => tool.slug !== currentSlug);
+  const { t } = useI18n();
 
   return (
     <div className="grid gap-6">
       <section className="rounded-lg border bg-white p-6 shadow-soft">
-        <h2 className="text-xl font-bold text-slate-950">Try our other free tools</h2>
+        <h2 className="text-xl font-bold text-slate-950">{t("tool.otherTools")}</h2>
         <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {tools.map((tool) => {
             const Icon = toolIcons[tool.iconName];
@@ -31,7 +35,7 @@ export function OtherTools({ currentSlug }: { currentSlug: ToolSlug }) {
       </section>
 
       <section className="rounded-lg border bg-white p-6 shadow-soft">
-        <h2 className="text-xl font-bold text-slate-950">Ready-to-use language links</h2>
+        <h2 className="text-xl font-bold text-slate-950">{t("tool.readyLinks")}</h2>
         <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {languageLinkTools.map((item) => (
             <Link

@@ -1,18 +1,97 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
-import { Braces, ChevronDown, LogIn, Search, Sun } from "lucide-react";
+import { Braces, ChevronDown, Globe2, LogIn, Moon, Sun } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { translationLanguages, useI18n, type LanguageCode } from "@/lib/i18n";
 import { toolIcons } from "@/lib/tool-icons";
 import { TOOLS } from "@/lib/tools";
+
+type ThemeMode = "light" | "dark";
+
+function ThemeToggle({ dark = false }: { dark?: boolean }) {
+  const [theme, setTheme] = useState<ThemeMode>("light");
+
+  useEffect(() => {
+    const savedTheme = window.localStorage.getItem("codetools-theme");
+    const initialTheme: ThemeMode = savedTheme === "dark" || savedTheme === "light" ? savedTheme : "light";
+    setTheme(initialTheme);
+    document.documentElement.classList.toggle("dark", initialTheme === "dark");
+  }, []);
+
+  const toggleTheme = () => {
+    const nextTheme = theme === "dark" ? "light" : "dark";
+    setTheme(nextTheme);
+    document.documentElement.classList.toggle("dark", nextTheme === "dark");
+    window.localStorage.setItem("codetools-theme", nextTheme);
+  };
+
+  const Icon = theme === "dark" ? Moon : Sun;
+
+  return (
+    <button
+      type="button"
+      onClick={toggleTheme}
+      aria-label={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
+      title={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
+      className={`grid h-8 w-8 place-items-center rounded-md transition ${
+        dark ? "text-slate-300 hover:bg-slate-800 hover:text-white" : "text-slate-600 hover:bg-slate-100 hover:text-slate-950"
+      }`}
+    >
+      <Icon className="h-4 w-4" />
+    </button>
+  );
+}
+
+function LanguageSwitcher({ dark = false }: { dark?: boolean }) {
+  const { language, setLanguage, t } = useI18n();
+
+  return (
+    <label
+      className={`flex h-8 items-center gap-2 rounded-md border px-2 text-[12px] font-black ${
+        dark ? "border-slate-700 bg-slate-900 text-white" : "border-slate-200 bg-white text-slate-800"
+      }`}
+      title={t("language.select")}
+    >
+      <Globe2 className="h-4 w-4 text-slate-400" />
+      <select
+        value={language}
+        onChange={(event) => setLanguage(event.target.value as LanguageCode)}
+        className={`h-full cursor-pointer bg-transparent pr-1 font-black outline-none ${dark ? "text-white" : "text-slate-800"}`}
+        aria-label={t("language.select")}
+      >
+        {translationLanguages.map((item) => (
+          <option key={item.code} value={item.code} title={item.label} className="text-slate-900">
+            {item.code}
+          </option>
+        ))}
+      </select>
+    </label>
+  );
+}
 
 export function SiteHeader() {
   const pathname = usePathname();
   const isHome = pathname === "/";
+  const { t } = useI18n();
 
   if (isHome) {
+    const navItems = [
+      { label: t("nav.home"), href: "/", active: true },
+      { label: t("nav.encode"), href: "#encode" },
+      { label: t("nav.decode"), href: "#decode" },
+      { label: t("nav.convert"), href: "#convert" },
+      { label: t("nav.utility"), href: "#utility" },
+      { label: t("nav.format"), href: "#format" },
+      { label: t("nav.security"), href: "#security" },
+      { label: t("nav.network"), href: "#network" },
+      { label: t("nav.regex"), href: "#regex" },
+      { label: t("nav.online"), href: "#online" }
+    ];
+
     return (
       <header className="sticky top-0 z-40 bg-slate-950 text-white shadow-lg">
         <div className="flex h-12 w-full items-center gap-4 px-4">
@@ -23,26 +102,23 @@ export function SiteHeader() {
             </span>
           </Link>
           <nav className="hidden flex-1 items-center gap-4 pl-4 text-[11px] font-black uppercase tracking-wide xl:flex">
-            {["Home", "Encode", "Decode", "Convert", "Utility", "Format", "Security", "Network", "Regex", "Online"].map((item) => (
+            {navItems.map((item) => (
               <a
-                key={item}
-                href={item === "Home" ? "/" : item === "Online" ? "#online" : `#${item.toLowerCase()}`}
-                className={item === "Home" ? "border-b-2 border-orange-500 py-4 text-white" : "py-4 text-slate-200 hover:text-white"}
+                key={item.href}
+                href={item.href}
+                className={item.active ? "border-b-2 border-orange-500 py-4 text-white" : "py-4 text-slate-200 hover:text-white"}
               >
-                {item}
+                {item.label}
               </a>
             ))}
             <a href="#code" className="flex items-center gap-1 py-4 text-slate-200 hover:text-white">
-              More
+              {t("nav.more")}
               <ChevronDown className="h-3 w-3" />
             </a>
           </nav>
-          <div className="ml-auto hidden items-center gap-3 md:flex">
-            <Sun className="h-4 w-4 text-slate-300" />
-            <div className="flex h-8 w-48 items-center gap-2 rounded-md bg-white px-3 text-slate-500">
-              <Search className="h-4 w-4" />
-              <span className="text-[12px]">Search tools...</span>
-            </div>
+          <div className="ml-auto mr-5 hidden items-center gap-3 md:flex">
+            <LanguageSwitcher dark />
+            <ThemeToggle dark />
           </div>
         </div>
       </header>
@@ -63,7 +139,7 @@ export function SiteHeader() {
           <DropdownMenu.Root>
             <DropdownMenu.Trigger asChild>
               <Button type="button" variant="ghost" className="px-2 sm:px-3">
-                Free Tools
+                {t("nav.freeTools")}
                 <ChevronDown className="h-4 w-4" />
               </Button>
             </DropdownMenu.Trigger>
@@ -90,14 +166,16 @@ export function SiteHeader() {
             </DropdownMenu.Portal>
           </DropdownMenu.Root>
           <a href="#faq" className="hidden text-sm font-semibold text-slate-700 hover:text-violet-700 sm:inline">
-            FAQ
+            {t("nav.faq")}
           </a>
           <a href="mailto:hello@codetools.example" className="hidden text-sm font-semibold text-slate-700 hover:text-violet-700 sm:inline">
-            Contact
+            {t("nav.contact")}
           </a>
+          <LanguageSwitcher />
+          <ThemeToggle />
           <Button type="button" variant="outline" size="sm">
             <LogIn className="h-4 w-4" />
-            Login
+            {t("nav.login")}
           </Button>
         </nav>
       </div>

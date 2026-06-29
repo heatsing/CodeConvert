@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { I18nProvider } from "@/lib/i18n";
 import { SiteHeader } from "@/components/site-header";
+import { SiteFooter } from "@/components/site-footer";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://codetools-ai.example.com"),
@@ -19,8 +21,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <SiteHeader />
-        {children}
+        <I18nProvider>
+          <SiteHeader />
+          {children}
+          <SiteFooter />
+        </I18nProvider>
       </body>
     </html>
   );
