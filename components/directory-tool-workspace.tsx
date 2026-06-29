@@ -12,6 +12,14 @@ import { toolIcons } from "@/lib/tool-icons";
 function sampleFor(tool: DirectoryTool) {
   const name = tool.name.toLowerCase();
   if (name.includes(" to ") && name.includes("converter")) return "function greet(name) {\n  return `Hello ${name}`;\n}";
+  if (name.includes("unit test")) return "function add(a, b) {\n  return a + b;\n}";
+  if (name.includes("api code")) return "Create a JSON API endpoint for a tasks list.";
+  if (name.includes("sql query")) return "users table with id, email, created_at. Find recent users.";
+  if (name.includes("shell script")) return "Back up a project folder into a dated archive.";
+  if (name.includes("dockerfile")) return "Next.js app using npm run build and npm start.";
+  if (name.includes("readme")) return "CodeTools AI - online developer tools built with Next.js.";
+  if (name.includes("code diff")) return "const a = 1;\nconst b = 2;\n---\nconst a = 1;\nconst b = 3;";
+  if (name.includes("code")) return "function greet(name) {\nconsole.log('Hello ' + name)\n}";
   if (name.includes("regex replace")) return "/cat/gi\ndog\nThe cat sat with another Cat.";
   if (name.includes("regex split")) return "/[,;\\s]+/g\nred, green; blue yellow";
   if (name.includes("regex escape")) return "https://example.com/search?q=(code tools)+ai";
@@ -99,6 +107,39 @@ function processTool(tool: DirectoryTool, input: string) {
   if (name.includes("remove duplicates")) return Array.from(new Set(value.split(/\r?\n/))).join("\n");
   if (name.includes("sort lines")) return value.split(/\r?\n/).sort((a, b) => a.localeCompare(b)).join("\n");
   if (name.includes("text reverser")) return value.split("").reverse().join("");
+  if (name.includes("code formatter") || name.includes("code beautifier")) {
+    return value
+      .replace(/\{/g, "{\n  ")
+      .replace(/;/g, ";\n  ")
+      .replace(/\}/g, "\n}")
+      .replace(/\n\s+\n/g, "\n")
+      .trim();
+  }
+  if (name.includes("code minifier")) return value.replace(/\/\*[\s\S]*?\*\/|\/\/.*$/gm, "").replace(/\s+/g, " ").trim();
+  if (name.includes("code diff")) {
+    const [left = "", right = ""] = value.split(/\n---\n/);
+    const leftLines = left.split(/\r?\n/);
+    const rightLines = right.split(/\r?\n/);
+    const max = Math.max(leftLines.length, rightLines.length);
+    return Array.from({ length: max }, (_, index) => {
+      if (leftLines[index] === rightLines[index]) return `  ${leftLines[index] ?? ""}`;
+      return `- ${leftLines[index] ?? ""}\n+ ${rightLines[index] ?? ""}`;
+    }).join("\n");
+  }
+  if (name.includes("code snippet generator")) {
+    return `function handleInput(value) {\n  if (!value) return null;\n  return value.trim();\n}\n\nexport { handleInput };`;
+  }
+  if (name.includes("code commenter")) return value.split(/\r?\n/).map((line) => line.trim() ? `${line} // explain this step` : line).join("\n");
+  if (name.includes("code refactor")) return `// Refactor suggestion\n// 1. Extract repeated logic into small functions.\n// 2. Name intermediate values clearly.\n// 3. Keep side effects near the edge.\n\n${value}`;
+  if (name.includes("code optimizer")) return `Optimization notes\n- Remove repeated work inside loops.\n- Prefer early returns for guard clauses.\n- Cache derived values when reused.\n\n${value}`;
+  if (name.includes("code summarizer")) return `Summary\nThis code appears to define a small routine, process input, and return or print a result.\n\nKey input\n${value.slice(0, 240)}`;
+  if (name.includes("code documentation")) return `# Code Documentation\n\n## Purpose\nDescribe what this code does and when to use it.\n\n## Inputs\nList parameters, types, and expected values.\n\n## Output\nDescribe the returned value or side effect.\n\n## Source\n\`\`\`\n${value}\n\`\`\``;
+  if (name.includes("unit test")) return `import { describe, expect, it } from "vitest";\n\nimport { add } from "./module";\n\ndescribe("add", () => {\n  it("adds two numbers", () => {\n    expect(add(2, 3)).toBe(5);\n  });\n});`;
+  if (name.includes("api code")) return `export async function GET() {\n  return Response.json({ data: [], ok: true });\n}\n\nexport async function POST(request: Request) {\n  const body = await request.json();\n  return Response.json({ data: body, ok: true }, { status: 201 });\n}`;
+  if (name.includes("sql query")) return `SELECT id, email, created_at\nFROM users\nWHERE created_at >= NOW() - INTERVAL '30 days'\nORDER BY created_at DESC\nLIMIT 50;`;
+  if (name.includes("shell script")) return `#!/usr/bin/env bash\nset -euo pipefail\n\nsrc="./project"\ndest="./backup-$(date +%Y%m%d).tar.gz"\ntar -czf "$dest" "$src"\necho "Created $dest"`;
+  if (name.includes("dockerfile")) return `FROM node:20-alpine AS deps\nWORKDIR /app\nCOPY package*.json ./\nRUN npm ci\n\nFROM deps AS build\nCOPY . .\nRUN npm run build\n\nEXPOSE 3000\nCMD ["npm", "start"]`;
+  if (name.includes("readme")) return `# Project Name\n\nShort description of the tool or application.\n\n## Getting Started\n\n\`\`\`bash\nnpm install\nnpm run dev\n\`\`\`\n\n## Features\n\n- Fast developer workflow\n- Clean UI\n- Extensible architecture`;
   if (name.includes("regex cheat sheet")) {
     return "\\d digit\n\\w word character\n\\s whitespace\n. any character\n+ one or more\n* zero or more\n? optional\n^ start\n$ end\n[] character set\n() capture group\n| either/or";
   }
