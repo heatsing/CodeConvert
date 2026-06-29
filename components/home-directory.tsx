@@ -17,6 +17,11 @@ function shortDescription(description: string) {
     .replace(/\.$/, "");
 }
 
+function languageToolDescription(name: string) {
+  const language = name.replace(/\s+Online Tool$/i, "");
+  return `Run ${language} code`;
+}
+
 function ToolTile({ tool, compact = false }: { tool: (typeof directoryTools)[number]; compact?: boolean }) {
   const Icon = toolIcons[tool.iconName];
 
@@ -187,7 +192,7 @@ export function HomeDirectory() {
                       {tool.name}
                     </span>
                     <span className="mt-1 block whitespace-normal break-words text-[12px] leading-5 text-slate-500">
-                      {tool.description}
+                      {languageToolDescription(tool.name)}
                     </span>
                   </span>
                 </Link>
