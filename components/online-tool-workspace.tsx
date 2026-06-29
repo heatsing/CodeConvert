@@ -18,11 +18,12 @@ function runOnlineTool(tool: OnlineTool, input: string, sampleText: string) {
   }
 
   if (tool.mode === "regex") {
-    const regex = new RegExp(source, "g");
+    const literal = source.trim().match(/^\/(.+)\/([dgimsuvy]*)$/);
+    const regex = literal ? new RegExp(literal[1], literal[2].includes("g") ? literal[2] : `${literal[2]}g`) : new RegExp(source, "g");
     const matches = Array.from(sampleText.matchAll(regex), (match) => match[0]);
     return matches.length
-      ? `Pattern: /${source}/g\nMatches (${matches.length})\n${matches.map((match, index) => `${index + 1}. ${match}`).join("\n")}`
-      : `Pattern: /${source}/g\nNo matches found in the test text.`;
+      ? `Pattern: ${regex.toString()}\nMatches (${matches.length})\n${matches.map((match, index) => `${index + 1}. ${match}`).join("\n")}`
+      : `Pattern: ${regex.toString()}\nNo matches found in the test text.`;
   }
 
   if (tool.mode === "api") {
@@ -166,16 +167,18 @@ export function OnlineToolWorkspace({ tool }: { tool: OnlineTool }) {
           </div>
 
           <div className="grid gap-3">
-            <div className="flex items-center justify-between gap-3">
+            <div className="flex flex-wrap items-center justify-between gap-3">
               <label className="text-sm font-black text-slate-900">{t("online.output")}</label>
-              <Button type="button" variant="outline" size="sm" disabled={!output} onClick={copy}>
-                <Copy className="h-4 w-4" />
-                {t("online.copy")}
-              </Button>
-              <Button type="button" variant="outline" size="sm" disabled={!output} onClick={download}>
-                <Download className="h-4 w-4" />
-                {t("tool.download")}
-              </Button>
+              <div className="flex flex-wrap gap-2">
+                <Button type="button" variant="outline" size="sm" disabled={!output} onClick={copy}>
+                  <Copy className="h-4 w-4" />
+                  {t("online.copy")}
+                </Button>
+                <Button type="button" variant="outline" size="sm" disabled={!output} onClick={download}>
+                  <Download className="h-4 w-4" />
+                  {t("tool.download")}
+                </Button>
+              </div>
             </div>
             <pre className="code-scrollbar min-h-[320px] overflow-auto whitespace-pre-wrap rounded-md border bg-slate-950 p-4 font-mono text-sm leading-6 text-slate-100">
               {output || <span className="text-slate-400">{t("online.outputPlaceholder")}</span>}

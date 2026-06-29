@@ -11,6 +11,24 @@ import { toolIcons } from "@/lib/tool-icons";
 
 function sampleFor(tool: DirectoryTool) {
   const name = tool.name.toLowerCase();
+  if (name.includes("base32 decode")) return "JBSWY3DPEBLW64TMMQ";
+  if (name.includes("base58 decode")) return "2NEpo7TZRRrLZSi2U";
+  if (name.includes("base32 encode") || name.includes("base58 encode")) return "Hello World";
+  if (name.includes("morse decode")) return ".... . .-.. .-.. --- / .-- --- .-. .-.. -..";
+  if (name.includes("morse encode")) return "hello world";
+  if (name.includes("jwt decode") || name.includes("jwt verify")) return "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjoiQ29kZVRvb2xzIEFJIn0.mock-signature";
+  if (name.includes("json to xml") || name.includes("json to yaml") || name.includes("json to toml") || name.includes("json to ini") || name.includes("json to csv") || name.includes("minify json")) return '{"name":"CodeTools","count":3}';
+  if (name.includes("csv to json") || name.includes("csv to text")) return "id,name\n1,Alice\n2,Bob";
+  if (name.includes("xml to json")) return "<root><name>CodeTools</name><count>3</count></root>";
+  if (name.includes("yaml to json")) return "name: CodeTools\ncount: 3";
+  if (name.includes("toml to json") || name.includes("ini to json")) return "name = CodeTools\ncount = 3";
+  if (name.includes("hex to rgb")) return "#3366ff";
+  if (name.includes("rgb to hex")) return "rgb(51, 102, 255)";
+  if (name.includes("decimal to hex") || name.includes("decimal to octal")) return "255";
+  if (name.includes("hex to decimal")) return "ff";
+  if (name.includes("octal to decimal")) return "377";
+  if (name.includes("unix to date")) return "1782741274";
+  if (name.includes("date to unix")) return "2026-06-30T00:00:00Z";
   if (name.includes("find and replace")) return "old\nnew\nThis old text has old words.";
   if (name.includes("character remover")) return "aeiou\nRemove vowels from this sentence.";
   if (name.includes("repeat text")) return "3\nRepeat this line";
@@ -51,6 +69,7 @@ function sampleFor(tool: DirectoryTool) {
 
 function regexFromLine(line: string) {
   const trimmed = line.trim();
+  if (!trimmed) return /(?:)/g;
   const literal = trimmed.match(/^\/(.+)\/([dgimsuvy]*)$/);
   if (literal) return new RegExp(literal[1], literal[2].includes("g") ? literal[2] : `${literal[2]}g`);
   return new RegExp(trimmed, "g");
@@ -249,7 +268,7 @@ function base32Encode(value: string) {
 }
 
 function base32Decode(value: string) {
-  const bits = value.toUpperCase().replace(/=+$/g, "").split("").map((char) => {
+  const bits = value.toUpperCase().replace(/=+$/g, "").replace(/\s+/g, "").split("").map((char) => {
     const index = base32Alphabet.indexOf(char);
     if (index < 0) throw new Error("Invalid Base32 input.");
     return index.toString(2).padStart(5, "0");
@@ -357,7 +376,13 @@ function processTool(tool: DirectoryTool, input: string) {
     }
   }
   if (name.includes("url encode")) return encodeURIComponent(value);
-  if (name.includes("url decode")) return decodeURIComponent(value);
+  if (name.includes("url decode")) {
+    try {
+      return decodeURIComponent(value);
+    } catch {
+      return "Invalid URL encoded input.";
+    }
+  }
   if (name.includes("html entity encode") || name.includes("html encode") || name.includes("escape html")) return htmlEncode(value);
   if (name.includes("html entity decode") || name.includes("html decode") || name.includes("unescape html")) return htmlDecode(value);
   if (name.includes("javascript encode")) return jsEncode(value);
@@ -391,25 +416,59 @@ function processTool(tool: DirectoryTool, input: string) {
     return `Header\n${decodePart(header)}\n\nPayload\n${decodePart(payload)}\n\nSignature\n${signature || "missing"}`;
   }
   if (name.includes("json") && name.includes("format")) {
-    return JSON.stringify(JSON.parse(value), null, 2);
+    try {
+      return JSON.stringify(JSON.parse(value), null, 2);
+    } catch {
+      return "Invalid JSON input.";
+    }
   }
-  if (name.includes("minify json")) return JSON.stringify(JSON.parse(value));
+  if (name.includes("minify json")) {
+    try {
+      return JSON.stringify(JSON.parse(value));
+    } catch {
+      return "Invalid JSON input.";
+    }
+  }
   if (name.includes("minify html") || name.includes("minify xml")) return value.replace(/>\s+</g, "><").replace(/\s+/g, " ").trim();
   if (name.includes("javascript minifier") || name.includes("minify js") || name.includes("css minifier") || name.includes("minify css")) {
     return value.replace(/\/\*[\s\S]*?\*\/|\/\/.*$/gm, "").replace(/\s+/g, " ").replace(/\s*([{}:;,])\s*/g, "$1").trim();
   }
   if (name.includes("csv to json")) return csvToJson(value);
-  if (name.includes("json to csv")) return jsonToCsv(value);
-  if (name.includes("json to xml")) return `<root>\n${Object.entries(JSON.parse(value)).map(([key, item]) => `  <${key}>${String(item)}</${key}>`).join("\n")}\n</root>`;
+  if (name.includes("json to csv")) {
+    try {
+      return jsonToCsv(value);
+    } catch {
+      return "Invalid JSON input.";
+    }
+  }
+  if (name.includes("json to xml")) {
+    try {
+      return `<root>\n${Object.entries(JSON.parse(value)).map(([key, item]) => `  <${key}>${String(item)}</${key}>`).join("\n")}\n</root>`;
+    } catch {
+      return "Invalid JSON input.";
+    }
+  }
   if (name.includes("xml to json")) {
     const entries = Array.from(value.matchAll(/<([A-Za-z0-9_-]+)>([\s\S]*?)<\/\1>/g)).map((match) => [match[1], match[2]]);
     return JSON.stringify(Object.fromEntries(entries), null, 2);
   }
-  if (name.includes("json to yaml")) return Object.entries(JSON.parse(value)).map(([key, item]) => `${key}: ${String(item)}`).join("\n");
+  if (name.includes("json to yaml")) {
+    try {
+      return Object.entries(JSON.parse(value)).map(([key, item]) => `${key}: ${String(item)}`).join("\n");
+    } catch {
+      return "Invalid JSON input.";
+    }
+  }
   if (name.includes("yaml to json") || name.includes("toml to json") || name.includes("ini to json")) {
     return JSON.stringify(Object.fromEntries(value.split(/\r?\n/).map((line) => line.split(/[:=]/)).filter((parts) => parts.length >= 2).map(([key, ...rest]) => [key.trim(), rest.join(":").trim()])), null, 2);
   }
-  if (name.includes("json to toml") || name.includes("json to ini")) return Object.entries(JSON.parse(value)).map(([key, item]) => `${key} = ${JSON.stringify(item)}`).join("\n");
+  if (name.includes("json to toml") || name.includes("json to ini")) {
+    try {
+      return Object.entries(JSON.parse(value)).map(([key, item]) => `${key} = ${JSON.stringify(item)}`).join("\n");
+    } catch {
+      return "Invalid JSON input.";
+    }
+  }
   if (name.includes("markdown to html")) return value.split(/\r?\n/).map((line) => line.startsWith("# ") ? `<h1>${line.slice(2)}</h1>` : `<p>${line}</p>`).join("\n");
   if (name.includes("html to markdown")) return htmlDecode(value.replace(/<h1>(.*?)<\/h1>/gi, "# $1\n").replace(/<[^>]+>/g, ""));
   if (name.includes("html to text")) return htmlDecode(value.replace(/<[^>]+>/g, " ")).replace(/\s+/g, " ").trim();
@@ -431,11 +490,17 @@ function processTool(tool: DirectoryTool, input: string) {
   if (name.includes("line counter")) return `Lines: ${value.split(/\r?\n/).length}`;
   if (name.includes("text to binary")) return Array.from(value).map((char) => char.charCodeAt(0).toString(2).padStart(8, "0")).join(" ");
   if (name.includes("binary to text")) {
-    return value.split(/\s+/).map((part) => String.fromCharCode(parseInt(part, 2))).join("");
+    return value.split(/\s+/).filter(Boolean).map((part) => {
+      const code = Number.parseInt(part, 2);
+      return Number.isFinite(code) ? String.fromCharCode(code) : "";
+    }).join("");
   }
   if (name.includes("text to hex")) return Array.from(value).map((char) => char.charCodeAt(0).toString(16).padStart(2, "0")).join("");
   if (name.includes("hex to text")) {
-    return value.replace(/\s+/g, "").match(/.{1,2}/g)?.map((part) => String.fromCharCode(parseInt(part, 16))).join("") ?? "";
+    return value.replace(/\s+/g, "").match(/.{1,2}/g)?.map((part) => {
+      const code = Number.parseInt(part, 16);
+      return Number.isFinite(code) ? String.fromCharCode(code) : "";
+    }).join("") ?? "";
   }
   if (name.includes("case converter")) return `UPPER\n${value.toUpperCase()}\n\nlower\n${value.toLowerCase()}`;
   if (name.includes("remove duplicates")) return Array.from(new Set(value.split(/\r?\n/))).join("\n");
@@ -703,16 +768,18 @@ export function DirectoryToolWorkspace({ tool }: { tool: DirectoryTool }) {
           </div>
 
           <div className="grid gap-3">
-            <div className="flex items-center justify-between gap-3">
+            <div className="flex flex-wrap items-center justify-between gap-3">
               <label className="text-sm font-black text-slate-900">{t("online.output")}</label>
-              <Button type="button" variant="outline" size="sm" disabled={!output} onClick={copy}>
-                <Copy className="h-4 w-4" />
-                {t("online.copy")}
-              </Button>
-              <Button type="button" variant="outline" size="sm" disabled={!output} onClick={download}>
-                <Download className="h-4 w-4" />
-                {t("tool.download")}
-              </Button>
+              <div className="flex flex-wrap gap-2">
+                <Button type="button" variant="outline" size="sm" disabled={!output} onClick={copy}>
+                  <Copy className="h-4 w-4" />
+                  {t("online.copy")}
+                </Button>
+                <Button type="button" variant="outline" size="sm" disabled={!output} onClick={download}>
+                  <Download className="h-4 w-4" />
+                  {t("tool.download")}
+                </Button>
+              </div>
             </div>
             <pre className="code-scrollbar min-h-[320px] overflow-auto whitespace-pre-wrap rounded-md border bg-slate-950 p-4 font-mono text-sm leading-6 text-slate-100">
               {output || <span className="text-slate-400">{t("online.outputPlaceholder")}</span>}
