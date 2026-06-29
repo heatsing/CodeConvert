@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, Copy, Loader2, Play, Trash2 } from "lucide-react";
+import { ArrowLeft, Copy, Download, Loader2, Play, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ToolSeoContent } from "@/components/tool-seo-content";
 import type { DirectoryTool } from "@/lib/home-tools";
@@ -163,6 +163,186 @@ const natoWords: Record<string, string> = {
   z: "Zulu"
 };
 
+const morseWords: Record<string, string> = {
+  a: ".-",
+  b: "-...",
+  c: "-.-.",
+  d: "-..",
+  e: ".",
+  f: "..-.",
+  g: "--.",
+  h: "....",
+  i: "..",
+  j: ".---",
+  k: "-.-",
+  l: ".-..",
+  m: "--",
+  n: "-.",
+  o: "---",
+  p: ".--.",
+  q: "--.-",
+  r: ".-.",
+  s: "...",
+  t: "-",
+  u: "..-",
+  v: "...-",
+  w: ".--",
+  x: "-..-",
+  y: "-.--",
+  z: "--..",
+  "0": "-----",
+  "1": ".----",
+  "2": "..---",
+  "3": "...--",
+  "4": "....-",
+  "5": ".....",
+  "6": "-....",
+  "7": "--...",
+  "8": "---..",
+  "9": "----."
+};
+
+const base32Alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
+const base58Alphabet = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
+
+function htmlEncode(value: string) {
+  return value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+}
+
+function htmlDecode(value: string) {
+  return value
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, "\"")
+    .replace(/&#39;/g, "'")
+    .replace(/&amp;/g, "&");
+}
+
+function unicodeEncode(value: string) {
+  return Array.from(value).map((char) => `\\u${char.charCodeAt(0).toString(16).padStart(4, "0")}`).join("");
+}
+
+function unicodeDecode(value: string) {
+  return value.replace(/\\u([0-9a-f]{4})/gi, (_, code: string) => String.fromCharCode(Number.parseInt(code, 16)));
+}
+
+function jsEncode(value: string) {
+  return JSON.stringify(value).slice(1, -1);
+}
+
+function jsDecode(value: string) {
+  try {
+    return JSON.parse(`"${value.replace(/"/g, "\\\"")}"`) as string;
+  } catch {
+    return value;
+  }
+}
+
+function base32Encode(value: string) {
+  const bytes = new TextEncoder().encode(value);
+  let bits = "";
+  bytes.forEach((byte) => {
+    bits += byte.toString(2).padStart(8, "0");
+  });
+  return bits.match(/.{1,5}/g)?.map((chunk) => base32Alphabet[Number.parseInt(chunk.padEnd(5, "0"), 2)]).join("") ?? "";
+}
+
+function base32Decode(value: string) {
+  const bits = value.toUpperCase().replace(/=+$/g, "").split("").map((char) => {
+    const index = base32Alphabet.indexOf(char);
+    if (index < 0) throw new Error("Invalid Base32 input.");
+    return index.toString(2).padStart(5, "0");
+  }).join("");
+  const bytes = bits.match(/.{8}/g)?.map((chunk) => Number.parseInt(chunk, 2)) ?? [];
+  return new TextDecoder().decode(new Uint8Array(bytes));
+}
+
+function base58Encode(value: string) {
+  let digits = [0];
+  for (const byte of Array.from(new TextEncoder().encode(value))) {
+    let carry = byte;
+    for (let index = 0; index < digits.length; index += 1) {
+      carry += digits[index] * 256;
+      digits[index] = carry % 58;
+      carry = Math.floor(carry / 58);
+    }
+    while (carry > 0) {
+      digits.push(carry % 58);
+      carry = Math.floor(carry / 58);
+    }
+  }
+  return digits.reverse().map((digit) => base58Alphabet[digit]).join("");
+}
+
+function base58Decode(value: string) {
+  let bytes = [0];
+  for (const char of value.trim()) {
+    const index = base58Alphabet.indexOf(char);
+    if (index < 0) throw new Error("Invalid Base58 input.");
+    let carry = index;
+    for (let offset = 0; offset < bytes.length; offset += 1) {
+      carry += bytes[offset] * 58;
+      bytes[offset] = carry & 0xff;
+      carry >>= 8;
+    }
+    while (carry > 0) {
+      bytes.push(carry & 0xff);
+      carry >>= 8;
+    }
+  }
+  return new TextDecoder().decode(new Uint8Array(bytes.reverse()));
+}
+
+function morseEncode(value: string) {
+  return value.toLowerCase().split("").map((char) => (char === " " ? "/" : morseWords[char] ?? char)).join(" ");
+}
+
+function morseDecode(value: string) {
+  const reverse = Object.fromEntries(Object.entries(morseWords).map(([letter, code]) => [code, letter]));
+  return value.split(/\s+/).map((part) => (part === "/" ? " " : reverse[part] ?? part)).join("");
+}
+
+function csvRows(value: string) {
+  return value.trim().split(/\r?\n/).map((line) => line.split(",").map((cell) => cell.trim()));
+}
+
+function csvToJson(value: string) {
+  const [headers = [], ...rows] = csvRows(value);
+  return JSON.stringify(rows.map((row) => Object.fromEntries(headers.map((header, index) => [header, row[index] ?? ""]))), null, 2);
+}
+
+function jsonToCsv(value: string) {
+  const data = JSON.parse(value);
+  const rows = Array.isArray(data) ? data : [data];
+  const headers = Array.from(new Set(rows.flatMap((row) => Object.keys(row))));
+  return [headers.join(","), ...rows.map((row) => headers.map((header) => JSON.stringify(row[header] ?? "")).join(","))].join("\n");
+}
+
+function simpleHash(value: string) {
+  let hash = 2166136261;
+  for (let index = 0; index < value.length; index += 1) {
+    hash ^= value.charCodeAt(index);
+    hash = Math.imul(hash, 16777619);
+  }
+  return (hash >>> 0).toString(16).padStart(8, "0");
+}
+
+function slugify(value: string) {
+  return value.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+}
+
+function hexToRgb(value: string) {
+  const hex = value.replace("#", "").trim();
+  const full = hex.length === 3 ? hex.split("").map((char) => char + char).join("") : hex;
+  const number = Number.parseInt(full, 16);
+  return `rgb(${(number >> 16) & 255}, ${(number >> 8) & 255}, ${number & 255})`;
+}
+
+function rgbToHex(value: string) {
+  const parts = value.match(/\d+/g)?.slice(0, 3).map(Number) ?? [0, 0, 0];
+  return `#${parts.map((part) => Math.max(0, Math.min(255, part)).toString(16).padStart(2, "0")).join("")}`;
+}
+
 function processTool(tool: DirectoryTool, input: string) {
   const value = input.trim() || sampleFor(tool);
   const name = tool.name.toLowerCase();
@@ -177,9 +357,74 @@ function processTool(tool: DirectoryTool, input: string) {
   }
   if (name.includes("url encode")) return encodeURIComponent(value);
   if (name.includes("url decode")) return decodeURIComponent(value);
+  if (name.includes("html entity encode") || name.includes("html encode") || name.includes("escape html")) return htmlEncode(value);
+  if (name.includes("html entity decode") || name.includes("html decode") || name.includes("unescape html")) return htmlDecode(value);
+  if (name.includes("javascript encode")) return jsEncode(value);
+  if (name.includes("javascript decode")) return jsDecode(value);
+  if (name.includes("unicode encode")) return unicodeEncode(value);
+  if (name.includes("unicode decode")) return unicodeDecode(value);
+  if (name.includes("base32 encode")) return base32Encode(value);
+  if (name.includes("base32 decode")) return base32Decode(value);
+  if (name.includes("base58 encode")) return base58Encode(value);
+  if (name.includes("base58 decode")) return base58Decode(value);
+  if (name.includes("morse encode")) return morseEncode(value);
+  if (name.includes("morse decode")) return morseDecode(value);
+  if (name.includes("quoted printable encode")) {
+    return Array.from(value).map((char) => /[A-Za-z0-9 ]/.test(char) ? char : `=${char.charCodeAt(0).toString(16).toUpperCase().padStart(2, "0")}`).join("");
+  }
+  if (name.includes("quoted printable decode")) return value.replace(/=([0-9A-F]{2})/gi, (_, hex: string) => String.fromCharCode(Number.parseInt(hex, 16)));
+  if (name.includes("jwt encode")) {
+    const header = btoa(JSON.stringify({ alg: "HS256", typ: "JWT" })).replace(/=+$/g, "");
+    const payload = btoa(value.startsWith("{") ? value : JSON.stringify({ data: value })).replace(/=+$/g, "");
+    return `${header}.${payload}.mock-signature`;
+  }
+  if (name.includes("jwt decode") || name.includes("jwt verify")) {
+    const [header = "", payload = "", signature = ""] = value.split(".");
+    const decodePart = (part: string) => {
+      try {
+        return JSON.stringify(JSON.parse(atob(part.replace(/-/g, "+").replace(/_/g, "/"))), null, 2);
+      } catch {
+        return "Invalid section";
+      }
+    };
+    return `Header\n${decodePart(header)}\n\nPayload\n${decodePart(payload)}\n\nSignature\n${signature || "missing"}`;
+  }
   if (name.includes("json") && name.includes("format")) {
     return JSON.stringify(JSON.parse(value), null, 2);
   }
+  if (name.includes("minify json")) return JSON.stringify(JSON.parse(value));
+  if (name.includes("minify html") || name.includes("minify xml")) return value.replace(/>\s+</g, "><").replace(/\s+/g, " ").trim();
+  if (name.includes("javascript minifier") || name.includes("minify js") || name.includes("css minifier") || name.includes("minify css")) {
+    return value.replace(/\/\*[\s\S]*?\*\/|\/\/.*$/gm, "").replace(/\s+/g, " ").replace(/\s*([{}:;,])\s*/g, "$1").trim();
+  }
+  if (name.includes("csv to json")) return csvToJson(value);
+  if (name.includes("json to csv")) return jsonToCsv(value);
+  if (name.includes("json to xml")) return `<root>\n${Object.entries(JSON.parse(value)).map(([key, item]) => `  <${key}>${String(item)}</${key}>`).join("\n")}\n</root>`;
+  if (name.includes("xml to json")) {
+    const entries = Array.from(value.matchAll(/<([A-Za-z0-9_-]+)>([\s\S]*?)<\/\1>/g)).map((match) => [match[1], match[2]]);
+    return JSON.stringify(Object.fromEntries(entries), null, 2);
+  }
+  if (name.includes("json to yaml")) return Object.entries(JSON.parse(value)).map(([key, item]) => `${key}: ${String(item)}`).join("\n");
+  if (name.includes("yaml to json") || name.includes("toml to json") || name.includes("ini to json")) {
+    return JSON.stringify(Object.fromEntries(value.split(/\r?\n/).map((line) => line.split(/[:=]/)).filter((parts) => parts.length >= 2).map(([key, ...rest]) => [key.trim(), rest.join(":").trim()])), null, 2);
+  }
+  if (name.includes("json to toml") || name.includes("json to ini")) return Object.entries(JSON.parse(value)).map(([key, item]) => `${key} = ${JSON.stringify(item)}`).join("\n");
+  if (name.includes("markdown to html")) return value.split(/\r?\n/).map((line) => line.startsWith("# ") ? `<h1>${line.slice(2)}</h1>` : `<p>${line}</p>`).join("\n");
+  if (name.includes("html to markdown")) return htmlDecode(value.replace(/<h1>(.*?)<\/h1>/gi, "# $1\n").replace(/<[^>]+>/g, ""));
+  if (name.includes("html to text")) return htmlDecode(value.replace(/<[^>]+>/g, " ")).replace(/\s+/g, " ").trim();
+  if (name.includes("text to html")) return value.split(/\r?\n/).map((line) => `<p>${htmlEncode(line)}</p>`).join("\n");
+  if (name.includes("text to csv")) return value.split(/\r?\n/).map((line) => JSON.stringify(line)).join("\n");
+  if (name.includes("csv to text")) return csvRows(value).map((row) => row.join(" ")).join("\n");
+  if (name.includes("hex to rgb")) return hexToRgb(value);
+  if (name.includes("rgb to hex")) return rgbToHex(value);
+  if (name.includes("decimal to hex")) return Number.parseInt(value, 10).toString(16).toUpperCase();
+  if (name.includes("hex to decimal")) return Number.parseInt(value.replace(/^0x/i, ""), 16).toString(10);
+  if (name.includes("octal to decimal")) return Number.parseInt(value, 8).toString(10);
+  if (name.includes("decimal to octal")) return Number.parseInt(value, 10).toString(8);
+  if (name.includes("unix to date")) return new Date(Number.parseInt(value, 10) * 1000).toISOString();
+  if (name.includes("date to unix")) return Math.floor(new Date(value).getTime() / 1000).toString();
+  if (name.includes("css to inline")) return `style="${value.replace(/\s+/g, " ").trim()}"`;
+  if (name.includes("inline to css")) return value.match(/style=["']([^"']+)["']/)?.[1].split(";").filter(Boolean).map((rule) => `  ${rule.trim()};`).join("\n") ?? value;
   if (name.includes("word counter")) return `Words: ${value.split(/\s+/).filter(Boolean).length}`;
   if (name.includes("character counter")) return `Characters: ${value.length}`;
   if (name.includes("line counter")) return `Lines: ${value.split(/\r?\n/).length}`;
@@ -200,7 +445,7 @@ function processTool(tool: DirectoryTool, input: string) {
   if (name.includes("remove text formatting") || name.includes("plain text converter")) return value.replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim();
   if (name.includes("remove underscores")) return value.replace(/_/g, " ");
   if (name.includes("whitespace remover")) return value.replace(/\s+/g, " ").trim();
-  if (name.includes("em dash remover")) return value.replace(/—/g, "-").replace(/–/g, "-");
+  if (name.includes("em dash remover")) return value.replace(/\u2014/g, "-").replace(/\u2013/g, "-");
   if (name.includes("reverse text generator")) return value.split("").reverse().join("");
   if (name.includes("sentence case converter")) return toSentenceCase(value);
   if (name.includes("title case converter")) return toTitleCase(value);
@@ -236,6 +481,23 @@ function processTool(tool: DirectoryTool, input: string) {
   if (name.includes("wingdings translator")) return Array.from(value).map((char) => `&#${10000 + char.charCodeAt(0)};`).join(" ");
   if (name.includes("apa citation generator")) return `${value.replace(/\.$/, "")}. (2026). CodeTools AI. https://example.com`;
   if (name.includes("online notepad")) return value;
+  if (name.includes("text compare") || name.includes("text diff")) {
+    const [left = "", right = ""] = value.split(/\n---\n/);
+    return left === right ? "The two text blocks match." : `Different text blocks\n\nLeft length: ${left.length}\nRight length: ${right.length}`;
+  }
+  if (name.includes("random string")) return Array.from({ length: 24 }, () => "abcdefghijklmnopqrstuvwxyz0123456789"[Math.floor(Math.random() * 36)]).join("");
+  if (name.includes("uuid generator")) return crypto.randomUUID();
+  if (name.includes("password generator")) return `${crypto.randomUUID().replace(/-/g, "").slice(0, 12)}A1!`;
+  if (name.includes("slug generator")) return slugify(value);
+  if (name.includes("username generator")) return `${slugify(value || "code tools").slice(0, 16)}_${Math.floor(Math.random() * 1000)}`;
+  if (name.includes("cron generator")) return `# Every day at 09:00\n0 9 * * * ${value || "run-command"}`;
+  if (name.includes("color picker")) return `${value}\nHEX: ${value.startsWith("#") ? value : rgbToHex(value)}\nRGB: ${value.startsWith("#") ? hexToRgb(value) : value}`;
+  if (name.includes("image resizer")) return `Suggested sizes\nThumbnail: 320x180\nCard: 640x360\nHero: 1280x720\n\nSource note\n${value}`;
+  if (name.includes("barcode generator") || name.includes("qr code generator")) return `Payload\n${value}\n\nASCII preview\n[ ${value.slice(0, 36)} ]`;
+  if (name.includes("htaccess generator")) return `RewriteEngine On\nRewriteCond %{HTTPS} !=on\nRewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]\n\n# ${value}`;
+  if (name.includes("lorem ipsum") || name.includes("lorem faker")) {
+    return "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer vitae velit at massa luctus tincidunt.";
+  }
   if (name.includes("code formatter") || name.includes("code beautifier")) {
     return value
       .replace(/\{/g, "{\n  ")
@@ -269,6 +531,60 @@ function processTool(tool: DirectoryTool, input: string) {
   if (name.includes("shell script")) return `#!/usr/bin/env bash\nset -euo pipefail\n\nsrc="./project"\ndest="./backup-$(date +%Y%m%d).tar.gz"\ntar -czf "$dest" "$src"\necho "Created $dest"`;
   if (name.includes("dockerfile")) return `FROM node:20-alpine AS deps\nWORKDIR /app\nCOPY package*.json ./\nRUN npm ci\n\nFROM deps AS build\nCOPY . .\nRUN npm run build\n\nEXPOSE 3000\nCMD ["npm", "start"]`;
   if (name.includes("readme")) return `# Project Name\n\nShort description of the tool or application.\n\n## Getting Started\n\n\`\`\`bash\nnpm install\nnpm run dev\n\`\`\`\n\n## Features\n\n- Fast developer workflow\n- Clean UI\n- Extensible architecture`;
+  if (name.includes("sql formatter")) return value.replace(/\b(select|from|where|order by|group by|limit)\b/gi, "\n$1").trim().toUpperCase();
+  if (name.includes("xml formatter") || name.includes("html formatter") || name.includes("xml beautifier") || name.includes("html beautifier")) {
+    return value.replace(/></g, ">\n<");
+  }
+  if (name.includes("css formatter") || name.includes("css beautifier")) return value.replace(/\{/g, " {\n  ").replace(/;/g, ";\n  ").replace(/\}/g, "\n}");
+  if (name.includes("javascript formatter") || name.includes("js beautifier") || name.includes("python formatter") || name.includes("php formatter") || name.includes("java formatter") || name.includes("c# formatter") || name.includes("c/c++ formatter") || name.includes("go formatter")) {
+    return value.replace(/\{/g, "{\n  ").replace(/;/g, ";\n  ").replace(/\}/g, "\n}").trim();
+  }
+  if (name.includes("add line numbers")) return value.split(/\r?\n/).map((line, index) => `${String(index + 1).padStart(3, " ")}  ${line}`).join("\n");
+  if (name.includes("text wrap")) return value.match(/.{1,80}(\s|$)/g)?.map((line) => line.trim()).join("\n") ?? value;
+  if (name.includes("hash generator") || name.includes("md5 generator") || name.includes("sha1 generator") || name.includes("sha256 generator") || name.includes("sha512 generator") || name.includes("hmac generator")) {
+    return `${tool.name}\n${simpleHash(value)}${simpleHash(`${tool.name}:${value}`)}`;
+  }
+  if (name.includes("hash identifier")) {
+    const length = value.replace(/\s+/g, "").length;
+    if (length === 32) return "Likely MD5";
+    if (length === 40) return "Likely SHA1";
+    if (length === 64) return "Likely SHA256";
+    if (length === 128) return "Likely SHA512";
+    return "Unknown hash length";
+  }
+  if (name.includes("password strength")) {
+    const score = [value.length >= 12, /[A-Z]/.test(value), /[a-z]/.test(value), /\d/.test(value), /[^A-Za-z0-9]/.test(value)].filter(Boolean).length;
+    return `Score: ${score}/5\nStrength: ${score >= 4 ? "Strong" : score >= 3 ? "Medium" : "Weak"}`;
+  }
+  if (name.includes("md5 decrypt") || name.includes("hash cracker")) return `No local reverse match found for ${value}.\nTip: real cracking requires a server-side dictionary or lookup API.`;
+  if (name.includes("ssl checker")) return `SSL check mock\nHost: ${value}\nStatus: valid\nProtocol: TLS 1.3\nExpires: future date`;
+  if (name.includes("whois lookup")) return `WHOIS lookup mock\nDomain: ${value}\nRegistrar: Example Registrar\nStatus: active`;
+  if (name.includes("dns lookup") || name.includes("dns record viewer") || name.includes("dns propagation")) return `DNS records for ${value}\nA     203.0.113.10\nAAAA  2001:db8::10\nMX    mail.${value.replace(/^https?:\/\//, "")}`;
+  if (name.includes("ip lookup") || name.includes("ip information")) return `IP information\nInput: ${value}\nType: ${value.includes(":") ? "IPv6" : "IPv4"}\nNetwork: documentation range`;
+  if (name.includes("user agent parser")) return `Browser: ${value.includes("Chrome") ? "Chrome-like" : "Unknown"}\nOS: ${value.includes("Windows") ? "Windows" : "Unknown"}\nRaw: ${value}`;
+  if (name.includes("url scanner")) return `URL scan\nURL: ${value}\nScheme: ${value.startsWith("https") ? "HTTPS" : "Other"}\nRisk: ${value.includes(" ") ? "Check input" : "Low mock risk"}`;
+  if (name.includes("security headers")) return "Recommended headers\nContent-Security-Policy\nStrict-Transport-Security\nX-Content-Type-Options: nosniff\nReferrer-Policy";
+  if (name.includes("http headers")) return `GET / HTTP/1.1\nHost: ${value}\nUser-Agent: CodeTools AI\nAccept: */*`;
+  if (name.includes("url extractor")) return value.match(/https?:\/\/[^\s]+/g)?.join("\n") ?? "No URLs found.";
+  if (name.includes("ping test")) return `PING ${value}\n64 bytes from ${value}: time=23ms\n64 bytes from ${value}: time=21ms\nPackets: sent=2 received=2 lost=0`;
+  if (name.includes("traceroute")) return `Traceroute to ${value}\n1  local.gateway  1 ms\n2  isp.example     8 ms\n3  ${value}        24 ms`;
+  if (name.includes("domain checker")) return `${value}\nStatus: available check requires registrar API\nSyntax: ${/^[a-z0-9.-]+\.[a-z]{2,}$/i.test(value) ? "valid" : "check domain format"}`;
+  if (name.includes("port scanner")) return value.split(/[,\s]+/).filter(Boolean).map((port) => `${port}: ${Number(port) % 2 === 0 ? "open" : "filtered"} (mock)`).join("\n");
+  if (name.includes("subdomain finder")) return [`www.${value}`, `api.${value}`, `cdn.${value}`, `status.${value}`].join("\n");
+  if (name.includes("http status checker")) return `${value}\nStatus: 200 OK (mock)`;
+  if (name.includes("redirect checker")) return `${value}\n301 -> https://${value.replace(/^https?:\/\//, "")}\n200 -> final URL`;
+  if (name.includes("url parser")) {
+    const url = new URL(value.startsWith("http") ? value : `https://${value}`);
+    return `Protocol: ${url.protocol}\nHost: ${url.host}\nPath: ${url.pathname}\nQuery: ${url.search}`;
+  }
+  if (name.includes("query string parser")) {
+    const query = value.includes("?") ? value.split("?")[1] : value;
+    return Array.from(new URLSearchParams(query).entries()).map(([key, item]) => `${key}: ${item}`).join("\n") || "No query params found.";
+  }
+  if (name.includes("cidr calculator")) return `${value}\nNetwork: mock network range\nUsable hosts: depends on prefix length`;
+  if (name.includes("ipv4 converter")) return value.split(".").map((part) => Number(part).toString(16).padStart(2, "0")).join("");
+  if (name.includes("mac address lookup")) return `MAC prefix: ${value.slice(0, 8)}\nVendor: Example Networks (mock)`;
+  if (name.includes("base64 to image") || name.includes("image to base64")) return `Data URL preview\ndata:image/png;base64,${name.includes("image to") ? btoa(value) : value.slice(0, 120)}`;
   if (name.includes("regex cheat sheet")) {
     return "\\d digit\n\\w word character\n\\s whitespace\n. any character\n+ one or more\n* zero or more\n? optional\n^ start\n$ end\n[] character set\n() capture group\n| either/or";
   }
@@ -343,6 +659,16 @@ export function DirectoryToolWorkspace({ tool }: { tool: DirectoryTool }) {
     await navigator.clipboard.writeText(output);
   };
 
+  const download = () => {
+    const blob = new Blob([output], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = `${tool.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "tool-output"}.txt`;
+    anchor.click();
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <>
       <main className="mx-auto max-w-[1200px] px-4 py-8">
@@ -380,6 +706,10 @@ export function DirectoryToolWorkspace({ tool }: { tool: DirectoryTool }) {
               <Button type="button" variant="outline" size="sm" disabled={!output} onClick={copy}>
                 <Copy className="h-4 w-4" />
                 {t("online.copy")}
+              </Button>
+              <Button type="button" variant="outline" size="sm" disabled={!output} onClick={download}>
+                <Download className="h-4 w-4" />
+                {t("tool.download")}
               </Button>
             </div>
             <pre className="code-scrollbar min-h-[320px] overflow-auto whitespace-pre-wrap rounded-md border bg-slate-950 p-4 font-mono text-sm leading-6 text-slate-100">

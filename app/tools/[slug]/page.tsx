@@ -2,8 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ToolLayout } from "@/components/tool-layout";
 import { TOOLS, toolBySlug, type ToolSlug } from "@/lib/tools";
-
-const siteUrl = "https://codetools-ai.example.com";
+import { siteUrl } from "@/lib/site";
 
 type ToolPageProps = {
   params: {

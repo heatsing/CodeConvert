@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, Copy, Loader2, Play, Trash2 } from "lucide-react";
+import { ArrowLeft, Copy, Download, Loader2, Play, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ToolSeoContent } from "@/components/tool-seo-content";
 import { useI18n } from "@/lib/i18n";
@@ -107,6 +107,16 @@ export function OnlineToolWorkspace({ tool }: { tool: OnlineTool }) {
     await navigator.clipboard.writeText(output);
   };
 
+  const download = () => {
+    const blob = new Blob([output], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = `${tool.slug}-output.txt`;
+    anchor.click();
+    URL.revokeObjectURL(url);
+  };
+
   const clear = () => {
     setInput("");
     setOutput("");
@@ -161,6 +171,10 @@ export function OnlineToolWorkspace({ tool }: { tool: OnlineTool }) {
               <Button type="button" variant="outline" size="sm" disabled={!output} onClick={copy}>
                 <Copy className="h-4 w-4" />
                 {t("online.copy")}
+              </Button>
+              <Button type="button" variant="outline" size="sm" disabled={!output} onClick={download}>
+                <Download className="h-4 w-4" />
+                {t("tool.download")}
               </Button>
             </div>
             <pre className="code-scrollbar min-h-[320px] overflow-auto whitespace-pre-wrap rounded-md border bg-slate-950 p-4 font-mono text-sm leading-6 text-slate-100">

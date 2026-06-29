@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { DirectoryToolWorkspace } from "@/components/directory-tool-workspace";
 import { directoryToolBySlug, directoryTools, directoryToolSlug } from "@/lib/home-tools";
 import { languageConverterBySlug, languageConverterTools } from "@/lib/language-converters";
+import { siteUrl } from "@/lib/site";
 
 type RootToolPageProps = {
   params: {
@@ -27,12 +28,12 @@ export function generateMetadata({ params }: RootToolPageProps): Metadata {
     title: `${tool.name} Online`,
     description: tool.description,
     alternates: {
-      canonical: `https://codetools-ai.example.com/${tool.href.slice(1)}`
+      canonical: `${siteUrl}${tool.href}`
     },
     openGraph: {
       title: `${tool.name} Online | CodeTools AI`,
       description: tool.description,
-      url: `https://codetools-ai.example.com/${tool.href.slice(1)}`,
+      url: `${siteUrl}${tool.href}`,
       siteName: "CodeTools AI",
       type: "website"
     }

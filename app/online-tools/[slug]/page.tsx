@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { OnlineToolWorkspace } from "@/components/online-tool-workspace";
 import { onlineToolBySlug, onlineTools } from "@/lib/online-tools";
+import { siteUrl } from "@/lib/site";
 
 type OnlineToolPageProps = {
   params: {
@@ -21,12 +22,12 @@ export function generateMetadata({ params }: OnlineToolPageProps): Metadata {
     title: `${tool.name} Online Tool`,
     description: tool.description,
     alternates: {
-      canonical: `https://codetools-ai.example.com/online-tools/${tool.slug}`
+      canonical: `${siteUrl}/online-tools/${tool.slug}`
     },
     openGraph: {
       title: `${tool.name} Online Tool | CodeTools AI`,
       description: tool.description,
-      url: `https://codetools-ai.example.com/online-tools/${tool.slug}`,
+      url: `${siteUrl}/online-tools/${tool.slug}`,
       siteName: "CodeTools AI",
       type: "website"
     }
@@ -43,7 +44,7 @@ export default function OnlineToolPage({ params }: OnlineToolPageProps) {
     name: tool.name,
     applicationCategory: "DeveloperApplication",
     operatingSystem: "Web",
-    url: `https://codetools-ai.example.com/online-tools/${tool.slug}`,
+    url: `${siteUrl}/online-tools/${tool.slug}`,
     description: tool.description,
     offers: {
       "@type": "Offer",

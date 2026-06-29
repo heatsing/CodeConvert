@@ -3,9 +3,11 @@ import "./globals.css";
 import { I18nProvider } from "@/lib/i18n";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
+import { GoogleAnalytics } from "@/components/google-analytics";
+import { siteUrl } from "@/lib/site";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://codetools-ai.example.com"),
+  metadataBase: new URL(siteUrl),
   title: {
     default: "CodeTools AI",
     template: "%s | CodeTools AI"
@@ -21,6 +23,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
+        <GoogleAnalytics />
         <I18nProvider>
           <SiteHeader />
           {children}
