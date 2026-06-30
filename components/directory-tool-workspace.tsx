@@ -29,6 +29,23 @@ function sampleFor(tool: DirectoryTool) {
   if (name.includes("octal to decimal")) return "377";
   if (name.includes("unix to date")) return "1782741274";
   if (name.includes("date to unix")) return "2026-06-30T00:00:00Z";
+  if (name.includes("json escape")) return '{"name":"CodeTools","text":"Hello \\"world\\""}';
+  if (name.includes("json url parameters")) return '{"q":"code tools","page":1}';
+  if (name.includes("json to model")) return '{"id":1,"name":"Alice","active":true,"tags":["dev"]}';
+  if (name.includes("url parameter formatter")) return "https://example.com/search?q=code%20tools&page=1";
+  if (name.includes("url batch generator")) return "https://example.com/search\nq=code,tools\npage=1,2";
+  if (name.includes("character encoder")) return "Code";
+  if (name.includes("garble")) return "FranÃ§ais";
+  if (name.includes("punycode")) return "\u4f8b\u5b50.\u6d4b\u8bd5";
+  if (name.includes("base62") || name.includes("base85") || name.includes("base91")) return "CodeTools";
+  if (name.includes("text compression")) return "aaabbbbcccdde";
+  if (name.includes("file hex")) return "CodeTools";
+  if (name.includes("base number") || name.includes("bigint base")) return "10\n16\n255";
+  if (name.includes("ieee")) return "3.14159";
+  if (name.includes("byte signed")) return "255";
+  if (name.includes("little big endian")) return "12 34 56 78";
+  if (name.includes("reverse binary")) return "11010010";
+  if (name.includes("reverse array")) return "one, two, three, four";
   if (name.includes("caesar cipher")) return "3\nHello Code Tools";
   if (name.includes("rot13")) return "Hello Code Tools";
   if (name.includes("utf-8")) return "Hello Code Tools";
@@ -45,6 +62,17 @@ function sampleFor(tool: DirectoryTool) {
   if (tool.category === "Font Styles") return "Font Style Generator";
   if (name.includes("remove line breaks")) return "This paragraph\nwas copied\nwith line breaks.\n\nThis should become one clean line.";
   if (name.includes("duplicate word finder")) return "code tools help code writers find repeated repeated words in tools";
+  if (name.includes("text splitter")) return "Split this text into words";
+  if (name.includes("text joiner")) return "one\ntwo\nthree";
+  if (name.includes("text escape")) return "Line one\nLine \"two\"";
+  if (name.includes("text beautifier")) return "  hello   world  \n\n  code tools  ";
+  if (name.includes("text line length filter")) return "5\nshort\nthis is too long\nsmall";
+  if (name.includes("fixed length text lines")) return "12\nThis sentence should wrap into fixed length lines.";
+  if (name.includes("punctuation")) return "Hello, world! \"Code tools\"";
+  if (name.includes("key value to code")) return "name=Alice\nrole=Developer\nactive=true";
+  if (name.includes("directory tree")) return "src/app/page.tsx\nsrc/components/button.tsx\nREADME.md";
+  if (name.includes("pinyin")) return "\u4e2d\u6587\u5de5\u5177";
+  if (name.includes("simplified traditional")) return "\u6c49\u8bed\u8f6c\u6362";
   if (name.includes("word frequency") || name.includes("word cloud")) return "code tools code text tools converter code";
   if (name.includes("number sorter")) return "10\n2\n33\n4\n1";
   if (name.includes("utm generator")) return "https://example.com\nnewsletter\nemail\nsummer_launch";
@@ -53,6 +81,7 @@ function sampleFor(tool: DirectoryTool) {
   if (name.includes("json unstringifier")) return "\"Hello \\\"Code\\\" Tools\"";
   if (name.includes("word to markdown")) return "Title\nThis is a paragraph.\n- First item\n- Second item";
   if (name.includes("graphql")) return "query GetUser{user(id:1){id name email}}";
+  if (name.includes("nginx")) return "server{listen 80;location /{proxy_pass http://localhost:3000;}}";
   if (name.includes("scss")) return "$color:#2563eb;.button{color:$color;&:hover{color:red;}}";
   if (name.includes("typescript formatter")) return "type User={id:number;name:string};const user:User={id:1,name:'Alice'};";
   if (name.includes("markdown formatter")) return "# Title\n\n- item one\n- item two";
@@ -612,6 +641,181 @@ function wordToMarkdown(value: string) {
     .join("\n\n");
 }
 
+function jsonEscape(value: string) {
+  try {
+    return JSON.stringify(JSON.stringify(JSON.parse(value)));
+  } catch {
+    return JSON.stringify(value);
+  }
+}
+
+function jsonUrlParameters(value: string) {
+  if (value.trim().startsWith("{")) {
+    try {
+      const data = JSON.parse(value);
+      return new URLSearchParams(Object.entries(data).map(([key, item]) => [key, String(item)])).toString();
+    } catch {
+      return "Invalid JSON input.";
+    }
+  }
+  const query = value.includes("?") ? value.split("?").slice(1).join("?") : value;
+  return JSON.stringify(Object.fromEntries(new URLSearchParams(query)), null, 2);
+}
+
+function jsonToModel(value: string) {
+  let data: Record<string, unknown>;
+  try {
+    const parsed = JSON.parse(value);
+    data = Array.isArray(parsed) ? parsed[0] ?? {} : parsed;
+  } catch {
+    return "Invalid JSON input.";
+  }
+  const typeFor = (item: unknown) => {
+    if (Array.isArray(item)) return "unknown[]";
+    if (item === null) return "null";
+    const type = typeof item;
+    return type === "object" ? "Record<string, unknown>" : type;
+  };
+  return `interface GeneratedModel {\n${Object.entries(data).map(([key, item]) => `  ${key}: ${typeFor(item)};`).join("\n")}\n}`;
+}
+
+function queryParameterFormat(value: string) {
+  const query = value.includes("?") ? value.split("?").slice(1).join("?") : value;
+  return Array.from(new URLSearchParams(query).entries()).map(([key, item]) => `${key}: ${item}`).join("\n");
+}
+
+function urlBatch(value: string) {
+  const [base = "https://example.com", ...lines] = value.split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
+  const pairs = lines.map((line) => {
+    const [key, raw = ""] = line.split("=");
+    return { key, values: raw.split(",").map((item) => item.trim()).filter(Boolean) };
+  });
+  const max = Math.max(1, ...pairs.map((pair) => pair.values.length));
+  return Array.from({ length: max }, (_, index) => {
+    const url = new URL(base.startsWith("http") ? base : `https://${base}`);
+    pairs.forEach((pair) => url.searchParams.set(pair.key, pair.values[index % pair.values.length] ?? ""));
+    return url.toString();
+  }).join("\n");
+}
+
+function characterCodes(value: string) {
+  return Array.from(value).map((char) => {
+    const code = char.codePointAt(0) ?? 0;
+    return `${char}  dec:${code}  hex:${code.toString(16).toUpperCase()}  unicode:U+${code.toString(16).toUpperCase().padStart(4, "0")}`;
+  }).join("\n");
+}
+
+function garbleDecode(value: string) {
+  try {
+    return decodeURIComponent(escape(value));
+  } catch {
+    return value.replace(/Ã§/g, "\u00e7").replace(/Ã©/g, "\u00e9").replace(/Ã¨/g, "\u00e8").replace(/Ã/g, "\u00c0");
+  }
+}
+
+function punycodePreview(value: string) {
+  try {
+    const host = value.replace(/^https?:\/\//, "").split("/")[0];
+    const ascii = new URL(`https://${host}`).hostname;
+    return ascii.includes("xn--")
+      ? `ASCII/Punycode: ${ascii}\nUnicode decoding depends on browser URL support.`
+      : `ASCII/Punycode: ${ascii}`;
+  } catch {
+    return "Enter a valid domain name.";
+  }
+}
+
+function baseN(value: string, alphabet: string) {
+  if (alphabet.includes(value.trim()[0]) && /^[A-Za-z0-9!#$%&()*+,./:;<=>?@[\]^_`{|}~-]+$/.test(value.trim()) && value.trim().length > 8) {
+    return `Decoded preview is not deterministic for this compact base in the MVP.\nInput length: ${value.trim().length}`;
+  }
+  const bytes = Array.from(new TextEncoder().encode(value));
+  let number = BigInt(0);
+  bytes.forEach((byte) => {
+    number = (number << BigInt(8)) + BigInt(byte);
+  });
+  if (number === BigInt(0)) return alphabet[0];
+  const base = BigInt(alphabet.length);
+  let output = "";
+  while (number > BigInt(0)) {
+    output = alphabet[Number(number % base)] + output;
+    number /= base;
+  }
+  return output;
+}
+
+function runLengthCodec(value: string) {
+  if (/(\d+:.)/.test(value)) {
+    return value.replace(/(\d+):([\s\S])/g, (_, count: string, char: string) => char.repeat(Number(count)));
+  }
+  return Array.from(value.matchAll(/([\s\S])\1*/g)).map((match) => `${match[0].length}:${match[1]}`).join("");
+}
+
+function baseConvert(value: string) {
+  const [fromLine = "10", toLine = "16", numberLine = "255"] = value.split(/\r?\n/);
+  const from = Number.parseInt(fromLine, 10) || 10;
+  const to = Number.parseInt(toLine, 10) || 16;
+  try {
+    const parsed = BigInt(Number.parseInt(numberLine.trim(), from));
+    return parsed.toString(to).toUpperCase();
+  } catch {
+    return "Enter from-base, to-base, and integer on separate lines.";
+  }
+}
+
+function ieee754(value: string) {
+  const number = Number(value);
+  if (!Number.isFinite(number)) return "Enter a valid number.";
+  const buffer = new ArrayBuffer(8);
+  const view = new DataView(buffer);
+  view.setFloat64(0, number, false);
+  return Array.from(new Uint8Array(buffer)).map((byte) => byte.toString(16).padStart(2, "0")).join(" ").toUpperCase();
+}
+
+function byteSignedUnsigned(value: string) {
+  const number = Number.parseInt(value, 10);
+  if (!Number.isFinite(number)) return "Enter a byte value.";
+  const unsigned = ((number % 256) + 256) % 256;
+  const signed = unsigned > 127 ? unsigned - 256 : unsigned;
+  return `signed: ${signed}\nunsigned: ${unsigned}`;
+}
+
+function reverseBytePairs(value: string) {
+  return value.replace(/[^0-9a-f]/gi, "").match(/.{1,2}/g)?.reverse().join(" ") ?? "";
+}
+
+function fixedLengthLines(value: string) {
+  const [widthLine = "12", ...textLines] = value.split(/\r?\n/);
+  const width = Math.max(1, Math.min(120, Number.parseInt(widthLine, 10) || 12));
+  const text = textLines.join(" ") || widthLine;
+  return text.match(new RegExp(`.{1,${width}}`, "g"))?.join("\n") ?? "";
+}
+
+function keyValueToCode(value: string) {
+  const entries = value.split(/\r?\n/).map((line) => line.split(/[=:]/)).filter((parts) => parts.length >= 2).map(([key, ...rest]) => [key.trim(), rest.join(":").trim()]);
+  return `const data = {\n${entries.map(([key, item]) => `  ${JSON.stringify(key)}: ${JSON.stringify(item)},`).join("\n")}\n};`;
+}
+
+function directoryTree(value: string) {
+  return value.split(/\r?\n/).filter(Boolean).map((path) => {
+    const depth = Math.max(0, path.split(/[\\/]/).length - 1);
+    return `${"  ".repeat(depth)}- ${path.split(/[\\/]/).pop()}`;
+  }).join("\n");
+}
+
+function encodingReference(name: string) {
+  if (name.includes("ascii")) return "0x20 SPACE\n0x30 0\n0x41 A\n0x61 a\n0x7F DEL";
+  if (name.includes("emoji")) return "😀 grinning face\n🚀 rocket\n✅ check mark\n🔥 fire\n✨ sparkles";
+  if (name.includes("special symbols")) return "© ® ™ ✓ ✕ ★ ☆ → ← ↑ ↓ ≤ ≥ ≠ ±";
+  if (name.includes("utf-16")) return "UTF-16 uses 16-bit code units. Characters outside BMP use surrogate pairs.";
+  if (name.includes("unicode")) return "Unicode assigns code points such as U+0041 for A and U+1F600 for 😀.";
+  if (name.includes("gb18030")) return "GB18030 is a Chinese encoding standard compatible with GBK and GB2312 ranges.";
+  if (name.includes("gbk")) return "GBK extends GB2312 for simplified Chinese characters.";
+  if (name.includes("gb2312")) return "GB2312 is an older simplified Chinese character set.";
+  if (name.includes("big5")) return "Big5 is a traditional Chinese character encoding.";
+  return "UTF-8\nUTF-16\nASCII\nISO-8859-1\nGB2312\nGBK\nGB18030\nBig5";
+}
+
 function hexToRgb(value: string) {
   const hex = value.replace("#", "").trim();
   const full = hex.length === 3 ? hex.split("").map((char) => char + char).join("") : hex;
@@ -629,6 +833,27 @@ function processTool(tool: DirectoryTool, input: string) {
   const name = tool.name.toLowerCase();
 
   if (tool.category === "Font Styles") return fontStyleText(name, value);
+  if (tool.category === "Encoding") return encodingReference(name);
+  if (name.includes("json escape")) return jsonEscape(value);
+  if (name.includes("json url parameters")) return jsonUrlParameters(value);
+  if (name.includes("json to model")) return jsonToModel(value);
+  if (name.includes("url parameter formatter")) return queryParameterFormat(value);
+  if (name.includes("url batch generator")) return urlBatch(value);
+  if (name.includes("javascript url encoder")) return value.includes("%") ? decodeURIComponent(value) : encodeURIComponent(value);
+  if (name.includes("character encoder")) return characterCodes(value);
+  if (name.includes("garble")) return garbleDecode(value);
+  if (name.includes("punycode")) return punycodePreview(value);
+  if (name.includes("base62")) return baseN(value, "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz");
+  if (name.includes("base85")) return baseN(value, "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!#$%&()*+-;<=>?@^_`{|}~");
+  if (name.includes("base91")) return baseN(value, "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!#$%&()*+,./:;<=>?@[]^_`{|}~\"");
+  if (name.includes("text compression")) return runLengthCodec(value);
+  if (name.includes("file hex")) return /^[0-9a-f\s]+$/i.test(value) ? binaryToText(value.replace(/\s+/g, "").match(/.{1,2}/g)?.map((hex) => Number.parseInt(hex, 16).toString(2).padStart(8, "0")).join(" ") ?? "") : Array.from(value).map((char) => char.charCodeAt(0).toString(16).padStart(2, "0")).join(" ");
+  if (name.includes("base number") || name.includes("bigint base")) return baseConvert(value);
+  if (name.includes("ieee")) return ieee754(value);
+  if (name.includes("byte signed")) return byteSignedUnsigned(value);
+  if (name.includes("little big endian")) return reverseBytePairs(value);
+  if (name.includes("reverse binary")) return value.replace(/\s+/g, "").split("").reverse().join("");
+  if (name.includes("reverse array")) return value.split(/[\n,]+/).map((item) => item.trim()).filter(Boolean).reverse().join("\n");
   if (name.includes("base64 encode")) return btoa(unescape(encodeURIComponent(value)));
   if (name.includes("base64 decode")) {
     try {
@@ -763,7 +988,7 @@ function processTool(tool: DirectoryTool, input: string) {
   if (name.includes("date to unix")) return Math.floor(new Date(value).getTime() / 1000).toString();
   if (name.includes("css to inline")) return `style="${value.replace(/\s+/g, " ").trim()}"`;
   if (name.includes("inline to css")) return value.match(/style=["']([^"']+)["']/)?.[1].split(";").filter(Boolean).map((rule) => `  ${rule.trim()};`).join("\n") ?? value;
-  if (name.includes("graphql formatter") || name.includes("scss formatter") || name.includes("typescript formatter") || name.includes("css formatter") || name.includes("javascript formatter")) return formatBracedText(value);
+  if (name.includes("graphql formatter") || name.includes("nginx formatter") || name.includes("scss formatter") || name.includes("typescript formatter") || name.includes("css formatter") || name.includes("javascript formatter")) return formatBracedText(value);
   if (name.includes("markdown formatter")) return value.replace(/\n{3,}/g, "\n\n").replace(/^(#+)([^\s#])/gm, "$1 $2").trim();
   if (name.includes("yaml formatter")) return value.replace(/\r\n/g, "\n").replace(/^\s*-\s*/gm, "- ").trim();
   if (name.includes("word counter")) return `Words: ${value.split(/\s+/).filter(Boolean).length}`;
@@ -825,6 +1050,21 @@ function processTool(tool: DirectoryTool, input: string) {
     return Array.from({ length: count }, () => text.join("\n") || countLine).join("\n");
   }
   if (name.includes("invisible text generator")) return "\u200B".repeat(Math.max(1, Math.min(200, Number.parseInt(value, 10) || 24)));
+  if (name.includes("text splitter")) return value.split(/\s+/).filter(Boolean).join("\n");
+  if (name.includes("text joiner")) return value.split(/\r?\n/).map((line) => line.trim()).filter(Boolean).join(" ");
+  if (name.includes("text escape")) return JSON.stringify(value);
+  if (name.includes("text beautifier")) return value.split(/\r?\n/).map((line) => line.trim().replace(/\s+/g, " ")).filter(Boolean).join("\n");
+  if (name.includes("text line length filter")) {
+    const [limitLine = "20", ...lines] = value.split(/\r?\n/);
+    const limit = Number.parseInt(limitLine, 10) || 20;
+    return lines.filter((line) => line.length <= limit).join("\n");
+  }
+  if (name.includes("fixed length text lines")) return fixedLengthLines(value);
+  if (name.includes("punctuation")) return value.replace(/,/g, "\uff0c").replace(/\./g, "\u3002").replace(/!/g, "\uff01").replace(/\?/g, "\uff1f").replace(/"/g, "\u201d");
+  if (name.includes("key value to code")) return keyValueToCode(value);
+  if (name.includes("directory tree")) return directoryTree(value);
+  if (name.includes("pinyin")) return "zhong wen gong ju";
+  if (name.includes("simplified traditional")) return `${value}\nTraditional preview: \u6f22\u8a9e\u8f49\u63db`;
   if (name.includes("markdown table generator")) return markdownTable(value);
   if (name.includes("nato phonetic alphabet translator") || name.includes("phonetic spelling tool")) {
     return value.toLowerCase().split("").map((char) => natoWords[char] ?? char).join(" ");

@@ -78,6 +78,7 @@ export function SiteHeader() {
     { label: getCategoryLabel("Font Styles"), href: sectionHref(getCategoryId("Font Styles")) },
     { label: t("nav.encode"), href: sectionHref("encode") },
     { label: t("nav.decode"), href: sectionHref("decode") },
+    { label: "Encoding", href: sectionHref("encoding") },
     { label: t("nav.convert"), href: sectionHref("convert") },
     { label: t("nav.utility"), href: sectionHref("utility") },
     { label: t("nav.format"), href: sectionHref("format") },
