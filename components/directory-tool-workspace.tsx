@@ -5,7 +5,7 @@ import Link from "next/link";
 import { ArrowLeft, Copy, Download, Loader2, Play, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ToolSeoContent } from "@/components/tool-seo-content";
-import type { DirectoryTool } from "@/lib/home-tools";
+import { getCategoryLabel, type DirectoryTool } from "@/lib/home-tools";
 import { useI18n } from "@/lib/i18n";
 import { toolIcons } from "@/lib/tool-icons";
 
@@ -750,7 +750,7 @@ export function DirectoryToolWorkspace({ tool }: { tool: DirectoryTool }) {
             <Icon className="h-6 w-6" />
           </span>
           <div>
-            <p className="text-sm font-black uppercase tracking-[0.18em] text-blue-700">{tool.category}</p>
+            <p className="text-sm font-black uppercase tracking-[0.18em] text-blue-700">{getCategoryLabel(tool.category)}</p>
             <h1 className="mt-2 text-3xl font-black text-slate-950">{tool.name}</h1>
             <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">{pageDescription}</p>
           </div>

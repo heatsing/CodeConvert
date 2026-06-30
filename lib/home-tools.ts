@@ -32,6 +32,10 @@ const internalToolMap: Partial<Record<ToolSlug, string>> = {
 
 export const categories = ["Popular", "Text", "Encode", "Decode", "Convert", "Utility", "Format", "Security", "Network", "Regex", "Code"] as const;
 
+export function getCategoryLabel(category: string) {
+  return category === "Text" ? "Text Tools" : category;
+}
+
 const rawDirectoryTools: DirectoryTool[] = [
   { name: "Code Converter", description: internalToolMap["code-converter"]!, category: "Code", href: "/tools/code-converter", iconName: "code", accent: "text-blue-600 bg-blue-50" },
   { name: "Code Generator", description: internalToolMap["code-generator"]!, category: "Code", href: "/tools/code-generator", iconName: "wand", accent: "text-violet-600 bg-violet-50" },

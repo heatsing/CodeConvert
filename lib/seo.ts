@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { createElement } from "react";
-import type { DirectoryTool } from "@/lib/home-tools";
+import { getCategoryLabel, type DirectoryTool } from "@/lib/home-tools";
 import type { OnlineTool } from "@/lib/online-tools";
 import { siteUrl } from "@/lib/site";
 import type { ToolConfig } from "@/lib/tools";
@@ -16,9 +16,10 @@ type SeoTool = {
 };
 
 export function getToolDescription(tool: DirectoryTool) {
+  const categoryLabel = getCategoryLabel(tool.category);
   return (
     tool.headerDescription ??
-    `${tool.name} is a free online ${tool.category.toLowerCase()} tool for quick browser-based developer workflows. Paste your input, run the tool, then copy or download the result.`
+    `${tool.name} is a free online ${categoryLabel.toLowerCase()} tool for quick browser-based developer workflows. Paste your input, run the tool, then copy or download the result.`
   );
 }
 
@@ -77,7 +78,7 @@ export function buildDirectoryToolMetadata(tool: DirectoryTool): Metadata {
     title: `${tool.name} Online`,
     description,
     path: tool.href,
-    keywords: [tool.name, `${tool.category} tool`, "online developer tool", "free code tools"]
+    keywords: [tool.name, `${getCategoryLabel(tool.category)} tool`, "online developer tool", "free code tools"]
   });
 }
 

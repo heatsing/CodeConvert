@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { DirectoryToolWorkspace } from "@/components/directory-tool-workspace";
 import { ToolLayout } from "@/components/tool-layout";
-import { directoryToolBySlug, directoryTools, directoryToolSlug } from "@/lib/home-tools";
+import { directoryToolBySlug, directoryTools, directoryToolSlug, getCategoryLabel } from "@/lib/home-tools";
 import { languageConverterBySlug, languageConverterTools } from "@/lib/language-converters";
 import {
   buildBreadcrumbJsonLd,
@@ -75,7 +75,8 @@ export default function RootToolPage({ params }: RootToolPageProps) {
   const tool = getTool(normalizedSlug);
   if (!tool) notFound();
   const description = languageConverterBySlug[normalizedSlug] ? getLanguageConverterDescription(tool) : getToolDescription(tool);
-  const faqs = buildToolFaqs(tool.name, tool.category);
+  const categoryLabel = getCategoryLabel(tool.category);
+  const faqs = buildToolFaqs(tool.name, categoryLabel);
   const url = `${siteUrl}${tool.href}`;
 
   return (
@@ -86,12 +87,12 @@ export default function RootToolPage({ params }: RootToolPageProps) {
           name: tool.name,
           title: `${tool.name} Online`,
           description,
-          category: tool.category,
+          category: categoryLabel,
           url
         }),
         buildBreadcrumbJsonLd([
           { name: "CodeTools AI", url: siteUrl },
-          { name: tool.category, url: `${siteUrl}/#${tool.category.toLowerCase()}` },
+          { name: categoryLabel, url: `${siteUrl}/#${tool.category.toLowerCase()}` },
           { name: tool.name, url }
         ])
       ])}

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { directoryTools } from "@/lib/home-tools";
+import { directoryTools, getCategoryLabel } from "@/lib/home-tools";
 import { onlineTools } from "@/lib/online-tools";
 import { buildToolFaqs } from "@/lib/seo";
 
@@ -12,16 +12,17 @@ type ToolSeoContentProps = {
 const onlineLinks = onlineTools.slice(0, 12);
 
 export function ToolSeoContent({ title, description, category }: ToolSeoContentProps) {
+  const categoryLabel = getCategoryLabel(category);
   const relatedLinks = directoryTools
     .filter((tool) => tool.category.toLowerCase() === category.toLowerCase() && tool.name !== title)
     .slice(0, 18);
   const fallbackLinks = directoryTools.filter((tool) => tool.name !== title).slice(0, 18);
   const sampleLinks = relatedLinks.length >= 6 ? relatedLinks : fallbackLinks;
-  const faqs = buildToolFaqs(title, category);
+  const faqs = buildToolFaqs(title, categoryLabel);
   const examples = [
     {
       name: "Quick cleanup",
-      detail: `Paste a small ${category.toLowerCase()} sample, run ${title}, and compare the output before using it in your project.`
+      detail: `Paste a small ${categoryLabel.toLowerCase()} sample, run ${title}, and compare the output before using it in your project.`
     },
     {
       name: "Repeatable edits",
@@ -75,7 +76,7 @@ export function ToolSeoContent({ title, description, category }: ToolSeoContentP
             <tbody className="divide-y">
               <tr>
                 <th className="w-44 bg-slate-50 px-4 py-3 font-black text-slate-900">Category</th>
-                <td className="px-4 py-3 text-slate-600">{category}</td>
+                <td className="px-4 py-3 text-slate-600">{categoryLabel}</td>
               </tr>
               <tr>
                 <th className="bg-slate-50 px-4 py-3 font-black text-slate-900">Best for</th>
