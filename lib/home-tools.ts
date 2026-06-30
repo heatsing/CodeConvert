@@ -228,6 +228,7 @@ const rawDirectoryTools: DirectoryTool[] = [
   { name: "Phonetic Spelling Tool", description: "Spell words aloud", category: "Text", href: "/tools/code-converter", iconName: "message", accent: "text-purple-700 bg-purple-50" },
   { name: "Pig Latin Translator", description: "Convert to Pig Latin", category: "Text", href: "/tools/code-converter", iconName: "message", accent: "text-pink-700 bg-pink-50" },
   { name: "Plain Text Converter", description: "Strip rich text", category: "Text", href: "/tools/code-converter", iconName: "fileText", accent: "text-slate-700 bg-slate-100" },
+  { name: "Small Text Generator", description: "Make tiny text", headerDescription: "Convert normal text into small Unicode-style text for bios, captions, usernames, and short social posts.", category: "Text", href: "/tools/code-converter", iconName: "wand", accent: "text-violet-700 bg-violet-50" },
   { name: "Remove Line Breaks", description: "Join broken lines", category: "Text", href: "/tools/comment-remover", iconName: "eraser", accent: "text-blue-700 bg-blue-50" },
   { name: "Remove Text Formatting", description: "Clean pasted text", category: "Text", href: "/tools/comment-remover", iconName: "eraser", accent: "text-violet-700 bg-violet-50" },
   { name: "Remove Underscores", description: "Replace underscores", category: "Text", href: "/tools/code-converter", iconName: "eraser", accent: "text-cyan-700 bg-cyan-50" },

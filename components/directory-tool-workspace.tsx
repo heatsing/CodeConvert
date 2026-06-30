@@ -35,6 +35,7 @@ function sampleFor(tool: DirectoryTool) {
   if (name.includes("roman numeral")) return "2026";
   if (name.includes("nato") || name.includes("phonetic")) return "Code Tools";
   if (name.includes("pig latin")) return "hello developer world";
+  if (name.includes("small text generator")) return "Small Text Generator 123";
   if (name.includes("remove line breaks")) return "This paragraph\nwas copied\nwith line breaks.\n\nThis should become one clean line.";
   if (name.includes("duplicate word finder")) return "code tools help code writers find repeated repeated words in tools";
   if (name.includes("word frequency") || name.includes("word cloud")) return "code tools code text tools converter code";
@@ -106,6 +107,54 @@ function explainRegex(patternLine: string) {
 
 function toTitleCase(value: string) {
   return value.toLowerCase().replace(/\b[a-z]/g, (letter) => letter.toUpperCase());
+}
+
+function toSmallText(value: string) {
+  const smallLetters: Record<string, string> = {
+    a: "ᵃ",
+    b: "ᵇ",
+    c: "ᶜ",
+    d: "ᵈ",
+    e: "ᵉ",
+    f: "ᶠ",
+    g: "ᵍ",
+    h: "ʰ",
+    i: "ᶦ",
+    j: "ʲ",
+    k: "ᵏ",
+    l: "ˡ",
+    m: "ᵐ",
+    n: "ⁿ",
+    o: "ᵒ",
+    p: "ᵖ",
+    q: "ᑫ",
+    r: "ʳ",
+    s: "ˢ",
+    t: "ᵗ",
+    u: "ᵘ",
+    v: "ᵛ",
+    w: "ʷ",
+    x: "ˣ",
+    y: "ʸ",
+    z: "ᶻ"
+  };
+  const smallNumbers: Record<string, string> = {
+    "0": "⁰",
+    "1": "¹",
+    "2": "²",
+    "3": "³",
+    "4": "⁴",
+    "5": "⁵",
+    "6": "⁶",
+    "7": "⁷",
+    "8": "⁸",
+    "9": "⁹"
+  };
+
+  return Array.from(value).map((char) => {
+    const lower = char.toLowerCase();
+    return smallLetters[lower] ?? smallNumbers[char] ?? char;
+  }).join("");
 }
 
 function toSentenceCase(value: string) {
@@ -512,6 +561,7 @@ function processTool(tool: DirectoryTool, input: string) {
   if (name.includes("remove underscores")) return value.replace(/_/g, " ");
   if (name.includes("whitespace remover")) return value.replace(/\s+/g, " ").trim();
   if (name.includes("em dash remover")) return value.replace(/\u2014/g, "-").replace(/\u2013/g, "-");
+  if (name.includes("small text generator")) return toSmallText(value);
   if (name.includes("reverse text generator")) return value.split("").reverse().join("");
   if (name.includes("sentence case converter")) return toSentenceCase(value);
   if (name.includes("title case converter")) return toTitleCase(value);
