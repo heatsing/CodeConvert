@@ -20,6 +20,7 @@ export function makeLanguageConverterTool(fromLanguage: string, toLanguage: stri
   return {
     name: `${fromLanguage} to ${toLanguage} Converter`,
     description: `Convert ${fromLanguage} code to ${toLanguage} code`,
+    headerDescription: `${fromLanguage} to ${toLanguage} Converter helps you turn source code from ${fromLanguage} into ${toLanguage} with a clean two-panel editor, language-aware sample output, copy, download, and file upload support.`,
     category: "Code",
     href: `/${languageConverterSlug(fromLanguage, toLanguage)}`,
     iconName: "code",
