@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import Link from "next/link";
@@ -29,8 +29,14 @@ function sampleFor(tool: DirectoryTool) {
   if (name.includes("octal to decimal")) return "377";
   if (name.includes("unix to date")) return "1782741274";
   if (name.includes("date to unix")) return "2026-06-30T00:00:00Z";
+  if (name.includes("caesar cipher")) return "3\nHello Code Tools";
+  if (name.includes("rot13")) return "Hello Code Tools";
+  if (name.includes("utf-8")) return "Hello Code Tools";
+  if (name.includes("morse code translator")) return ".... . .-.. .-.. ---";
   if (name.includes("find and replace")) return "old\nnew\nThis old text has old words.";
+  if (name.includes("camelcase") || name.includes("pascalcase") || name.includes("snake_case") || name.includes("kebab-case") || name.includes("dot.case")) return "hello code tools example";
   if (name.includes("character remover")) return "aeiou\nRemove vowels from this sentence.";
+  if (name.includes("markdown table")) return "Name,Role\nAlice,Developer\nBob,Designer";
   if (name.includes("repeat text")) return "3\nRepeat this line";
   if (name.includes("roman numeral")) return "2026";
   if (name.includes("nato") || name.includes("phonetic")) return "Code Tools";
@@ -39,6 +45,17 @@ function sampleFor(tool: DirectoryTool) {
   if (name.includes("remove line breaks")) return "This paragraph\nwas copied\nwith line breaks.\n\nThis should become one clean line.";
   if (name.includes("duplicate word finder")) return "code tools help code writers find repeated repeated words in tools";
   if (name.includes("word frequency") || name.includes("word cloud")) return "code tools code text tools converter code";
+  if (name.includes("number sorter")) return "10\n2\n33\n4\n1";
+  if (name.includes("utm generator")) return "https://example.com\nnewsletter\nemail\nsummer_launch";
+  if (name.includes("slugify url")) return "Code Tools AI Online Converter";
+  if (name.includes("json stringify")) return "Hello \"Code\" Tools";
+  if (name.includes("json unstringifier")) return "\"Hello \\\"Code\\\" Tools\"";
+  if (name.includes("word to markdown")) return "Title\nThis is a paragraph.\n- First item\n- Second item";
+  if (name.includes("graphql")) return "query GetUser{user(id:1){id name email}}";
+  if (name.includes("scss")) return "$color:#2563eb;.button{color:$color;&:hover{color:red;}}";
+  if (name.includes("typescript formatter")) return "type User={id:number;name:string};const user:User={id:1,name:'Alice'};";
+  if (name.includes("markdown formatter")) return "# Title\n\n- item one\n- item two";
+  if (name.includes("yaml formatter")) return "name: CodeTools\nitems:\n- format\n- convert";
   if (tool.category === "Text") return "Paste clean text here.\nAdd another line here.";
   if (name.includes(" to ") && name.includes("converter")) return "function greet(name) {\n  return `Hello ${name}`;\n}";
   if (name.includes("unit test")) return "function add(a, b) {\n  return a + b;\n}";
@@ -129,44 +146,44 @@ function toTitleCase(value: string) {
 
 function toSmallText(value: string) {
   const smallLetters: Record<string, string> = {
-    a: "ᵃ",
-    b: "ᵇ",
-    c: "ᶜ",
-    d: "ᵈ",
-    e: "ᵉ",
-    f: "ᶠ",
-    g: "ᵍ",
-    h: "ʰ",
-    i: "ᶦ",
-    j: "ʲ",
-    k: "ᵏ",
-    l: "ˡ",
-    m: "ᵐ",
-    n: "ⁿ",
-    o: "ᵒ",
-    p: "ᵖ",
-    q: "ᑫ",
-    r: "ʳ",
-    s: "ˢ",
-    t: "ᵗ",
-    u: "ᵘ",
-    v: "ᵛ",
-    w: "ʷ",
-    x: "ˣ",
-    y: "ʸ",
-    z: "ᶻ"
+    a: "\u1d43",
+    b: "\u1d47",
+    c: "\u1d9c",
+    d: "\u1d48",
+    e: "\u1d49",
+    f: "\u1da0",
+    g: "\u1d4d",
+    h: "\u02b0",
+    i: "\u1da6",
+    j: "\u02b2",
+    k: "\u1d4f",
+    l: "\u02e1",
+    m: "\u1d50",
+    n: "\u207f",
+    o: "\u1d52",
+    p: "\u1d56",
+    q: "\u1d60",
+    r: "\u02b3",
+    s: "\u02e2",
+    t: "\u1d57",
+    u: "\u1d58",
+    v: "\u1d5b",
+    w: "\u02b7",
+    x: "\u02e3",
+    y: "\u02b8",
+    z: "\u1dbb"
   };
   const smallNumbers: Record<string, string> = {
-    "0": "⁰",
-    "1": "¹",
-    "2": "²",
-    "3": "³",
-    "4": "⁴",
-    "5": "⁵",
-    "6": "⁶",
-    "7": "⁷",
-    "8": "⁸",
-    "9": "⁹"
+    "0": "\u2070",
+    "1": "\u00b9",
+    "2": "\u00b2",
+    "3": "\u00b3",
+    "4": "\u2074",
+    "5": "\u2075",
+    "6": "\u2076",
+    "7": "\u2077",
+    "8": "\u2078",
+    "9": "\u2079"
   };
 
   return Array.from(value).map((char) => {
@@ -174,7 +191,6 @@ function toSmallText(value: string) {
     return smallLetters[lower] ?? smallNumbers[char] ?? char;
   }).join("");
 }
-
 function toSentenceCase(value: string) {
   return value
     .toLowerCase()
@@ -418,6 +434,92 @@ function slugify(value: string) {
   return value.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
 }
 
+function wordsForCase(value: string) {
+  return value
+    .trim()
+    .replace(/([a-z])([A-Z])/g, "$1 $2")
+    .split(/[^A-Za-z0-9]+/)
+    .filter(Boolean)
+    .map((word) => word.toLowerCase());
+}
+
+function toCamelCaseValue(value: string) {
+  const words = wordsForCase(value);
+  return words.map((word, index) => index === 0 ? word : word.charAt(0).toUpperCase() + word.slice(1)).join("");
+}
+
+function toPascalCaseValue(value: string) {
+  return wordsForCase(value).map((word) => word.charAt(0).toUpperCase() + word.slice(1)).join("");
+}
+
+function caesarCipher(value: string, shift: number) {
+  const normalizedShift = ((shift % 26) + 26) % 26;
+  return value.replace(/[A-Za-z]/g, (char) => {
+    const base = char >= "a" && char <= "z" ? 97 : 65;
+    return String.fromCharCode(((char.charCodeAt(0) - base + normalizedShift) % 26) + base);
+  });
+}
+
+function rot13(value: string) {
+  return caesarCipher(value, 13);
+}
+
+function utf8Encode(value: string) {
+  return Array.from(new TextEncoder().encode(value)).map((byte) => byte.toString(16).padStart(2, "0")).join(" ");
+}
+
+function utf8Decode(value: string) {
+  const bytes = value.trim().split(/[\s,]+/).filter(Boolean).map((part) => Number.parseInt(part.replace(/^0x/i, ""), 16));
+  if (!bytes.length || bytes.some((byte) => !Number.isFinite(byte))) return utf8Encode(value);
+  return new TextDecoder().decode(new Uint8Array(bytes));
+}
+
+function formatBracedText(value: string) {
+  let indent = 0;
+  return value
+    .replace(/\s+/g, " ")
+    .replace(/([{}[\]();,])/g, "$1\n")
+    .split(/\n+/)
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map((line) => {
+      if (/^[}\])]/.test(line)) indent = Math.max(0, indent - 1);
+      const output = `${"  ".repeat(indent)}${line}`;
+      if (/[{[(]$/.test(line)) indent += 1;
+      return output;
+    })
+    .join("\n");
+}
+
+function markdownTable(value: string) {
+  const rows = csvRows(value);
+  const [header = ["Column"], ...body] = rows;
+  const separator = header.map(() => "---");
+  return [header, separator, ...body].map((row) => `| ${row.join(" | ")} |`).join("\n");
+}
+
+function utmUrl(value: string) {
+  const [base = "https://example.com", source = "newsletter", medium = "email", campaign = "campaign"] = value.split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
+  const url = new URL(base.startsWith("http") ? base : `https://${base}`);
+  url.searchParams.set("utm_source", slugify(source));
+  url.searchParams.set("utm_medium", slugify(medium));
+  url.searchParams.set("utm_campaign", slugify(campaign));
+  return url.toString();
+}
+
+function wordToMarkdown(value: string) {
+  return value
+    .split(/\r?\n/)
+    .map((line, index) => {
+      const trimmed = line.trim();
+      if (!trimmed) return "";
+      if (index === 0) return `# ${trimmed.replace(/^#+\s*/, "")}`;
+      if (/^[-*]\s+/.test(trimmed)) return trimmed;
+      return trimmed;
+    })
+    .join("\n\n");
+}
+
 function hexToRgb(value: string) {
   const hex = value.replace("#", "").trim();
   const full = hex.length === 3 ? hex.split("").map((char) => char + char).join("") : hex;
@@ -456,10 +558,17 @@ function processTool(tool: DirectoryTool, input: string) {
   if (name.includes("javascript decode")) return jsDecode(value);
   if (name.includes("unicode encode")) return unicodeEncode(value);
   if (name.includes("unicode decode")) return unicodeDecode(value);
+  if (name.includes("utf-8")) return utf8Decode(value);
+  if (name.includes("rot13")) return rot13(value);
+  if (name.includes("caesar cipher")) {
+    const [shiftLine = "3", ...text] = value.split(/\r?\n/);
+    return caesarCipher(text.join("\n") || shiftLine, Number.parseInt(shiftLine, 10) || 3);
+  }
   if (name.includes("base32 encode")) return base32Encode(value);
   if (name.includes("base32 decode")) return base32Decode(value);
   if (name.includes("base58 encode")) return base58Encode(value);
   if (name.includes("base58 decode")) return base58Decode(value);
+  if (name.includes("morse code translator")) return /^[.\-/\s]+$/.test(value) ? morseDecode(value) : morseEncode(value);
   if (name.includes("morse encode")) return morseEncode(value);
   if (name.includes("morse decode")) return morseDecode(value);
   if (name.includes("quoted printable encode")) {
@@ -481,6 +590,14 @@ function processTool(tool: DirectoryTool, input: string) {
       }
     };
     return `Header\n${decodePart(header)}\n\nPayload\n${decodePart(payload)}\n\nSignature\n${signature || "missing"}`;
+  }
+  if (name.includes("json stringify text")) return JSON.stringify(value);
+  if (name.includes("json unstringifier")) {
+    try {
+      return JSON.parse(value);
+    } catch {
+      return value.replace(/^"|"$/g, "").replace(/\\"/g, "\"").replace(/\\n/g, "\n").replace(/\\t/g, "\t");
+    }
   }
   if (name.includes("json") && name.includes("format")) {
     try {
@@ -538,6 +655,7 @@ function processTool(tool: DirectoryTool, input: string) {
   }
   if (name.includes("markdown to html")) return value.split(/\r?\n/).map((line) => line.startsWith("# ") ? `<h1>${line.slice(2)}</h1>` : `<p>${line}</p>`).join("\n");
   if (name.includes("html to markdown")) return htmlDecode(value.replace(/<h1>(.*?)<\/h1>/gi, "# $1\n").replace(/<[^>]+>/g, ""));
+  if (name.includes("word to markdown")) return wordToMarkdown(value);
   if (name.includes("html to text")) return htmlDecode(value.replace(/<[^>]+>/g, " ")).replace(/\s+/g, " ").trim();
   if (name.includes("text to html")) return value.split(/\r?\n/).map((line) => `<p>${htmlEncode(line)}</p>`).join("\n");
   if (name.includes("text to csv")) return value.split(/\r?\n/).map((line) => JSON.stringify(line)).join("\n");
@@ -552,6 +670,9 @@ function processTool(tool: DirectoryTool, input: string) {
   if (name.includes("date to unix")) return Math.floor(new Date(value).getTime() / 1000).toString();
   if (name.includes("css to inline")) return `style="${value.replace(/\s+/g, " ").trim()}"`;
   if (name.includes("inline to css")) return value.match(/style=["']([^"']+)["']/)?.[1].split(";").filter(Boolean).map((rule) => `  ${rule.trim()};`).join("\n") ?? value;
+  if (name.includes("graphql formatter") || name.includes("scss formatter") || name.includes("typescript formatter") || name.includes("css formatter") || name.includes("javascript formatter")) return formatBracedText(value);
+  if (name.includes("markdown formatter")) return value.replace(/\n{3,}/g, "\n\n").replace(/^(#+)([^\s#])/gm, "$1 $2").trim();
+  if (name.includes("yaml formatter")) return value.replace(/\r\n/g, "\n").replace(/^\s*-\s*/gm, "- ").trim();
   if (name.includes("word counter")) return `Words: ${value.split(/\s+/).filter(Boolean).length}`;
   if (name.includes("character counter")) return `Characters: ${value.length}`;
   if (name.includes("line counter")) return `Lines: ${value.split(/\r?\n/).length}`;
@@ -567,9 +688,15 @@ function processTool(tool: DirectoryTool, input: string) {
       return Number.isFinite(code) ? String.fromCharCode(code) : "";
     }).join("") ?? "";
   }
+  if (name.includes("camelcase converter")) return toCamelCaseValue(value);
+  if (name.includes("pascalcase converter")) return toPascalCaseValue(value);
+  if (name.includes("snake_case converter")) return wordsForCase(value).join("_");
+  if (name.includes("kebab-case converter")) return wordsForCase(value).join("-");
+  if (name.includes("dot.case converter")) return wordsForCase(value).join(".");
   if (name.includes("case converter")) return `UPPER\n${value.toUpperCase()}\n\nlower\n${value.toLowerCase()}`;
   if (name.includes("remove duplicates")) return Array.from(new Set(value.split(/\r?\n/))).join("\n");
   if (name.includes("sort lines")) return value.split(/\r?\n/).sort((a, b) => a.localeCompare(b)).join("\n");
+  if (name.includes("number sorter")) return value.match(/-?\d+(\.\d+)?/g)?.map(Number).sort((a, b) => a - b).join("\n") ?? "";
   if (name.includes("text reverser")) return value.split("").reverse().join("");
   if (name.includes("remove line breaks")) return value.split(/\r?\n/).map((line) => line.trim()).filter(Boolean).join(" ");
   if (name.includes("duplicate line remover")) return Array.from(new Set(value.split(/\r?\n/).filter(Boolean))).join("\n");
@@ -605,6 +732,7 @@ function processTool(tool: DirectoryTool, input: string) {
     return Array.from({ length: count }, () => text.join("\n") || countLine).join("\n");
   }
   if (name.includes("invisible text generator")) return "\u200B".repeat(Math.max(1, Math.min(200, Number.parseInt(value, 10) || 24)));
+  if (name.includes("markdown table generator")) return markdownTable(value);
   if (name.includes("nato phonetic alphabet translator") || name.includes("phonetic spelling tool")) {
     return value.toLowerCase().split("").map((char) => natoWords[char] ?? char).join(" ");
   }
@@ -621,6 +749,8 @@ function processTool(tool: DirectoryTool, input: string) {
   if (name.includes("uuid generator")) return crypto.randomUUID();
   if (name.includes("password generator")) return `${crypto.randomUUID().replace(/-/g, "").slice(0, 12)}A1!`;
   if (name.includes("slug generator")) return slugify(value);
+  if (name.includes("slugify url generator")) return slugify(value);
+  if (name.includes("utm generator")) return utmUrl(value);
   if (name.includes("username generator")) return `${slugify(value || "code tools").slice(0, 16)}_${Math.floor(Math.random() * 1000)}`;
   if (name.includes("cron generator")) return `# Every day at 09:00\n0 9 * * * ${value || "run-command"}`;
   if (name.includes("color picker")) return `${value}\nHEX: ${value.startsWith("#") ? value : rgbToHex(value)}\nRGB: ${value.startsWith("#") ? hexToRgb(value) : value}`;
