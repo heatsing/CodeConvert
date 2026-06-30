@@ -30,10 +30,14 @@ const internalToolMap: Partial<Record<ToolSlug, string>> = {
   "code-to-pdf": "Prepare code documents"
 };
 
-export const categories = ["Popular", "Text", "Encode", "Decode", "Convert", "Utility", "Format", "Security", "Network", "Regex", "Code"] as const;
+export const categories = ["Popular", "Text", "Font Styles", "Encode", "Decode", "Convert", "Utility", "Format", "Security", "Network", "Regex", "Code"] as const;
 
 export function getCategoryLabel(category: string) {
   return category === "Text" ? "Text Tools" : category;
+}
+
+export function getCategoryId(category: string) {
+  return category.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
 }
 
 const rawDirectoryTools: DirectoryTool[] = [
@@ -250,7 +254,36 @@ const rawDirectoryTools: DirectoryTool[] = [
   { name: "Pig Latin Translator", description: "Convert to Pig Latin", category: "Text", href: "/tools/code-converter", iconName: "message", accent: "text-pink-700 bg-pink-50" },
   { name: "Plain Text Converter", description: "Strip rich text", category: "Text", href: "/tools/code-converter", iconName: "fileText", accent: "text-slate-700 bg-slate-100" },
   { name: "Markdown Table Generator", description: "Create Markdown tables", category: "Text", href: "/tools/code-generator", iconName: "fileText", accent: "text-blue-700 bg-blue-50" },
-  { name: "Small Text Generator", description: "Make tiny text", headerDescription: "Convert normal text into small Unicode-style text for bios, captions, usernames, and short social posts.", category: "Text", href: "/tools/code-converter", iconName: "wand", accent: "text-violet-700 bg-violet-50" },
+  { name: "Aesthetic Text", description: "Add spaced aesthetic style", category: "Font Styles", href: "/tools/code-converter", iconName: "wand", accent: "text-pink-700 bg-pink-50" },
+  { name: "Big Text Generator", description: "Make text big and spaced", category: "Font Styles", href: "/tools/code-generator", iconName: "wand", accent: "text-orange-700 bg-orange-50" },
+  { name: "Bold Text Generator", description: "Create bold Unicode text", category: "Font Styles", href: "/tools/code-generator", iconName: "wand", accent: "text-slate-700 bg-slate-100" },
+  { name: "Bubble Text Generator", description: "Create circled text", category: "Font Styles", href: "/tools/code-generator", iconName: "wand", accent: "text-sky-700 bg-sky-50" },
+  { name: "Cursed Text Tool", description: "Create glitchy text", category: "Font Styles", href: "/tools/code-generator", iconName: "wand", accent: "text-red-700 bg-red-50" },
+  { name: "Cute Font Generator", description: "Make cute styled text", category: "Font Styles", href: "/tools/code-generator", iconName: "wand", accent: "text-rose-700 bg-rose-50" },
+  { name: "Discord Font Generator", description: "Style text for Discord", category: "Font Styles", href: "/tools/code-generator", iconName: "wand", accent: "text-indigo-700 bg-indigo-50" },
+  { name: "Double-Struck Text", description: "Create double-struck text", category: "Font Styles", href: "/tools/code-generator", iconName: "wand", accent: "text-blue-700 bg-blue-50" },
+  { name: "Facebook Font Generator", description: "Style text for Facebook", category: "Font Styles", href: "/tools/code-generator", iconName: "wand", accent: "text-blue-700 bg-blue-50" },
+  { name: "Fancy Text Generator", description: "Create fancy Unicode text", category: "Font Styles", href: "/tools/code-generator", iconName: "wand", accent: "text-purple-700 bg-purple-50" },
+  { name: "Fonts for Instagram", description: "Style text for Instagram", category: "Font Styles", href: "/tools/code-generator", iconName: "wand", accent: "text-fuchsia-700 bg-fuchsia-50" },
+  { name: "Gothic Text", description: "Create gothic text style", category: "Font Styles", href: "/tools/code-generator", iconName: "wand", accent: "text-slate-700 bg-slate-100" },
+  { name: "Italic Text Generator", description: "Create italic Unicode text", category: "Font Styles", href: "/tools/code-generator", iconName: "wand", accent: "text-teal-700 bg-teal-50" },
+  { name: "Mirror Text Generator", description: "Reverse mirrored text", category: "Font Styles", href: "/tools/code-generator", iconName: "wand", accent: "text-cyan-700 bg-cyan-50" },
+  { name: "Slash Text Generator", description: "Add slash overlay text", category: "Font Styles", href: "/tools/code-generator", iconName: "wand", accent: "text-amber-700 bg-amber-50" },
+  { name: "Small Text Generator", description: "Make tiny text", headerDescription: "Convert normal text into small Unicode-style text for bios, captions, usernames, and short social posts.", category: "Font Styles", href: "/tools/code-converter", iconName: "wand", accent: "text-violet-700 bg-violet-50" },
+  { name: "Stacked Text Generator", description: "Create stacked text", category: "Font Styles", href: "/tools/code-generator", iconName: "wand", accent: "text-green-700 bg-green-50" },
+  { name: "Strikethrough Text Generator", description: "Strike through text", category: "Font Styles", href: "/tools/code-generator", iconName: "wand", accent: "text-red-700 bg-red-50" },
+  { name: "Subscript Generator", description: "Create subscript text", category: "Font Styles", href: "/tools/code-generator", iconName: "wand", accent: "text-blue-700 bg-blue-50" },
+  { name: "Superscript Generator", description: "Create superscript text", category: "Font Styles", href: "/tools/code-generator", iconName: "wand", accent: "text-violet-700 bg-violet-50" },
+  { name: "TikTok Font Generator", description: "Style text for TikTok", category: "Font Styles", href: "/tools/code-generator", iconName: "wand", accent: "text-pink-700 bg-pink-50" },
+  { name: "Twitter Font Generator", description: "Style text for Twitter", category: "Font Styles", href: "/tools/code-generator", iconName: "wand", accent: "text-sky-700 bg-sky-50" },
+  { name: "Typewriter Text", description: "Create typewriter text", category: "Font Styles", href: "/tools/code-generator", iconName: "wand", accent: "text-slate-700 bg-slate-100" },
+  { name: "Underline Text Generator", description: "Underline each character", category: "Font Styles", href: "/tools/code-generator", iconName: "wand", accent: "text-cyan-700 bg-cyan-50" },
+  { name: "Unicode Text Converter", description: "Convert text to Unicode escapes", category: "Font Styles", href: "/tools/code-converter", iconName: "code", accent: "text-purple-700 bg-purple-50" },
+  { name: "Unicode to Text Converter", description: "Decode Unicode escapes", category: "Font Styles", href: "/tools/code-converter", iconName: "message", accent: "text-purple-700 bg-purple-50" },
+  { name: "Upside Down Text", description: "Flip text upside down", category: "Font Styles", href: "/tools/code-generator", iconName: "wand", accent: "text-orange-700 bg-orange-50" },
+  { name: "WhatsApp Font Generator", description: "Style text for WhatsApp", category: "Font Styles", href: "/tools/code-generator", iconName: "wand", accent: "text-green-700 bg-green-50" },
+  { name: "Wide Text Generator", description: "Create wide fullwidth text", category: "Font Styles", href: "/tools/code-generator", iconName: "wand", accent: "text-blue-700 bg-blue-50" },
+  { name: "Zalgo Text Generator", description: "Create intense glitch text", category: "Font Styles", href: "/tools/code-generator", iconName: "wand", accent: "text-red-700 bg-red-50" },
   { name: "Remove Line Breaks", description: "Join broken lines", category: "Text", href: "/tools/comment-remover", iconName: "eraser", accent: "text-blue-700 bg-blue-50" },
   { name: "Remove Text Formatting", description: "Clean pasted text", category: "Text", href: "/tools/comment-remover", iconName: "eraser", accent: "text-violet-700 bg-violet-50" },
   { name: "Remove Underscores", description: "Replace underscores", category: "Text", href: "/tools/code-converter", iconName: "eraser", accent: "text-cyan-700 bg-cyan-50" },

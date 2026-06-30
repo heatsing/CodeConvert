@@ -42,6 +42,7 @@ function sampleFor(tool: DirectoryTool) {
   if (name.includes("nato") || name.includes("phonetic")) return "Code Tools";
   if (name.includes("pig latin")) return "hello developer world";
   if (name.includes("small text generator")) return "Small Text Generator 123";
+  if (tool.category === "Font Styles") return "Font Style Generator";
   if (name.includes("remove line breaks")) return "This paragraph\nwas copied\nwith line breaks.\n\nThis should become one clean line.";
   if (name.includes("duplicate word finder")) return "code tools help code writers find repeated repeated words in tools";
   if (name.includes("word frequency") || name.includes("word cloud")) return "code tools code text tools converter code";
@@ -191,6 +192,97 @@ function toSmallText(value: string) {
     return smallLetters[lower] ?? smallNumbers[char] ?? char;
   }).join("");
 }
+
+function styledAlphaNumeric(value: string, upperStart: number, lowerStart: number, digitStart?: number) {
+  return Array.from(value).map((char) => {
+    const code = char.charCodeAt(0);
+    if (code >= 65 && code <= 90) return String.fromCodePoint(upperStart + code - 65);
+    if (code >= 97 && code <= 122) return String.fromCodePoint(lowerStart + code - 97);
+    if (digitStart !== undefined && code >= 48 && code <= 57) return String.fromCodePoint(digitStart + code - 48);
+    return char;
+  }).join("");
+}
+
+function overlayText(value: string, mark: string) {
+  return Array.from(value).map((char) => (char.trim() ? `${char}${mark}` : char)).join("");
+}
+
+function wideText(value: string) {
+  return Array.from(value).map((char) => {
+    const code = char.charCodeAt(0);
+    if (code === 32) return "\u3000";
+    if (code >= 33 && code <= 126) return String.fromCharCode(code + 0xfee0);
+    return char;
+  }).join("");
+}
+
+function bubbleText(value: string) {
+  const digitMap = ["\u24ea", "\u2460", "\u2461", "\u2462", "\u2463", "\u2464", "\u2465", "\u2466", "\u2467", "\u2468"];
+  return Array.from(value).map((char) => {
+    const lower = char.toLowerCase();
+    const code = lower.charCodeAt(0);
+    if (code >= 97 && code <= 122) return String.fromCodePoint(0x24d0 + code - 97);
+    if (/[0-9]/.test(char)) return digitMap[Number(char)];
+    return char;
+  }).join("");
+}
+
+function mirrorText(value: string) {
+  const map: Record<string, string> = {
+    a: "\u0252", b: "d", c: "\u0254", d: "b", e: "\u01dd", f: "\u025f", g: "\u0183", h: "\u0265", i: "i", j: "\u027e", k: "\u029e", l: "l", m: "m", n: "n", o: "o", p: "q", q: "p", r: "\u027f", s: "s", t: "\u0287", u: "u", v: "v", w: "w", x: "x", y: "\u028e", z: "z"
+  };
+  return Array.from(value).reverse().map((char) => map[char.toLowerCase()] ?? char).join("");
+}
+
+function upsideDownText(value: string) {
+  const map: Record<string, string> = {
+    a: "\u0250", b: "q", c: "\u0254", d: "p", e: "\u01dd", f: "\u025f", g: "\u0183", h: "\u0265", i: "\u1d09", j: "\u027e", k: "\u029e", l: "l", m: "\u026f", n: "u", o: "o", p: "d", q: "b", r: "\u0279", s: "s", t: "\u0287", u: "n", v: "\u028c", w: "\u028d", x: "x", y: "\u028e", z: "z", ".": "\u02d9", "?": "\u00bf", "!": "\u00a1"
+  };
+  return Array.from(value).reverse().map((char) => map[char.toLowerCase()] ?? char).join("");
+}
+
+function subscriptText(value: string) {
+  const map: Record<string, string> = {
+    a: "\u2090", e: "\u2091", h: "\u2095", i: "\u1d62", j: "\u2c7c", k: "\u2096", l: "\u2097", m: "\u2098", n: "\u2099", o: "\u2092", p: "\u209a", r: "\u1d63", s: "\u209b", t: "\u209c", u: "\u1d64", v: "\u1d65", x: "\u2093", "0": "\u2080", "1": "\u2081", "2": "\u2082", "3": "\u2083", "4": "\u2084", "5": "\u2085", "6": "\u2086", "7": "\u2087", "8": "\u2088", "9": "\u2089"
+  };
+  return Array.from(value).map((char) => map[char.toLowerCase()] ?? char).join("");
+}
+
+function zalgoText(value: string, intense = false) {
+  const marks = ["\u0300", "\u0301", "\u0302", "\u0303", "\u0304", "\u0307", "\u0308", "\u0336", "\u034f", "\u035c"];
+  return Array.from(value).map((char, index) => {
+    if (!char.trim()) return char;
+    const count = intense ? 4 : 2;
+    return char + Array.from({ length: count }, (_, offset) => marks[(index + offset) % marks.length]).join("");
+  }).join("");
+}
+
+function fontStyleText(toolName: string, value: string) {
+  if (toolName.includes("aesthetic")) return Array.from(value.toUpperCase()).join(" ");
+  if (toolName.includes("big text")) return Array.from(value.toUpperCase()).join("  ");
+  if (toolName.includes("bold") || toolName.includes("facebook") || toolName.includes("whatsapp")) return styledAlphaNumeric(value, 0x1d400, 0x1d41a, 0x1d7ce);
+  if (toolName.includes("italic") || toolName.includes("twitter")) return styledAlphaNumeric(value, 0x1d434, 0x1d44e);
+  if (toolName.includes("double-struck")) return styledAlphaNumeric(value, 0x1d538, 0x1d552, 0x1d7d8);
+  if (toolName.includes("typewriter") || toolName.includes("discord")) return styledAlphaNumeric(value, 0x1d670, 0x1d68a, 0x1d7f6);
+  if (toolName.includes("gothic")) return styledAlphaNumeric(value, 0x1d504, 0x1d51e);
+  if (toolName.includes("bubble")) return bubbleText(value);
+  if (toolName.includes("cursed")) return zalgoText(value);
+  if (toolName.includes("zalgo")) return zalgoText(value, true);
+  if (toolName.includes("cute") || toolName.includes("fancy") || toolName.includes("instagram") || toolName.includes("tiktok")) return `${toSmallText(value)} ${bubbleText(value)}`;
+  if (toolName.includes("mirror")) return mirrorText(value);
+  if (toolName.includes("upside down")) return upsideDownText(value);
+  if (toolName.includes("slash")) return overlayText(value, "\u0338");
+  if (toolName.includes("stacked")) return overlayText(value, "\u034d");
+  if (toolName.includes("strikethrough")) return overlayText(value, "\u0336");
+  if (toolName.includes("underline")) return overlayText(value, "\u0332");
+  if (toolName.includes("subscript")) return subscriptText(value);
+  if (toolName.includes("superscript") || toolName.includes("small text")) return toSmallText(value);
+  if (toolName.includes("wide")) return wideText(value);
+  if (toolName.includes("unicode text converter")) return unicodeEncode(value);
+  if (toolName.includes("unicode to text converter")) return unicodeDecode(value);
+  return value;
+}
+
 function toSentenceCase(value: string) {
   return value
     .toLowerCase()
@@ -536,6 +628,7 @@ function processTool(tool: DirectoryTool, input: string) {
   const value = input.trim() || sampleFor(tool);
   const name = tool.name.toLowerCase();
 
+  if (tool.category === "Font Styles") return fontStyleText(name, value);
   if (name.includes("base64 encode")) return btoa(unescape(encodeURIComponent(value)));
   if (name.includes("base64 decode")) {
     try {

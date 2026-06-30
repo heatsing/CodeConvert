@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { Flame, Search } from "lucide-react";
-import { categories, directoryTools, featuredTools, frequentTools, getCategoryLabel } from "@/lib/home-tools";
+import { categories, directoryTools, featuredTools, frequentTools, getCategoryId, getCategoryLabel } from "@/lib/home-tools";
 import { useI18n } from "@/lib/i18n";
 import { developerOnlineTools, languageOnlineTools, onlineTools } from "@/lib/online-tools";
 import { toolIcons } from "@/lib/tool-icons";
@@ -94,7 +94,7 @@ export function HomeDirectory() {
     { label: t("home.onlineTools"), href: "#online" },
     ...categories
       .filter((category) => category !== "Popular")
-      .map((category) => ({ label: getCategoryLabel(t(`nav.${category.toLowerCase()}`)), href: `#${category.toLowerCase()}` }))
+      .map((category) => ({ label: getCategoryLabel(category), href: `#${getCategoryId(category)}` }))
   ];
 
   return (
@@ -228,8 +228,8 @@ export function HomeDirectory() {
         </section>
 
         {visibleGroups.map((group) => (
-          <section key={group.category} id={group.category.toLowerCase()} className="rounded-lg border bg-white p-4 shadow-soft">
-            <h2 className="text-[15px] font-black text-slate-950">{getCategoryLabel(t(`nav.${group.category.toLowerCase()}`))}</h2>
+          <section key={group.category} id={getCategoryId(group.category)} className="rounded-lg border bg-white p-4 shadow-soft">
+            <h2 className="text-[15px] font-black text-slate-950">{getCategoryLabel(group.category)}</h2>
             <div className="mt-3 grid gap-3 [grid-template-columns:repeat(auto-fit,minmax(230px,1fr))]">
               {group.tools.map((tool) => (
                 <ToolTile key={tool.name} tool={tool} />

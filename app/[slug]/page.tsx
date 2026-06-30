@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { DirectoryToolWorkspace } from "@/components/directory-tool-workspace";
 import { ToolLayout } from "@/components/tool-layout";
-import { directoryToolBySlug, directoryTools, directoryToolSlug, getCategoryLabel } from "@/lib/home-tools";
+import { directoryToolBySlug, directoryTools, directoryToolSlug, getCategoryId, getCategoryLabel } from "@/lib/home-tools";
 import { languageConverterBySlug, languageConverterTools } from "@/lib/language-converters";
 import {
   buildBreadcrumbJsonLd,
@@ -92,7 +92,7 @@ export default function RootToolPage({ params }: RootToolPageProps) {
         }),
         buildBreadcrumbJsonLd([
           { name: "CodeTools AI", url: siteUrl },
-          { name: categoryLabel, url: `${siteUrl}/#${tool.category.toLowerCase()}` },
+          { name: categoryLabel, url: `${siteUrl}/#${getCategoryId(tool.category)}` },
           { name: tool.name, url }
         ])
       ])}
