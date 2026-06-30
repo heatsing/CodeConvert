@@ -147,6 +147,7 @@ const rawDirectoryTools: DirectoryTool[] = [
   { name: "HEX to Text", description: "Decode HEX to text", category: "Convert", href: "/tools/code-converter", iconName: "message", accent: "text-red-600 bg-red-50" },
   { name: "Decimal to HEX", description: "Convert decimal numbers to HEX", category: "Convert", href: "/tools/code-converter", iconName: "code", accent: "text-amber-700 bg-amber-50" },
   { name: "HEX to Decimal", description: "Convert HEX numbers to decimal", category: "Convert", href: "/tools/code-converter", iconName: "message", accent: "text-amber-700 bg-amber-50" },
+  { name: "Binary Code Translator", description: "Translate binary code", headerDescription: "Convert plain text to binary code or translate binary code back into readable text using a simple online binary translator.", category: "Convert", href: "/tools/code-converter", iconName: "code", accent: "text-slate-700 bg-slate-100" },
   { name: "Binary to Text", description: "Convert binary to text", category: "Convert", href: "/tools/code-converter", iconName: "message", accent: "text-slate-700 bg-slate-100" },
   { name: "Text to Binary", description: "Convert text to binary", category: "Convert", href: "/tools/code-converter", iconName: "code", accent: "text-slate-700 bg-slate-100" },
   { name: "Octal to Decimal", description: "Convert octal numbers", category: "Convert", href: "/tools/code-converter", iconName: "message", accent: "text-indigo-600 bg-indigo-50" },

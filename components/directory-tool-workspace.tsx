@@ -62,6 +62,7 @@ function sampleFor(tool: DirectoryTool) {
   if (name.includes("html")) return "<section>Hello & welcome</section>";
   if (name.includes("csv")) return "id,name\n1,Alice\n2,Bob";
   if (name.includes("hex")) return "Hello";
+  if (name.includes("binary code translator")) return "01001000 01100101 01101100 01101100 01101111";
   if (name.includes("binary")) return "Hello";
   if (name.includes("password")) return "CorrectHorseBatteryStaple!";
   if (name.includes("ping")) return "example.com";
@@ -74,6 +75,23 @@ function regexFromLine(line: string) {
   const literal = trimmed.match(/^\/(.+)\/([dgimsuvy]*)$/);
   if (literal) return new RegExp(literal[1], literal[2].includes("g") ? literal[2] : `${literal[2]}g`);
   return new RegExp(trimmed, "g");
+}
+
+function looksLikeBinaryCode(value: string) {
+  const compact = value.replace(/\s+/g, "");
+  return compact.length > 0 && compact.length % 8 === 0 && /^[01]+$/.test(compact);
+}
+
+function binaryToText(value: string) {
+  const compact = value.replace(/[^01]/g, "");
+  return compact.match(/.{1,8}/g)?.map((part) => {
+    const code = Number.parseInt(part, 2);
+    return Number.isFinite(code) ? String.fromCharCode(code) : "";
+  }).join("") ?? "";
+}
+
+function textToBinary(value: string) {
+  return Array.from(value).map((char) => char.charCodeAt(0).toString(2).padStart(8, "0")).join(" ");
 }
 
 function regexParts(value: string) {
@@ -537,12 +555,10 @@ function processTool(tool: DirectoryTool, input: string) {
   if (name.includes("word counter")) return `Words: ${value.split(/\s+/).filter(Boolean).length}`;
   if (name.includes("character counter")) return `Characters: ${value.length}`;
   if (name.includes("line counter")) return `Lines: ${value.split(/\r?\n/).length}`;
-  if (name.includes("text to binary")) return Array.from(value).map((char) => char.charCodeAt(0).toString(2).padStart(8, "0")).join(" ");
+  if (name.includes("binary code translator")) return looksLikeBinaryCode(value) ? binaryToText(value) : textToBinary(value);
+  if (name.includes("text to binary")) return textToBinary(value);
   if (name.includes("binary to text")) {
-    return value.split(/\s+/).filter(Boolean).map((part) => {
-      const code = Number.parseInt(part, 2);
-      return Number.isFinite(code) ? String.fromCharCode(code) : "";
-    }).join("");
+    return binaryToText(value);
   }
   if (name.includes("text to hex")) return Array.from(value).map((char) => char.charCodeAt(0).toString(16).padStart(2, "0")).join("");
   if (name.includes("hex to text")) {
