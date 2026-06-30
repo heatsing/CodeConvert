@@ -4,7 +4,6 @@ import { useMemo, useState } from "react";
 import { AlertCircle, Loader2, Sparkles, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CodeEditorBox } from "@/components/code-editor-box";
-import { FAQSection } from "@/components/faq-section";
 import { FileUpload } from "@/components/file-upload";
 import { LanguageSelect } from "@/components/language-select";
 import { OtherTools } from "@/components/other-tools";
@@ -155,23 +154,6 @@ export function ToolLayout({ tool }: ToolLayoutProps) {
         </div>
       </section>
 
-      <section className="rounded-lg border bg-white p-6 shadow-soft">
-        <h2 className="text-xl font-bold text-slate-950">{t("tool.howTo")}</h2>
-        <ol className="mt-5 grid gap-3 sm:grid-cols-3">
-          {tool.howTo.map((step, index) => (
-            <li key={step} className="rounded-md border bg-slate-50 p-4 text-sm leading-6 text-slate-700">
-              <span className="mb-3 grid h-7 w-7 place-items-center rounded-full bg-violet-600 text-xs font-bold text-white">
-                {index + 1}
-              </span>
-              {step}
-            </li>
-          ))}
-        </ol>
-      </section>
-
-      <div id="faq">
-        <FAQSection faqs={tool.faqs} />
-      </div>
       <ToolSeoContent title={tool.name} description={tool.description} category="Code" />
       <OtherTools currentSlug={tool.slug} />
     </main>
