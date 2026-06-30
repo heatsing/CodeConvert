@@ -5,7 +5,7 @@ import { buildJsonLdScripts, buildMetadata } from "@/lib/seo";
 import { siteUrl } from "@/lib/site";
 
 export const metadata: Metadata = buildMetadata({
-  title: "Online Code Tools Directory",
+  title: "Quick Code Conversion Tools | CodeConvert.net",
   description: "Free online code tools for converting, encoding, decoding, formatting, checking, generating, and cleaning developer text from one fast workspace.",
   path: "",
   keywords: ["online code tools", "developer tools", "code converter", "base64 encode", "json formatter"]
