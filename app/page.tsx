@@ -26,7 +26,7 @@ export default function Page() {
   const website = {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    name: "CodeTools AI",
+    name: "CodeConvert.net",
     url: siteUrl,
     potentialAction: {
       "@type": "SearchAction",

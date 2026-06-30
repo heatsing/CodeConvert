@@ -46,7 +46,7 @@ export default function OnlineToolPage({ params }: OnlineToolPageProps) {
           url
         }),
         buildBreadcrumbJsonLd([
-          { name: "CodeTools AI", url: siteUrl },
+          { name: "CodeConvert.net", url: siteUrl },
           { name: "Online Developer Tools", url: `${siteUrl}/#online` },
           { name: tool.name, url }
         ])

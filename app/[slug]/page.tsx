@@ -63,7 +63,7 @@ export default function RootToolPage({ params }: RootToolPageProps) {
             url
           }),
           buildBreadcrumbJsonLd([
-            { name: "CodeTools AI", url: siteUrl },
+            { name: "CodeConvert.net", url: siteUrl },
             { name: coreTool.name, url }
           ])
         ])}
@@ -91,7 +91,7 @@ export default function RootToolPage({ params }: RootToolPageProps) {
           url
         }),
         buildBreadcrumbJsonLd([
-          { name: "CodeTools AI", url: siteUrl },
+          { name: "CodeConvert.net", url: siteUrl },
           { name: categoryLabel, url: `${siteUrl}/#${getCategoryId(tool.category)}` },
           { name: tool.name, url }
         ])

@@ -9,14 +9,14 @@ import { siteUrl } from "@/lib/site";
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "CodeTools AI - Free Online Code Tools",
-    template: "%s | CodeTools AI"
+    default: "Quick Code Conversion Tools | CodeConvert.net",
+    template: "%s | CodeConvert.net"
   },
   description: "Free browser-based coding tools for converting, encoding, decoding, formatting, generating, explaining, checking, cleaning, and exporting developer text.",
-  applicationName: "CodeTools AI",
-  authors: [{ name: "CodeTools AI" }],
-  creator: "CodeTools AI",
-  publisher: "CodeTools AI",
+  applicationName: "CodeConvert.net",
+  authors: [{ name: "CodeConvert.net" }],
+  creator: "CodeConvert.net",
+  publisher: "CodeConvert.net",
   manifest: "/site.webmanifest",
   icons: {
     icon: [
