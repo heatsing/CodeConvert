@@ -22,6 +22,25 @@ function languageToolDescription(name: string) {
   return `Run ${language} code`;
 }
 
+function localizedCategoryLabel(category: string, t: (key: string) => string) {
+  const labels: Record<string, string> = {
+    Text: t("category.text"),
+    "Font Styles": t("category.fontStyles"),
+    Encoding: t("category.encoding"),
+    Encode: t("nav.encode"),
+    Decode: t("nav.decode"),
+    Convert: t("nav.convert"),
+    Utility: t("nav.utility"),
+    Format: t("nav.format"),
+    Security: t("nav.security"),
+    Network: t("nav.network"),
+    Regex: t("nav.regex"),
+    Code: t("nav.code")
+  };
+
+  return labels[category] ?? getCategoryLabel(category);
+}
+
 function ToolTile({ tool, compact = false }: { tool: (typeof directoryTools)[number]; compact?: boolean }) {
   const Icon = toolIcons[tool.iconName];
 
@@ -94,7 +113,7 @@ export function HomeDirectory() {
     { label: t("home.onlineTools"), href: "#online" },
     ...categories
       .filter((category) => category !== "Popular")
-      .map((category) => ({ label: getCategoryLabel(category), href: `#${getCategoryId(category)}` }))
+      .map((category) => ({ label: localizedCategoryLabel(category, t), href: `#${getCategoryId(category)}` }))
   ];
 
   return (
@@ -229,7 +248,7 @@ export function HomeDirectory() {
 
         {visibleGroups.map((group) => (
           <section key={group.category} id={getCategoryId(group.category)} className="rounded-lg border bg-white p-4 shadow-soft">
-            <h2 className="text-[15px] font-black text-slate-950">{getCategoryLabel(group.category)}</h2>
+            <h2 className="text-[15px] font-black text-slate-950">{localizedCategoryLabel(group.category, t)}</h2>
             <div className="mt-3 grid gap-3 [grid-template-columns:repeat(auto-fit,minmax(230px,1fr))]">
               {group.tools.map((tool) => (
                 <ToolTile key={tool.name} tool={tool} />

@@ -9,6 +9,25 @@ import { getCategoryLabel, type DirectoryTool } from "@/lib/home-tools";
 import { useI18n } from "@/lib/i18n";
 import { toolIcons } from "@/lib/tool-icons";
 
+function localizedCategoryLabel(category: string, t: (key: string) => string) {
+  const labels: Record<string, string> = {
+    Text: t("category.text"),
+    "Font Styles": t("category.fontStyles"),
+    Encoding: t("category.encoding"),
+    Encode: t("nav.encode"),
+    Decode: t("nav.decode"),
+    Convert: t("nav.convert"),
+    Utility: t("nav.utility"),
+    Format: t("nav.format"),
+    Security: t("nav.security"),
+    Network: t("nav.network"),
+    Regex: t("nav.regex"),
+    Code: t("nav.code")
+  };
+
+  return labels[category] ?? getCategoryLabel(category);
+}
+
 function sampleFor(tool: DirectoryTool) {
   const name = tool.name.toLowerCase();
   if (name.includes("base32 decode")) return "JBSWY3DPEBLW64TMMQ";
@@ -1279,7 +1298,7 @@ export function DirectoryToolWorkspace({ tool }: { tool: DirectoryTool }) {
             <Icon className="h-6 w-6" />
           </span>
           <div>
-            <p className="text-sm font-black uppercase tracking-[0.18em] text-blue-700">{getCategoryLabel(tool.category)}</p>
+            <p className="text-sm font-black uppercase tracking-[0.18em] text-blue-700">{localizedCategoryLabel(tool.category, t)}</p>
             <h1 className="mt-2 text-3xl font-black text-slate-950">{tool.name}</h1>
             <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">{pageDescription}</p>
           </div>

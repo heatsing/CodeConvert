@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ChevronDown, Globe2, Moon, Sun } from "lucide-react";
 import { usePathname } from "next/navigation";
-import { getCategoryId, getCategoryLabel } from "@/lib/home-tools";
+import { getCategoryId } from "@/lib/home-tools";
 import { translationLanguages, useI18n, type LanguageCode } from "@/lib/i18n";
 
 type ThemeMode = "light" | "dark";
@@ -74,11 +74,11 @@ export function SiteHeader() {
 
   const navItems = [
     { label: t("nav.home"), href: "/", active: isHome },
-    { label: getCategoryLabel(t("nav.text")), href: sectionHref("text") },
-    { label: getCategoryLabel("Font Styles"), href: sectionHref(getCategoryId("Font Styles")) },
+    { label: t("category.text"), href: sectionHref("text") },
+    { label: t("category.fontStyles"), href: sectionHref(getCategoryId("Font Styles")) },
     { label: t("nav.encode"), href: sectionHref("encode") },
     { label: t("nav.decode"), href: sectionHref("decode") },
-    { label: "Encoding", href: sectionHref("encoding") },
+    { label: t("category.encoding"), href: sectionHref("encoding") },
     { label: t("nav.convert"), href: sectionHref("convert") },
     { label: t("nav.utility"), href: sectionHref("utility") },
     { label: t("nav.format"), href: sectionHref("format") },
