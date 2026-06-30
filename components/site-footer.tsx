@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Braces } from "lucide-react";
+import Image from "next/image";
 import { useI18n } from "@/lib/i18n";
 
 export function SiteFooter() {
@@ -12,11 +12,14 @@ export function SiteFooter() {
     <footer className="border-t bg-white/90 text-[12px] text-slate-600 dark:bg-slate-950/95">
       <div className="grid w-full gap-5 px-4 py-6 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
         <div>
-          <Link href="/" className="inline-flex items-center gap-2 text-sm font-black text-slate-950">
-            <span className="grid h-8 w-8 place-items-center rounded-md bg-gradient-to-br from-blue-600 to-violet-600 text-white">
-              <Braces className="h-4 w-4" />
-            </span>
-            CodeTools AI
+          <Link href="/" className="inline-flex items-center" aria-label="CodeConvert.net home">
+            <Image
+              src="/codeconvert-logo.png"
+              alt="CodeConvert.net"
+              width={1152}
+              height={217}
+              className="h-8 w-auto"
+            />
           </Link>
           <p className="mt-3 max-w-md leading-5">{t("footer.description")}</p>
         </div>
@@ -50,7 +53,7 @@ export function SiteFooter() {
       </div>
 
       <div className="flex flex-wrap items-center justify-between gap-3 border-t px-4 py-3">
-        <p>© {year} CodeTools AI. {t("footer.copyright")}</p>
+        <p>© {year} CodeConvert.net. {t("footer.copyright")}</p>
         <div className="flex gap-4">
           <a href="/#top" className="hover:text-blue-700">{t("footer.privacy")}</a>
           <a href="/#top" className="hover:text-blue-700">{t("footer.terms")}</a>
