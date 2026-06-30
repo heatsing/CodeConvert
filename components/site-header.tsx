@@ -35,7 +35,7 @@ function ThemeToggle() {
       onClick={toggleTheme}
       aria-label={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
       title={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
-      className="grid h-8 w-8 place-items-center rounded-md text-slate-300 transition hover:bg-slate-800 hover:text-white"
+      className="grid h-8 w-8 place-items-center rounded-md text-slate-600 transition hover:bg-slate-100 hover:text-slate-950"
     >
       <Icon className="h-4 w-4" />
     </button>
@@ -47,14 +47,14 @@ function LanguageSwitcher() {
 
   return (
     <label
-      className="flex h-8 items-center gap-2 rounded-md border border-slate-700 bg-slate-900 px-2 text-[12px] font-black text-white"
+      className="flex h-8 items-center gap-2 rounded-md border border-slate-200 bg-white px-2 text-[12px] font-black text-slate-900 shadow-sm"
       title={t("language.select")}
     >
-      <Globe2 className="h-4 w-4 text-slate-400" />
+      <Globe2 className="h-4 w-4 text-slate-500" />
       <select
         value={language}
         onChange={(event) => setLanguage(event.target.value as LanguageCode)}
-        className="h-full cursor-pointer bg-transparent pr-1 font-black text-white outline-none"
+        className="h-full cursor-pointer bg-transparent pr-1 font-black text-slate-900 outline-none"
         aria-label={t("language.select")}
       >
         {translationLanguages.map((item) => (
@@ -90,7 +90,7 @@ export function SiteHeader() {
   ];
 
   return (
-    <header className="sticky top-0 z-40 bg-slate-950 text-white shadow-lg">
+    <header className="sticky top-0 z-40 border-b bg-white text-slate-950 shadow-sm">
       <div className="flex h-12 w-full items-center gap-4 px-4">
         <Link href="/" className="flex shrink-0 items-center" aria-label="CodeConvert.net home">
           <Image
@@ -108,12 +108,12 @@ export function SiteHeader() {
             <a
               key={item.href}
               href={item.href}
-              className={item.active ? "border-b-2 border-orange-500 py-4 text-white" : "py-4 text-slate-200 hover:text-white"}
+              className={item.active ? "border-b-2 border-orange-500 py-4 text-slate-950" : "py-4 text-slate-700 hover:text-blue-700"}
             >
               {item.label}
             </a>
           ))}
-          <a href={sectionHref("code")} className="flex items-center gap-1 py-4 text-slate-200 hover:text-white">
+          <a href={sectionHref("code")} className="flex items-center gap-1 py-4 text-slate-700 hover:text-blue-700">
             {t("nav.more")}
             <ChevronDown className="h-3 w-3" />
           </a>
@@ -121,7 +121,7 @@ export function SiteHeader() {
 
         <nav className="flex min-w-0 flex-1 gap-3 overflow-x-auto pl-1 text-[11px] font-black uppercase tracking-wide xl:hidden">
           {navItems.slice(1, 7).map((item) => (
-            <a key={item.href} href={item.href} className="shrink-0 py-4 text-slate-200 hover:text-white">
+            <a key={item.href} href={item.href} className="shrink-0 py-4 text-slate-700 hover:text-blue-700">
               {item.label}
             </a>
           ))}
