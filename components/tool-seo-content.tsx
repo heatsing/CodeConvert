@@ -14,8 +14,6 @@ type ConversionPair = {
   to: string;
 };
 
-const onlineLinks = onlineTools.slice(0, 12);
-
 function getConversionPair(title: string): ConversionPair | null {
   const match = title.match(/^(.+?) to (.+?) Converter$/i);
   if (!match) return null;
@@ -96,13 +94,16 @@ export function ToolSeoContent({ title, description, category }: ToolSeoContentP
   const relatedLinks = directoryTools
     .filter((tool) => tool.category.toLowerCase() === category.toLowerCase() && tool.name !== title)
     .slice(0, 18);
-  const fallbackLinks = directoryTools.filter((tool) => tool.name !== title).slice(0, 18);
-  const sampleLinks = relatedLinks.length >= 6 ? relatedLinks : fallbackLinks;
+  const relatedOnlineLinks = onlineTools
+    .filter((tool) => tool.mode.toLowerCase() === category.toLowerCase() && tool.name !== title)
+    .slice(0, 18);
+  const sampleLinks = relatedLinks.length > 0 ? relatedLinks : relatedOnlineLinks;
   const faqs = buildToolFaqs(title, categoryLabel);
   const inputExample = conversionPair ? codeSample(conversionPair.from, "palindrome") : toolInputExample(title, categoryLabel);
   const outputExample = conversionPair ? codeSample(conversionPair.to, "palindrome") : toolOutputExample(title, categoryLabel);
   const secondInputExample = conversionPair ? codeSample(conversionPair.from, "evenOdd") : toolInputExample(title, categoryLabel);
   const secondOutputExample = conversionPair ? codeSample(conversionPair.to, "evenOdd") : toolOutputExample(title, categoryLabel);
+  const relatedHeading = categoryLabel.toLowerCase().endsWith("tools") ? categoryLabel.toLowerCase() : `${categoryLabel.toLowerCase()} tools`;
 
   const useIntro = conversionPair
     ? `This free online converter helps you convert ${conversionPair.from} code to ${conversionPair.to} in a focused browser workspace.`
@@ -217,27 +218,18 @@ export function ToolSeoContent({ title, description, category }: ToolSeoContentP
           </div>
         </section>
 
-        <section className="mt-8">
-          <h2 className="text-xl font-black text-slate-950">Try our other free tools</h2>
-          <div className="mt-4 flex flex-wrap gap-3">
-            {sampleLinks.slice(0, 12).map((tool) => (
-              <Link key={tool.name} href={tool.href} className="rounded-md bg-slate-100 px-4 py-2 text-sm font-bold text-slate-700 hover:bg-blue-50 hover:text-blue-700">
-                {tool.name}
-              </Link>
-            ))}
-          </div>
-        </section>
-
-        <section className="mt-8">
-          <h2 className="text-xl font-black text-slate-950">Online developer workspaces</h2>
-          <div className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {onlineLinks.map((tool) => (
-              <Link key={tool.slug} href={`/online-tools/${tool.slug}`} className="rounded-md border bg-slate-50 px-3 py-2 text-sm font-bold text-slate-700 hover:bg-white hover:text-blue-700">
-                {tool.name}
-              </Link>
-            ))}
-          </div>
-        </section>
+        {sampleLinks.length > 0 && (
+          <section className="mt-8">
+            <h2 className="text-xl font-black text-slate-950">Try more {relatedHeading}</h2>
+            <div className="mt-4 flex flex-wrap gap-3">
+              {sampleLinks.slice(0, 12).map((tool) => (
+                <Link key={tool.name} href={"href" in tool ? tool.href : `/online-tools/${tool.slug}`} className="rounded-md bg-slate-100 px-4 py-2 text-sm font-bold text-slate-700 hover:bg-blue-50 hover:text-blue-700">
+                  {tool.name}
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
       </article>
     </div>
   );
