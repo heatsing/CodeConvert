@@ -67,6 +67,8 @@ function buildDirectoryMetaDescription(tool: DirectoryTool) {
   const pair = getConversionPair(tool.name);
   if (pair) return getLanguageConverterDescription(tool);
 
+  if (tool.category === "Text") return buildTextToolMetaDescription(tool);
+
   if (tool.headerDescription) {
     return `${tool.headerDescription} Paste your input, run the tool, then copy or download the result.`;
   }
@@ -77,10 +79,84 @@ function buildDirectoryMetaDescription(tool: DirectoryTool) {
 function buildDirectoryMetaTitle(tool: DirectoryTool) {
   const pair = getConversionPair(tool.name);
   if (pair) return `Free ${pair.from} to ${pair.to} Converter Online`;
+  if (tool.category === "Text") return buildTextToolMetaTitle(tool);
 
   return /\b(tool|generator|converter|formatter|decoder|encoder|translator|checker|counter|remover|minifier|beautifier)$/i.test(tool.name)
     ? `Free ${tool.name} Online`
     : `Free ${tool.name} Online Tool`;
+}
+
+function textToolBenefit(name: string) {
+  const benefits: Record<string, string> = {
+    "APA Citation Generator": "Create APA References Online",
+    "Character Remover": "Remove Characters from Text",
+    "Duplicate Line Remover": "Remove Duplicate Lines Online",
+    "Duplicate Word Finder": "Find Repeated Words Online",
+    "Em Dash Remover": "Clean Up Dashes Online",
+    "Find and Replace Text": "Replace Words and Phrases Online",
+    "Text Splitter": "Split Text into Lines",
+    "Text Joiner": "Join Lines into Text",
+    "Text Escape Tool": "Escape Text Online",
+    "Text Beautifier": "Clean Up Text Online",
+    "Text Line Length Filter": "Filter Lines by Length",
+    "Fixed Length Text Lines": "Wrap Text to Fixed Width",
+    "Punctuation Converter": "Convert Punctuation Online",
+    "Key Value to Code": "Convert Pairs to Code",
+    "Directory Tree Generator": "Create Folder Trees Online",
+    "Pinyin Converter": "Convert Chinese to Pinyin",
+    "Simplified Traditional Converter": "Convert Chinese Text Online",
+    "camelCase Converter": "Convert Text to camelCase",
+    "PascalCase Converter": "Convert Text to PascalCase",
+    "snake_case Converter": "Convert Text to snake_case",
+    "kebab-case Converter": "Convert Text to kebab-case",
+    "dot.case Converter": "Convert Text to dot.case",
+    "Invisible Text Generator": "Create Blank Unicode Text",
+    "NATO Phonetic Alphabet Translator": "Translate Words to NATO Spelling",
+    "Online Notepad": "Write Notes in Your Browser",
+    "Online Sentence Counter": "Count Sentences Online",
+    "Phonetic Spelling Tool": "Spell Words Phonetically",
+    "Pig Latin Translator": "Translate Text to Pig Latin",
+    "Plain Text Converter": "Convert Rich Text to Plain Text",
+    "Markdown Table Generator": "Create Markdown Tables Online",
+    "Remove Line Breaks": "Clean Up Text Online",
+    "Remove Text Formatting": "Clean Pasted Text Online",
+    "Remove Underscores": "Replace Underscores Online",
+    "Repeat Text Generator": "Repeat Text Online",
+    "Reverse Text Generator": "Reverse Text Online",
+    "Roman Numeral Dates": "Convert Dates to Roman Numerals",
+    "Sentence Case Converter": "Convert Text to Sentence Case",
+    "Sort Words Alphabetically": "Sort Words A-Z Online",
+    "Title Case Converter": "Convert Text to Title Case",
+    "Whitespace Remover": "Remove Extra Spaces Online",
+    "Wingdings Translator": "Convert Wingdings Text Online",
+    "Word Cloud Generator": "Find Top Words Online",
+    "Word Frequency Counter": "Count Word Usage Online"
+  };
+
+  return benefits[name] ?? "Edit and Clean Text Online";
+}
+
+function textToolAction(name: string) {
+  const lowerName = name.toLowerCase();
+  if (lowerName.includes("remove")) return "remove unwanted characters, breaks, formatting, or spacing";
+  if (lowerName.includes("counter") || lowerName.includes("frequency")) return "count and analyze text";
+  if (lowerName.includes("sort")) return "sort words and lines into a cleaner order";
+  if (lowerName.includes("case")) return "change text casing for titles, sentences, names, and labels";
+  if (lowerName.includes("translator") || lowerName.includes("converter")) return "convert text into a cleaner or more useful format";
+  if (lowerName.includes("generator")) return "generate ready-to-copy text output";
+  if (lowerName.includes("replace")) return "find and replace text matches";
+  if (lowerName.includes("split")) return "split long text into smaller parts";
+  if (lowerName.includes("join")) return "join lines into cleaner text";
+  return "clean, edit, rewrite, or format pasted text";
+}
+
+function buildTextToolMetaTitle(tool: DirectoryTool) {
+  return `${tool.name} | ${textToolBenefit(tool.name)}`;
+}
+
+function buildTextToolMetaDescription(tool: DirectoryTool) {
+  const action = textToolAction(tool.name);
+  return `Use this free ${tool.name} to ${action} online. Paste your text, run the tool instantly, then copy or download the cleaned result.`;
 }
 
 function buildCoreToolMetaDescription(tool: ToolConfig) {
