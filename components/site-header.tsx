@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { ChevronDown, Globe2, Moon, Sun } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { getCategoryId } from "@/lib/home-tools";
@@ -91,11 +92,15 @@ export function SiteHeader() {
   return (
     <header className="sticky top-0 z-40 bg-slate-950 text-white shadow-lg">
       <div className="flex h-12 w-full items-center gap-4 px-4">
-        <Link href="/" className="flex shrink-0 items-center gap-2 text-base font-black">
-          <span className="text-orange-500">&lt;/&gt;</span>
-          <span>
-            <span className="text-orange-500">Code</span>Tools
-          </span>
+        <Link href="/" className="flex shrink-0 items-center" aria-label="CodeConvert.net home">
+          <Image
+            src="/codeconvert-logo.png"
+            alt="CodeConvert.net"
+            width={1152}
+            height={217}
+            priority
+            className="h-7 w-auto"
+          />
         </Link>
 
         <nav className="hidden flex-1 items-center gap-4 pl-4 text-[11px] font-black uppercase tracking-wide xl:flex">
