@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, Copy, Download, Loader2, Play, Trash2 } from "lucide-react";
+import { ArrowLeft, Copy, Download, Loader2, Play, Share2, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ToolSeoContent } from "@/components/tool-seo-content";
 import { getCategoryLabel, type DirectoryTool } from "@/lib/home-tools";
@@ -27,6 +27,76 @@ function localizedCategoryLabel(category: string, t: (key: string) => string) {
   };
 
   return labels[category] ?? getCategoryLabel(category);
+}
+
+function countWords(value: string) {
+  return value.trim() ? value.trim().split(/\s+/).filter(Boolean).length : 0;
+}
+
+function defaultTextOption(tool: DirectoryTool) {
+  const name = tool.name.toLowerCase();
+  if (name.includes("character remover")) return "aeiou";
+  if (name.includes("repeat text")) return "3";
+  if (name.includes("text line length filter")) return "5";
+  if (name.includes("fixed length text lines")) return "12";
+  if (name.includes("find and replace text")) return "old\nnew";
+  return "";
+}
+
+function textOptionLabel(tool: DirectoryTool) {
+  const name = tool.name.toLowerCase();
+  if (name.includes("character remover")) return "Letters/Characters to Remove:";
+  if (name.includes("repeat text")) return "Repeat Count:";
+  if (name.includes("text line length filter")) return "Maximum Line Length:";
+  if (name.includes("fixed length text lines")) return "Fixed Line Length:";
+  if (name.includes("find and replace text")) return "Find and Replace:";
+  return "Text Options:";
+}
+
+function textOptionHelp(tool: DirectoryTool) {
+  const name = tool.name.toLowerCase();
+  if (name.includes("find and replace text")) return "Enter find text on the first line and replacement text on the second line.";
+  if (name.includes("character remover")) return "Enter every letter, symbol, or character that should be removed from the text.";
+  if (name.includes("repeat text")) return "Enter how many times to repeat the text.";
+  if (name.includes("text line length filter")) return "Lines longer than this value will be removed.";
+  if (name.includes("fixed length text lines")) return "Text will be wrapped to this line length.";
+  return "";
+}
+
+function hasTextOption(tool: DirectoryTool) {
+  const name = tool.name.toLowerCase();
+  return (
+    name.includes("character remover") ||
+    name.includes("repeat text") ||
+    name.includes("text line length filter") ||
+    name.includes("fixed length text lines") ||
+    name.includes("find and replace text")
+  );
+}
+
+function textToolPayload(tool: DirectoryTool, input: string, option: string) {
+  const name = tool.name.toLowerCase();
+  if (hasTextOption(tool)) {
+    return `${option.trim()}\n${input}`;
+  }
+  return input;
+}
+
+function defaultTextInput(tool: DirectoryTool) {
+  const name = tool.name.toLowerCase();
+  const sample = sampleFor(tool);
+  if (
+    name.includes("character remover") ||
+    name.includes("repeat text") ||
+    name.includes("text line length filter") ||
+    name.includes("fixed length text lines")
+  ) {
+    return sample.split(/\r?\n/).slice(1).join("\n");
+  }
+  if (name.includes("find and replace text")) {
+    return sample.split(/\r?\n/).slice(2).join("\n");
+  }
+  return sample;
 }
 
 function sampleFor(tool: DirectoryTool) {
@@ -1306,6 +1376,7 @@ function processTool(tool: DirectoryTool, input: string) {
   }
   if (name.includes("character remover")) {
     const [chars = "", ...text] = value.split(/\r?\n/);
+    if (!chars) return text.join("\n");
     const escaped = chars.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     return text.join("\n").replace(new RegExp(`[${escaped}]`, "g"), "");
   }
@@ -1495,10 +1566,11 @@ function processTool(tool: DirectoryTool, input: string) {
 }
 
 export function DirectoryToolWorkspace({ tool }: { tool: DirectoryTool }) {
-  const [input, setInput] = useState(sampleFor(tool));
+  const [input, setInput] = useState(tool.category === "Text" ? defaultTextInput(tool) : sampleFor(tool));
   const [output, setOutput] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [textOption, setTextOption] = useState(defaultTextOption(tool));
   const { t } = useI18n();
   const Icon = toolIcons[tool.iconName];
   const pageDescription = tool.headerDescription ?? tool.description;
@@ -1508,7 +1580,7 @@ export function DirectoryToolWorkspace({ tool }: { tool: DirectoryTool }) {
     setError("");
     await new Promise((resolve) => setTimeout(resolve, 250));
     try {
-      setOutput(processTool(tool, input));
+      setOutput(processTool(tool, tool.category === "Text" ? textToolPayload(tool, input, textOption) : input));
     } catch (err) {
       setError(err instanceof Error ? err.message : t("online.processError"));
     } finally {
@@ -1529,6 +1601,127 @@ export function DirectoryToolWorkspace({ tool }: { tool: DirectoryTool }) {
     anchor.click();
     URL.revokeObjectURL(url);
   };
+
+  const share = async () => {
+    if (navigator.share) {
+      await navigator.share({ title: tool.name, text: output || input });
+      return;
+    }
+    await navigator.clipboard.writeText(window.location.href);
+  };
+
+  const clearAll = () => {
+    setInput("");
+    setOutput("");
+    setError("");
+  };
+
+  if (tool.category === "Text") {
+    const inputLines = input ? input.split(/\r?\n/).length : 0;
+    const outputLines = output ? output.split(/\r?\n/).length : 0;
+    const hasOption = hasTextOption(tool);
+
+    return (
+      <>
+        <main className="bg-gradient-to-b from-cyan-50 to-white px-4 py-8 text-slate-950">
+          <section className="mx-auto max-w-[1200px]">
+            <Link href="/" className="inline-flex items-center gap-2 text-sm font-bold text-slate-600 hover:text-blue-700">
+              <ArrowLeft className="h-4 w-4" />
+              {t("online.back")}
+            </Link>
+
+            <div className="mt-5">
+              <p className="inline-block bg-blue-700 px-2 py-1 text-[13px] font-black uppercase tracking-[0.2em] text-white">
+                {localizedCategoryLabel(tool.category, t)}
+              </p>
+              <h1 className="mt-3 text-2xl font-black tracking-tight text-slate-950 sm:text-3xl">{tool.name}</h1>
+              <p className="mt-3 max-w-5xl text-base leading-7 text-slate-700 sm:text-lg">{pageDescription}</p>
+            </div>
+
+            <div className="mt-6 grid gap-5 lg:grid-cols-2">
+              <div className="overflow-hidden rounded border border-slate-300 bg-white shadow-sm">
+                <textarea
+                  value={input}
+                  onChange={(event) => setInput(event.target.value)}
+                  placeholder={`Type or paste text to ${tool.name.toLowerCase()}...`}
+                  className="min-h-[420px] w-full resize-y bg-white p-4 text-base leading-7 text-slate-900 outline-none placeholder:text-slate-500"
+                  spellCheck={false}
+                />
+                <div className="border-t-8 border-slate-300 bg-white px-4 py-3 text-right text-sm font-medium text-slate-700">
+                  Character Count: {input.length} | Word Count: {countWords(input)} | Line Count: {inputLines}
+                </div>
+              </div>
+
+              <div className="overflow-hidden rounded border border-slate-300 bg-white shadow-sm">
+                <textarea
+                  value={output}
+                  onChange={(event) => setOutput(event.target.value)}
+                  placeholder={`Type or paste text to ${tool.name.toLowerCase()}...`}
+                  className="min-h-[420px] w-full resize-y bg-white p-4 text-base leading-7 text-slate-900 outline-none placeholder:text-slate-500"
+                  spellCheck={false}
+                />
+                <div className="flex flex-wrap items-center justify-between gap-3 border-t-8 border-slate-300 bg-white px-4 py-3">
+                  <div className="flex gap-2">
+                    <button type="button" onClick={copy} disabled={!output} title={t("online.copy")} className="grid h-9 w-9 place-items-center rounded bg-slate-100 text-slate-900 transition hover:bg-blue-50 disabled:cursor-not-allowed disabled:text-slate-400">
+                      <Copy className="h-5 w-5" />
+                    </button>
+                    <button type="button" onClick={share} title="Share" className="grid h-9 w-9 place-items-center rounded bg-slate-100 text-slate-900 transition hover:bg-blue-50">
+                      <Share2 className="h-5 w-5" />
+                    </button>
+                    <button type="button" onClick={download} disabled={!output} title={t("tool.download")} className="grid h-9 w-9 place-items-center rounded bg-slate-100 text-slate-900 transition hover:bg-blue-50 disabled:cursor-not-allowed disabled:text-slate-400">
+                      <Download className="h-5 w-5" />
+                    </button>
+                    <button type="button" onClick={clearAll} title={t("online.clear")} className="grid h-9 w-9 place-items-center rounded bg-slate-100 text-slate-900 transition hover:bg-blue-50">
+                      <Trash2 className="h-5 w-5" />
+                    </button>
+                  </div>
+                  <p className="text-sm font-medium text-slate-700">
+                    Character Count: {output.length} | Word Count: {countWords(output)} | Line Count: {outputLines}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <section className="mt-5 rounded border border-slate-300 bg-white p-4 shadow-sm">
+              <div className="grid gap-4 lg:grid-cols-[minmax(240px,360px)_1fr_auto] lg:items-end">
+                {hasOption && (
+                  <label className="grid gap-2 text-sm font-semibold text-slate-900">
+                    {textOptionLabel(tool)}
+                    {textOption.includes("\n") || tool.name.toLowerCase().includes("find and replace") ? (
+                      <textarea
+                        value={textOption}
+                        onChange={(event) => setTextOption(event.target.value)}
+                        className="min-h-20 rounded border border-slate-300 px-3 py-2 text-sm font-normal outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+                      />
+                    ) : (
+                      <input
+                        value={textOption}
+                        onChange={(event) => setTextOption(event.target.value)}
+                        className="h-10 rounded border border-slate-300 px-3 text-sm font-normal outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+                      />
+                    )}
+                  </label>
+                )}
+                <p className="text-sm leading-6 text-slate-600">{textOptionHelp(tool)}</p>
+                <div className="flex flex-wrap gap-3">
+                  <Button type="button" variant="gradient" onClick={run} disabled={loading}>
+                    {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Play className="h-4 w-4" />}
+                    {loading ? t("online.running") : t("online.runTool")}
+                  </Button>
+                  <Button type="button" variant="outline" onClick={clearAll}>
+                    <Trash2 className="h-4 w-4" />
+                    {t("online.clear")}
+                  </Button>
+                </div>
+              </div>
+              {error && <p className="mt-4 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm font-semibold text-red-700">{error}</p>}
+            </section>
+          </section>
+        </main>
+        <ToolSeoContent title={tool.name} description={pageDescription} category={tool.category} />
+      </>
+    );
+  }
 
   return (
     <>
@@ -1587,7 +1780,7 @@ export function DirectoryToolWorkspace({ tool }: { tool: DirectoryTool }) {
             {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Play className="h-4 w-4" />}
             {loading ? t("online.running") : t("online.runTool")}
           </Button>
-          <Button type="button" variant="outline" onClick={() => { setInput(""); setOutput(""); setError(""); }}>
+          <Button type="button" variant="outline" onClick={clearAll}>
             <Trash2 className="h-4 w-4" />
             {t("online.clear")}
           </Button>
