@@ -26,7 +26,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.7
     })),
     ...onlineTools.map((tool) => ({
-      url: `${siteUrl}/online-tools/${tool.slug}`,
+      url: `${siteUrl}/${tool.slug}`,
       lastModified: now,
       changeFrequency: "weekly" as const,
       priority: 0.65

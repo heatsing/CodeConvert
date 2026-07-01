@@ -247,7 +247,7 @@ export function buildOnlineToolMetadata(tool: OnlineTool): Metadata {
   return buildMetadata({
     title: `Free ${tool.name} Online Tool`,
     description: buildOnlineMetaDescription(tool),
-    path: `/online-tools/${tool.slug}`,
+    path: `/${tool.slug}`,
     keywords: [tool.name, "online coding workspace", "developer tool", "code playground", "free online tool"]
   });
 }

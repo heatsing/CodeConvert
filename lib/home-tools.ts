@@ -66,7 +66,6 @@ const rawDirectoryTools: DirectoryTool[] = [
   { name: "JSON Viewer", description: "View formatted JSON", category: "Code", href: "/tools/code-checker", iconName: "fileText", accent: "text-emerald-700 bg-emerald-50" },
   { name: "JSON Validator", description: "Validate JSON syntax", category: "Code", href: "/tools/code-checker", iconName: "bug", accent: "text-red-700 bg-red-50" },
   { name: "JSON Editor", description: "Edit and format JSON", category: "Code", href: "/tools/code-checker", iconName: "code", accent: "text-emerald-700 bg-emerald-50" },
-  { name: "JSON Parser", description: "Parse JSON values", category: "Code", href: "/tools/code-explainer", iconName: "message", accent: "text-emerald-700 bg-emerald-50" },
   { name: "JSON Path Tester", description: "Test JSONPath queries", category: "Code", href: "/tools/code-checker", iconName: "bug", accent: "text-green-700 bg-green-50" },
   { name: "XML Viewer", description: "View formatted XML", category: "Code", href: "/tools/code-checker", iconName: "fileText", accent: "text-blue-700 bg-blue-50" },
   { name: "XML Validator", description: "Validate XML tags", category: "Code", href: "/tools/code-checker", iconName: "bug", accent: "text-red-700 bg-red-50" },

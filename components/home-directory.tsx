@@ -200,7 +200,7 @@ export function HomeDirectory() {
               return (
                 <Link
                   key={tool.slug}
-                  href={`/online-tools/${tool.slug}`}
+                  href={`/${tool.slug}`}
                   className="group flex min-h-20 items-center gap-3 rounded-md border bg-white px-4 py-3 shadow-sm transition hover:border-blue-200 hover:shadow-md"
                 >
                   <span className={`grid h-8 w-8 shrink-0 place-items-center rounded-md ${tool.accent}`}>
@@ -228,7 +228,7 @@ export function HomeDirectory() {
               return (
                 <Link
                   key={tool.slug}
-                  href={`/online-tools/${tool.slug}`}
+                  href={`/${tool.slug}`}
                   className="group flex min-h-20 gap-3 rounded-md bg-slate-50 px-3 py-2.5 transition hover:bg-white hover:shadow-md"
                 >
                   <span className={`grid h-9 w-9 shrink-0 place-items-center rounded-md ${tool.accent}`}>
