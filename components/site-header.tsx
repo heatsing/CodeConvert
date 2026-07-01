@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { ChevronDown, Globe2, Moon, Sun } from "lucide-react";
+import { Globe2, Moon, Sun } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { getCategoryId } from "@/lib/home-tools";
 import { translationLanguages, useI18n, type LanguageCode } from "@/lib/i18n";
@@ -113,10 +113,6 @@ export function SiteHeader() {
               {item.label}
             </a>
           ))}
-          <a href={sectionHref("code")} className="flex items-center gap-1 py-4 text-slate-700 hover:text-blue-700">
-            {t("nav.more")}
-            <ChevronDown className="h-3 w-3" />
-          </a>
         </nav>
 
         <nav className="flex min-w-0 flex-1 gap-3 overflow-x-auto pl-1 text-[11px] font-black uppercase tracking-wide xl:hidden">
