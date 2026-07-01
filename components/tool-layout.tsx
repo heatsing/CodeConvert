@@ -11,6 +11,7 @@ import { OutputBox } from "@/components/output-box";
 import { ToolSeoContent } from "@/components/tool-seo-content";
 import { useI18n } from "@/lib/i18n";
 import { mockResult } from "@/lib/mock-ai";
+import { getCoreToolHeader } from "@/lib/tool-page-copy";
 import { toolIcons } from "@/lib/tool-icons";
 import type { ToolConfig } from "@/lib/tools";
 
@@ -28,6 +29,7 @@ export function ToolLayout({ tool }: ToolLayoutProps) {
   const [loading, setLoading] = useState(false);
   const { t } = useI18n();
   const Icon = toolIcons[tool.iconName];
+  const headerCopy = getCoreToolHeader(tool);
 
   const languageSummary = useMemo(() => {
     if (tool.needsSourceLanguage && tool.needsTargetLanguage) return `${sourceLanguage} to ${targetLanguage}`;
@@ -93,9 +95,9 @@ export function ToolLayout({ tool }: ToolLayoutProps) {
               <Icon className="h-6 w-6" />
             </div>
             <div>
-              <p className="text-sm font-bold uppercase tracking-[0.18em] text-violet-700">{t("tool.free")}</p>
-              <h1 className="mt-2 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">{tool.title}</h1>
-              <p className="mt-3 max-w-3xl text-base leading-7 text-slate-600">{tool.description}</p>
+              <p className="text-sm font-bold uppercase tracking-[0.18em] text-violet-700">{headerCopy.eyebrow}</p>
+              <h1 className="mt-2 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">{headerCopy.title}</h1>
+              <p className="mt-3 max-w-3xl text-base leading-7 text-slate-600">{headerCopy.description}</p>
             </div>
           </div>
           <div className="grid gap-3 rounded-lg border bg-slate-50 p-4 sm:min-w-72">
@@ -154,7 +156,7 @@ export function ToolLayout({ tool }: ToolLayoutProps) {
         </div>
       </section>
 
-      <ToolSeoContent title={tool.name} description={tool.description} category="Code" />
+      <ToolSeoContent title={headerCopy.title} description={headerCopy.description} category="Code" />
       <OtherTools currentSlug={tool.slug} />
     </main>
   );

@@ -3,6 +3,7 @@ import { createElement } from "react";
 import { getCategoryLabel, type DirectoryTool } from "@/lib/home-tools";
 import type { OnlineTool } from "@/lib/online-tools";
 import { siteUrl } from "@/lib/site";
+import { getCoreToolHeader, getDirectoryToolHeader, getOnlineToolHeader } from "@/lib/tool-page-copy";
 import type { ToolConfig } from "@/lib/tools";
 
 const brandName = "CodeConvert.net";
@@ -17,11 +18,7 @@ type SeoTool = {
 };
 
 export function getToolDescription(tool: DirectoryTool) {
-  const categoryLabel = getCategoryLabel(tool.category);
-  return (
-    tool.headerDescription ??
-    `${tool.name} is a free online ${categoryLabel.toLowerCase()} tool for quick browser-based developer workflows. Paste your input, run the tool, then copy or download the result.`
-  );
+  return getDirectoryToolHeader(tool).description;
 }
 
 export function getLanguageConverterDescription(tool: DirectoryTool) {
@@ -67,13 +64,7 @@ function buildDirectoryMetaDescription(tool: DirectoryTool) {
   const pair = getConversionPair(tool.name);
   if (pair) return getLanguageConverterDescription(tool);
 
-  if (tool.category === "Text") return buildTextToolMetaDescription(tool);
-
-  if (tool.headerDescription) {
-    return `${tool.headerDescription} Paste your input, run the tool, then copy or download the result.`;
-  }
-
-  return `Use this free online ${tool.name} to ${actionPhrase(tool)}. Paste your input, run it in your browser, then copy or download clean output.`;
+  return getDirectoryToolHeader(tool).description;
 }
 
 function buildDirectoryMetaTitle(tool: DirectoryTool) {
@@ -160,11 +151,11 @@ function buildTextToolMetaDescription(tool: DirectoryTool) {
 }
 
 function buildCoreToolMetaDescription(tool: ToolConfig) {
-  return `${tool.description} Use this free online ${tool.name} with a two-panel workspace, file upload, copy, download, clear, and responsive browser controls.`;
+  return getCoreToolHeader(tool).description;
 }
 
 function buildOnlineMetaDescription(tool: OnlineTool) {
-  return `Use ${tool.name} online for free. ${tool.description} Work in a clean browser workspace with input, output, copy, clear, and quick mock execution controls.`;
+  return getOnlineToolHeader(tool).description;
 }
 
 export function buildMetadata({
@@ -216,8 +207,9 @@ export function buildMetadata({
 }
 
 export function buildToolMetadata(tool: ToolConfig): Metadata {
+  const headerCopy = getCoreToolHeader(tool);
   return buildMetadata({
-    title: `Free ${tool.title} Online`,
+    title: headerCopy.title,
     description: buildCoreToolMetaDescription(tool),
     path: `/${tool.slug}`,
     keywords: [tool.name, tool.title, "free online code tool", "developer tool", "copy output", "download output"]
@@ -225,7 +217,7 @@ export function buildToolMetadata(tool: ToolConfig): Metadata {
 }
 
 export function buildDirectoryToolMetadata(tool: DirectoryTool): Metadata {
-  const title = buildDirectoryMetaTitle(tool);
+  const title = getDirectoryToolHeader(tool).title;
   const description = buildDirectoryMetaDescription(tool);
 
   return buildMetadata({
@@ -244,8 +236,9 @@ export function buildDirectoryToolMetadata(tool: DirectoryTool): Metadata {
 }
 
 export function buildOnlineToolMetadata(tool: OnlineTool): Metadata {
+  const headerCopy = getOnlineToolHeader(tool);
   return buildMetadata({
-    title: `Free ${tool.name} Online Tool`,
+    title: headerCopy.title,
     description: buildOnlineMetaDescription(tool),
     path: `/${tool.slug}`,
     keywords: [tool.name, "online coding workspace", "developer tool", "code playground", "free online tool"]

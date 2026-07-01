@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { ToolSeoContent } from "@/components/tool-seo-content";
 import { getCategoryLabel, type DirectoryTool } from "@/lib/home-tools";
 import { useI18n } from "@/lib/i18n";
+import { getDirectoryToolHeader } from "@/lib/tool-page-copy";
 import { toolIcons } from "@/lib/tool-icons";
 
 function localizedCategoryLabel(category: string, t: (key: string) => string) {
@@ -1573,7 +1574,9 @@ export function DirectoryToolWorkspace({ tool }: { tool: DirectoryTool }) {
   const [textOption, setTextOption] = useState(defaultTextOption(tool));
   const { t } = useI18n();
   const Icon = toolIcons[tool.iconName];
-  const pageDescription = tool.headerDescription ?? tool.description;
+  const headerCopy = getDirectoryToolHeader(tool);
+  const pageDescription = headerCopy.description;
+  const eyebrow = headerCopy.eyebrow === getCategoryLabel(tool.category) ? localizedCategoryLabel(tool.category, t) : headerCopy.eyebrow;
 
   const run = async () => {
     setLoading(true);
@@ -1632,9 +1635,9 @@ export function DirectoryToolWorkspace({ tool }: { tool: DirectoryTool }) {
 
             <div className="mt-5">
               <p className="inline-block bg-blue-700 px-2 py-1 text-[13px] font-black uppercase tracking-[0.2em] text-white">
-                {localizedCategoryLabel(tool.category, t)}
+                {eyebrow}
               </p>
-              <h1 className="mt-3 text-2xl font-black tracking-tight text-slate-950 sm:text-3xl">{tool.name}</h1>
+              <h1 className="mt-3 text-2xl font-black tracking-tight text-slate-950 sm:text-3xl">{headerCopy.title}</h1>
               <p className="mt-3 max-w-5xl text-base leading-7 text-slate-700 sm:text-lg">{pageDescription}</p>
             </div>
 
@@ -1718,7 +1721,7 @@ export function DirectoryToolWorkspace({ tool }: { tool: DirectoryTool }) {
             </section>
           </section>
         </main>
-        <ToolSeoContent title={tool.name} description={pageDescription} category={tool.category} />
+        <ToolSeoContent title={headerCopy.title} description={pageDescription} category={tool.category} />
       </>
     );
   }
@@ -1737,8 +1740,8 @@ export function DirectoryToolWorkspace({ tool }: { tool: DirectoryTool }) {
             <Icon className="h-6 w-6" />
           </span>
           <div>
-            <p className="text-sm font-black uppercase tracking-[0.18em] text-blue-700">{localizedCategoryLabel(tool.category, t)}</p>
-            <h1 className="mt-2 text-3xl font-black text-slate-950">{tool.name}</h1>
+            <p className="text-sm font-black uppercase tracking-[0.18em] text-blue-700">{eyebrow}</p>
+            <h1 className="mt-2 text-3xl font-black text-slate-950">{headerCopy.title}</h1>
             <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">{pageDescription}</p>
           </div>
         </div>
@@ -1787,7 +1790,7 @@ export function DirectoryToolWorkspace({ tool }: { tool: DirectoryTool }) {
         </div>
         </section>
       </main>
-      <ToolSeoContent title={tool.name} description={pageDescription} category={tool.category} />
+      <ToolSeoContent title={headerCopy.title} description={pageDescription} category={tool.category} />
     </>
   );
 }

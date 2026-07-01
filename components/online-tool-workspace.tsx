@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { ToolSeoContent } from "@/components/tool-seo-content";
 import { useI18n } from "@/lib/i18n";
 import type { OnlineTool } from "@/lib/online-tools";
+import { getOnlineToolHeader } from "@/lib/tool-page-copy";
 import { toolIcons } from "@/lib/tool-icons";
 
 function runOnlineTool(tool: OnlineTool, input: string, sampleText: string) {
@@ -81,6 +82,7 @@ export function OnlineToolWorkspace({ tool }: { tool: OnlineTool }) {
   const [loading, setLoading] = useState(false);
   const { t } = useI18n();
   const Icon = toolIcons[tool.iconName];
+  const headerCopy = getOnlineToolHeader(tool);
 
   const helperLabel = useMemo(() => {
     if (tool.mode === "regex") return t("online.testText");
@@ -138,9 +140,9 @@ export function OnlineToolWorkspace({ tool }: { tool: OnlineTool }) {
             <Icon className="h-6 w-6" />
           </span>
           <div>
-            <p className="text-sm font-black uppercase tracking-[0.18em] text-blue-700">{t("online.badge")}</p>
-            <h1 className="mt-2 text-3xl font-black text-slate-950">{tool.name}</h1>
-            <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">{tool.description}</p>
+            <p className="text-sm font-black uppercase tracking-[0.18em] text-blue-700">{headerCopy.eyebrow}</p>
+            <h1 className="mt-2 text-3xl font-black text-slate-950">{headerCopy.title}</h1>
+            <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">{headerCopy.description}</p>
           </div>
         </div>
 
@@ -199,7 +201,7 @@ export function OnlineToolWorkspace({ tool }: { tool: OnlineTool }) {
         </div>
         </section>
       </main>
-      <ToolSeoContent title={tool.name} description={tool.description} category={tool.mode} />
+      <ToolSeoContent title={headerCopy.title} description={headerCopy.description} category={tool.mode} />
     </>
   );
 }

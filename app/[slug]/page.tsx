@@ -19,6 +19,7 @@ import {
   getToolDescription
 } from "@/lib/seo";
 import { siteUrl } from "@/lib/site";
+import { getCoreToolHeader, getOnlineToolHeader } from "@/lib/tool-page-copy";
 import { toolBySlug, type ToolSlug } from "@/lib/tools";
 
 type RootToolPageProps = {
@@ -62,6 +63,7 @@ export default function RootToolPage({ params }: RootToolPageProps) {
   const coreTool = toolBySlug[normalizedSlug as ToolSlug];
   if (coreTool) {
     const url = `${siteUrl}/${coreTool.slug}`;
+    const headerCopy = getCoreToolHeader(coreTool);
 
     return (
       <>
@@ -69,8 +71,8 @@ export default function RootToolPage({ params }: RootToolPageProps) {
           buildFaqJsonLd(coreTool.faqs),
           buildSoftwareApplicationJsonLd({
             name: coreTool.name,
-            title: coreTool.title,
-            description: coreTool.description,
+            title: headerCopy.title,
+            description: headerCopy.description,
             category: "Code",
             url
           }),
@@ -89,6 +91,7 @@ export default function RootToolPage({ params }: RootToolPageProps) {
     const onlineTool = onlineToolBySlug[normalizedSlug];
     if (!onlineTool) notFound();
     const url = `${siteUrl}/${onlineTool.slug}`;
+    const headerCopy = getOnlineToolHeader(onlineTool);
 
     return (
       <>
@@ -96,8 +99,8 @@ export default function RootToolPage({ params }: RootToolPageProps) {
           buildFaqJsonLd(buildToolFaqs(onlineTool.name, "Developer")),
           buildSoftwareApplicationJsonLd({
             name: onlineTool.name,
-            title: `${onlineTool.name} Online Tool`,
-            description: onlineTool.description,
+            title: headerCopy.title,
+            description: headerCopy.description,
             category: "Developer",
             url
           }),
