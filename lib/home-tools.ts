@@ -30,7 +30,7 @@ const internalToolMap: Partial<Record<ToolSlug, string>> = {
   "code-to-pdf": "Prepare code documents"
 };
 
-export const categories = ["Popular", "Text", "Font Styles", "Encode", "Decode", "Encoding", "Convert", "Utility", "Format", "Security", "Network", "Regex", "Code"] as const;
+export const categories = ["Popular", "Text", "Font Styles", "Encode", "Decode", "Encoding", "Convert", "Utility", "Format", "Beautifiers", "Security", "Network", "Regex", "Code"] as const;
 
 export function getCategoryLabel(category: string) {
   return category === "Text" ? "Text Tools" : category;
@@ -292,16 +292,8 @@ const rawDirectoryTools: DirectoryTool[] = [
   { name: "C# Formatter", description: "Format C# code", category: "Format", href: "/tools/code-checker", iconName: "code", accent: "text-cyan-700 bg-cyan-50" },
   { name: "C/C++ Formatter", description: "Format C/C++ code", category: "Format", href: "/tools/code-checker", iconName: "code", accent: "text-blue-700 bg-blue-50" },
   { name: "Go Formatter", description: "Format Go code", category: "Format", href: "/tools/code-checker", iconName: "code", accent: "text-sky-600 bg-sky-50" },
-  { name: "Perl Beautifier", description: "Beautify Perl code", category: "Format", href: "/tools/code-checker", iconName: "wand", accent: "text-blue-700 bg-blue-50" },
-  { name: "Ruby Beautifier", description: "Beautify Ruby code", category: "Format", href: "/tools/code-checker", iconName: "wand", accent: "text-red-700 bg-red-50" },
-  { name: "Lua Beautifier", description: "Beautify Lua code", category: "Format", href: "/tools/code-checker", iconName: "wand", accent: "text-blue-700 bg-blue-50" },
-  { name: "XAML Beautifier", description: "Beautify XAML markup", category: "Format", href: "/tools/code-checker", iconName: "wand", accent: "text-purple-700 bg-purple-50" },
   { name: "Markdown Formatter", description: "Format Markdown text", category: "Format", href: "/tools/code-checker", iconName: "fileText", accent: "text-slate-700 bg-slate-100" },
   { name: "YAML Formatter", description: "Format YAML text", category: "Format", href: "/tools/code-checker", iconName: "fileText", accent: "text-orange-700 bg-orange-50" },
-  { name: "XML Beautifier", description: "Beautify XML", category: "Format", href: "/tools/code-checker", iconName: "wand", accent: "text-blue-600 bg-blue-50" },
-  { name: "HTML Beautifier", description: "Beautify HTML", category: "Format", href: "/tools/code-checker", iconName: "wand", accent: "text-orange-600 bg-orange-50" },
-  { name: "CSS Beautifier", description: "Beautify CSS", category: "Format", href: "/tools/code-checker", iconName: "wand", accent: "text-cyan-600 bg-cyan-50" },
-  { name: "JS Beautifier", description: "Beautify JavaScript", category: "Format", href: "/tools/code-checker", iconName: "wand", accent: "text-yellow-700 bg-yellow-50" },
   { name: "Minify HTML", description: "Minify HTML markup", category: "Format", href: "/tools/comment-remover", iconName: "eraser", accent: "text-orange-600 bg-orange-50" },
   { name: "Minify JSON", description: "Minify JSON data", category: "Format", href: "/tools/comment-remover", iconName: "eraser", accent: "text-emerald-600 bg-emerald-50" },
   { name: "Minify XML", description: "Minify XML markup", category: "Format", href: "/tools/comment-remover", iconName: "eraser", accent: "text-blue-600 bg-blue-50" },
@@ -311,6 +303,25 @@ const rawDirectoryTools: DirectoryTool[] = [
   { name: "Remove Comments", description: "Remove code comments", category: "Format", href: "/tools/comment-remover", iconName: "eraser", accent: "text-rose-600 bg-rose-50" },
   { name: "Add Line Numbers", description: "Number code lines", category: "Format", href: "/tools/code-generator", iconName: "fileText", accent: "text-slate-700 bg-slate-100" },
   { name: "Text Wrap", description: "Wrap long text", category: "Format", href: "/tools/code-converter", iconName: "fileText", accent: "text-violet-600 bg-violet-50" },
+  { name: "JSON Beautifier", description: "Beautify JSON data", category: "Beautifiers", href: "/tools/code-checker", iconName: "wand", accent: "text-emerald-700 bg-emerald-50" },
+  { name: "CSS Beautifier", description: "Beautify CSS", category: "Beautifiers", href: "/tools/code-checker", iconName: "wand", accent: "text-cyan-600 bg-cyan-50" },
+  { name: "XML Beautifier", description: "Beautify XML", category: "Beautifiers", href: "/tools/code-checker", iconName: "wand", accent: "text-blue-600 bg-blue-50" },
+  { name: "HTML Beautifier", description: "Beautify HTML", category: "Beautifiers", href: "/tools/code-checker", iconName: "wand", accent: "text-orange-600 bg-orange-50" },
+  { name: "JavaScript Beautifier", description: "Beautify JavaScript", category: "Beautifiers", href: "/tools/code-checker", iconName: "wand", accent: "text-yellow-700 bg-yellow-50" },
+  { name: "YAML Beautifier", description: "Beautify YAML text", category: "Beautifiers", href: "/tools/code-checker", iconName: "wand", accent: "text-orange-700 bg-orange-50" },
+  { name: "C# Beautifier", description: "Beautify C# code", category: "Beautifiers", href: "/tools/code-checker", iconName: "wand", accent: "text-cyan-700 bg-cyan-50" },
+  { name: "Java Beautifier", description: "Beautify Java code", category: "Beautifiers", href: "/tools/code-checker", iconName: "wand", accent: "text-orange-700 bg-orange-50" },
+  { name: "C Beautifier", description: "Beautify C code", category: "Beautifiers", href: "/tools/code-checker", iconName: "wand", accent: "text-sky-700 bg-sky-50" },
+  { name: "C++ Beautifier", description: "Beautify C++ code", category: "Beautifiers", href: "/tools/code-checker", iconName: "wand", accent: "text-blue-700 bg-blue-50" },
+  { name: "LESS Beautifier", description: "Beautify LESS code", category: "Beautifiers", href: "/tools/code-checker", iconName: "wand", accent: "text-indigo-700 bg-indigo-50" },
+  { name: "SCSS Beautifier", description: "Beautify SCSS code", category: "Beautifiers", href: "/tools/code-checker", iconName: "wand", accent: "text-pink-700 bg-pink-50" },
+  { name: "GraphQL Beautifier", description: "Beautify GraphQL queries", category: "Beautifiers", href: "/tools/code-checker", iconName: "wand", accent: "text-pink-700 bg-pink-50" },
+  { name: "PHP Beautifier", description: "Beautify PHP code", category: "Beautifiers", href: "/tools/code-checker", iconName: "wand", accent: "text-violet-700 bg-violet-50" },
+  { name: "Python Beautifier", description: "Beautify Python code", category: "Beautifiers", href: "/tools/code-checker", iconName: "wand", accent: "text-blue-700 bg-blue-50" },
+  { name: "Perl Beautifier", description: "Beautify Perl code", category: "Beautifiers", href: "/tools/code-checker", iconName: "wand", accent: "text-blue-700 bg-blue-50" },
+  { name: "Ruby Beautifier", description: "Beautify Ruby code", category: "Beautifiers", href: "/tools/code-checker", iconName: "wand", accent: "text-red-700 bg-red-50" },
+  { name: "Lua Beautifier", description: "Beautify Lua code", category: "Beautifiers", href: "/tools/code-checker", iconName: "wand", accent: "text-blue-700 bg-blue-50" },
+  { name: "XAML Beautifier", description: "Beautify XAML markup", category: "Beautifiers", href: "/tools/code-checker", iconName: "wand", accent: "text-purple-700 bg-purple-50" },
   { name: "Regex Tester", description: "Test regex matches", category: "Regex", href: "/tools/code-checker", iconName: "bug", accent: "text-slate-700 bg-slate-100" },
   { name: "Regex Generator", description: "Draft regex patterns", category: "Regex", href: "/tools/code-generator", iconName: "wand", accent: "text-violet-600 bg-violet-50" },
   { name: "Regex Cheat Sheet", description: "Quick regex syntax", category: "Regex", href: "/tools/code-explainer", iconName: "fileText", accent: "text-blue-700 bg-blue-50" },

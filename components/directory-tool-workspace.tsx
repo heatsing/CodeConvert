@@ -19,6 +19,7 @@ function localizedCategoryLabel(category: string, t: (key: string) => string) {
     Convert: t("nav.convert"),
     Utility: t("nav.utility"),
     Format: t("nav.format"),
+    Beautifiers: t("category.beautifiers"),
     Security: t("nav.security"),
     Network: t("nav.network"),
     Regex: t("nav.regex"),
@@ -111,6 +112,15 @@ function sampleFor(tool: DirectoryTool) {
   if (name.includes("nginx")) return "server{listen 80;location /{proxy_pass http://localhost:3000;}}";
   if (name.includes("scss")) return "$color:#2563eb;.button{color:$color;&:hover{color:red;}}";
   if (name.includes("typescript formatter")) return "type User={id:number;name:string};const user:User={id:1,name:'Alice'};";
+  if (name.includes("json beautifier")) return '{"name":"CodeTools","items":[1,2,3]}';
+  if (name.includes("yaml beautifier")) return "name: CodeTools\nitems:\n- beautify\n- format";
+  if (name.includes("graphql beautifier")) return "query GetUser{user(id:1){id name email}}";
+  if (name.includes("less beautifier") || name.includes("scss beautifier")) return "$color:#2563eb;.button{color:$color;&:hover{color:red;}}";
+  if (name.includes("c beautifier") || name.includes("c++ beautifier")) return "int main(){printf(\"Hello\");return 0;}";
+  if (name.includes("c# beautifier")) return "public class Demo{public string Name{get;set;}}";
+  if (name.includes("java beautifier")) return "class Demo{public static void main(String[] args){System.out.println(\"Hello\");}}";
+  if (name.includes("php beautifier")) return "<?php function hello($name){echo \"Hello $name\";} ?>";
+  if (name.includes("python beautifier")) return "def hello(name):\n print('Hello '+name)";
   if (name.includes("lwc formatter")) return "import { LightningElement } from 'lwc';export default class Demo extends LightningElement{message='Hello LWC';}";
   if (name.includes("flow formatter")) return "// @flow\ntype User={id:number,name:string};const user:User={id:1,name:'Alice'};";
   if (name.includes("wsdl formatter")) return "<definitions><service name=\"Demo\"><port name=\"DemoPort\"></port></service></definitions>";
@@ -1007,6 +1017,13 @@ function processTool(tool: DirectoryTool, input: string) {
       return "Invalid JSON5 input.";
     }
   }
+  if (name.includes("json beautifier")) {
+    try {
+      return JSON.stringify(JSON.parse(value), null, 2);
+    } catch {
+      return "Invalid JSON input.";
+    }
+  }
   if (name.includes("xml validator") || name.includes("html validator")) return xmlTagValidation(value);
   if (name.includes("xml viewer") || name.includes("xml parser") || name.includes("html viewer")) return value.replace(/></g, ">\n<");
   if (name.includes("yaml viewer") || name.includes("yaml validator")) return value.replace(/\r\n/g, "\n").trim() || "YAML input is empty.";
@@ -1236,9 +1253,9 @@ function processTool(tool: DirectoryTool, input: string) {
   if (name.includes("css to inline")) return `style="${value.replace(/\s+/g, " ").trim()}"`;
   if (name.includes("inline to css")) return value.match(/style=["']([^"']+)["']/)?.[1].split(";").filter(Boolean).map((rule) => `  ${rule.trim()};`).join("\n") ?? value;
   if ((name.includes("css to ") || name.includes("scss to ") || name.includes("less to ") || name.includes("sass to ") || name.includes("stylus to ")) && name.includes("css") || name.includes(" to scss") || name.includes(" to less") || name.includes(" to sass") || name.includes(" to stylus")) return cssPreprocessorPreview(name, value);
-  if (name.includes("graphql formatter") || name.includes("nginx formatter") || name.includes("scss formatter") || name.includes("less formatter") || name.includes("typescript formatter") || name.includes("react formatter") || name.includes("angular formatter") || name.includes("vue js formatter") || name.includes("babel formatter") || name.includes("glimmer js formatter") || name.includes("lwc formatter") || name.includes("flow formatter") || name.includes("css formatter") || name.includes("javascript formatter")) return formatBracedText(value);
+  if (name.includes("graphql formatter") || name.includes("graphql beautifier") || name.includes("nginx formatter") || name.includes("scss formatter") || name.includes("scss beautifier") || name.includes("less formatter") || name.includes("less beautifier") || name.includes("typescript formatter") || name.includes("react formatter") || name.includes("angular formatter") || name.includes("vue js formatter") || name.includes("babel formatter") || name.includes("glimmer js formatter") || name.includes("lwc formatter") || name.includes("flow formatter") || name.includes("css formatter") || name.includes("javascript formatter") || name.includes("javascript beautifier")) return formatBracedText(value);
   if (name.includes("markdown formatter")) return value.replace(/\n{3,}/g, "\n\n").replace(/^(#+)([^\s#])/gm, "$1 $2").trim();
-  if (name.includes("yaml formatter")) return value.replace(/\r\n/g, "\n").replace(/^\s*-\s*/gm, "- ").trim();
+  if (name.includes("yaml formatter") || name.includes("yaml beautifier")) return value.replace(/\r\n/g, "\n").replace(/^\s*-\s*/gm, "- ").trim();
   if (name.includes("word counter")) return `Words: ${value.split(/\s+/).filter(Boolean).length}`;
   if (name.includes("character counter")) return `Characters: ${value.length}`;
   if (name.includes("line counter")) return `Lines: ${value.split(/\r?\n/).length}`;
@@ -1379,7 +1396,7 @@ function processTool(tool: DirectoryTool, input: string) {
     return value.replace(/></g, ">\n<");
   }
   if (name.includes("css formatter") || name.includes("css beautifier")) return value.replace(/\{/g, " {\n  ").replace(/;/g, ";\n  ").replace(/\}/g, "\n}");
-  if (name.includes("javascript formatter") || name.includes("js beautifier") || name.includes("python formatter") || name.includes("php formatter") || name.includes("java formatter") || name.includes("c# formatter") || name.includes("c/c++ formatter") || name.includes("go formatter")) {
+  if (name.includes("javascript formatter") || name.includes("js beautifier") || name.includes("javascript beautifier") || name.includes("python formatter") || name.includes("python beautifier") || name.includes("php formatter") || name.includes("php beautifier") || name.includes("java formatter") || name.includes("java beautifier") || name.includes("c# formatter") || name.includes("c# beautifier") || name.includes("c/c++ formatter") || name.includes("c beautifier") || name.includes("c++ beautifier") || name.includes("go formatter") || name.includes("perl beautifier") || name.includes("ruby beautifier") || name.includes("lua beautifier")) {
     return value.replace(/\{/g, "{\n  ").replace(/;/g, ";\n  ").replace(/\}/g, "\n}").trim();
   }
   if (name.includes("add line numbers")) return value.split(/\r?\n/).map((line, index) => `${String(index + 1).padStart(3, " ")}  ${line}`).join("\n");

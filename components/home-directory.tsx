@@ -32,6 +32,7 @@ function localizedCategoryLabel(category: string, t: (key: string) => string) {
     Convert: t("nav.convert"),
     Utility: t("nav.utility"),
     Format: t("nav.format"),
+    Beautifiers: t("category.beautifiers"),
     Security: t("nav.security"),
     Network: t("nav.network"),
     Regex: t("nav.regex"),
