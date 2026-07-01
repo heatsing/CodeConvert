@@ -91,7 +91,7 @@ export function SiteHeader() {
 
   return (
     <header className="sticky top-0 z-40 border-b bg-white text-slate-950 shadow-sm">
-      <div className="flex h-12 w-full items-center gap-4 px-4">
+      <div className="flex h-14 w-full items-center gap-4 px-4">
         <Link href="/" className="flex shrink-0 items-center" aria-label="CodeConvert.net home">
           <Image
             src="/codeconvert-logo.png"
@@ -108,7 +108,7 @@ export function SiteHeader() {
             <a
               key={item.href}
               href={item.href}
-              className={item.active ? "border-b-2 border-orange-500 py-4 text-slate-950" : "py-4 text-slate-700 hover:text-blue-700"}
+              className={item.active ? "border-b-2 border-orange-500 py-5 text-slate-950" : "py-5 text-slate-700 hover:text-blue-700"}
             >
               {item.label}
             </a>
@@ -117,7 +117,7 @@ export function SiteHeader() {
 
         <nav className="flex min-w-0 flex-1 gap-3 overflow-x-auto pl-1 text-[11px] font-black uppercase tracking-wide xl:hidden">
           {navItems.slice(1, 7).map((item) => (
-            <a key={item.href} href={item.href} className="shrink-0 py-4 text-slate-700 hover:text-blue-700">
+            <a key={item.href} href={item.href} className="shrink-0 py-5 text-slate-700 hover:text-blue-700">
               {item.label}
             </a>
           ))}
