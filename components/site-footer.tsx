@@ -11,11 +11,11 @@ export function SiteFooter() {
         </a>
       </div>
       <div>
-        <a href="/#top" className="underline underline-offset-2 hover:text-blue-700">
+        <a href="/privacy-policy" className="underline underline-offset-2 hover:text-blue-700">
           Privacy Policy
         </a>
         <span> | </span>
-        <a href="/#top" className="underline underline-offset-2 hover:text-blue-700">
+        <a href="/terms-of-service" className="underline underline-offset-2 hover:text-blue-700">
           Terms of Service
         </a>
         <span> | </span>

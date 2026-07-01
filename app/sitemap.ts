@@ -13,6 +13,18 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "daily" as const,
       priority: 1
     },
+    {
+      url: `${siteUrl}/privacy-policy`,
+      lastModified: now,
+      changeFrequency: "monthly" as const,
+      priority: 0.3
+    },
+    {
+      url: `${siteUrl}/terms-of-service`,
+      lastModified: now,
+      changeFrequency: "monthly" as const,
+      priority: 0.3
+    },
     ...directoryTools.map((tool) => ({
       url: `${siteUrl}${tool.href}`,
       lastModified: now,
