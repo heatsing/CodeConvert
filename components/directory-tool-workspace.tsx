@@ -111,6 +111,10 @@ function sampleFor(tool: DirectoryTool) {
   if (name.includes("nginx")) return "server{listen 80;location /{proxy_pass http://localhost:3000;}}";
   if (name.includes("scss")) return "$color:#2563eb;.button{color:$color;&:hover{color:red;}}";
   if (name.includes("typescript formatter")) return "type User={id:number;name:string};const user:User={id:1,name:'Alice'};";
+  if (name.includes("lwc formatter")) return "import { LightningElement } from 'lwc';export default class Demo extends LightningElement{message='Hello LWC';}";
+  if (name.includes("flow formatter")) return "// @flow\ntype User={id:number,name:string};const user:User={id:1,name:'Alice'};";
+  if (name.includes("wsdl formatter")) return "<definitions><service name=\"Demo\"><port name=\"DemoPort\"></port></service></definitions>";
+  if (name.includes("soap formatter")) return "<soap:Envelope><soap:Body><getUser><id>1</id></getUser></soap:Body></soap:Envelope>";
   if (name.includes("markdown formatter")) return "# Title\n\n- item one\n- item two";
   if (name.includes("yaml formatter")) return "name: CodeTools\nitems:\n- format\n- convert";
   if (tool.category === "Text") return "Paste clean text here.\nAdd another line here.";
@@ -1232,7 +1236,7 @@ function processTool(tool: DirectoryTool, input: string) {
   if (name.includes("css to inline")) return `style="${value.replace(/\s+/g, " ").trim()}"`;
   if (name.includes("inline to css")) return value.match(/style=["']([^"']+)["']/)?.[1].split(";").filter(Boolean).map((rule) => `  ${rule.trim()};`).join("\n") ?? value;
   if ((name.includes("css to ") || name.includes("scss to ") || name.includes("less to ") || name.includes("sass to ") || name.includes("stylus to ")) && name.includes("css") || name.includes(" to scss") || name.includes(" to less") || name.includes(" to sass") || name.includes(" to stylus")) return cssPreprocessorPreview(name, value);
-  if (name.includes("graphql formatter") || name.includes("nginx formatter") || name.includes("scss formatter") || name.includes("less formatter") || name.includes("typescript formatter") || name.includes("react formatter") || name.includes("angular formatter") || name.includes("vue js formatter") || name.includes("babel formatter") || name.includes("glimmer js formatter") || name.includes("css formatter") || name.includes("javascript formatter")) return formatBracedText(value);
+  if (name.includes("graphql formatter") || name.includes("nginx formatter") || name.includes("scss formatter") || name.includes("less formatter") || name.includes("typescript formatter") || name.includes("react formatter") || name.includes("angular formatter") || name.includes("vue js formatter") || name.includes("babel formatter") || name.includes("glimmer js formatter") || name.includes("lwc formatter") || name.includes("flow formatter") || name.includes("css formatter") || name.includes("javascript formatter")) return formatBracedText(value);
   if (name.includes("markdown formatter")) return value.replace(/\n{3,}/g, "\n\n").replace(/^(#+)([^\s#])/gm, "$1 $2").trim();
   if (name.includes("yaml formatter")) return value.replace(/\r\n/g, "\n").replace(/^\s*-\s*/gm, "- ").trim();
   if (name.includes("word counter")) return `Words: ${value.split(/\s+/).filter(Boolean).length}`;
@@ -1371,7 +1375,7 @@ function processTool(tool: DirectoryTool, input: string) {
   if (name.includes("dockerfile")) return `FROM node:20-alpine AS deps\nWORKDIR /app\nCOPY package*.json ./\nRUN npm ci\n\nFROM deps AS build\nCOPY . .\nRUN npm run build\n\nEXPOSE 3000\nCMD ["npm", "start"]`;
   if (name.includes("readme")) return `# Project Name\n\nShort description of the tool or application.\n\n## Getting Started\n\n\`\`\`bash\nnpm install\nnpm run dev\n\`\`\`\n\n## Features\n\n- Fast developer workflow\n- Clean UI\n- Extensible architecture`;
   if (name.includes("sql formatter")) return value.replace(/\b(select|from|where|order by|group by|limit)\b/gi, "\n$1").trim().toUpperCase();
-  if (name.includes("xml formatter") || name.includes("html formatter") || name.includes("xml beautifier") || name.includes("html beautifier")) {
+  if (name.includes("xml formatter") || name.includes("html formatter") || name.includes("wsdl formatter") || name.includes("soap formatter") || name.includes("xml beautifier") || name.includes("html beautifier")) {
     return value.replace(/></g, ">\n<");
   }
   if (name.includes("css formatter") || name.includes("css beautifier")) return value.replace(/\{/g, " {\n  ").replace(/;/g, ";\n  ").replace(/\}/g, "\n}");
