@@ -173,7 +173,7 @@ export function HomeDirectory() {
 
           <div className="mt-5 text-left">
             <p className="mb-2 text-[12px] font-black text-slate-600">{t("home.frequentlyUsed")}</p>
-            <div className="grid gap-3 [grid-template-columns:repeat(auto-fit,minmax(230px,1fr))]">
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
               {frequentTools.map((tool) => (
                 <ToolTile key={tool.name} tool={tool} />
               ))}

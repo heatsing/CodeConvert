@@ -440,4 +440,4 @@ export const directoryToolBySlug = Object.fromEntries(
 ) as Record<string, DirectoryTool>;
 
 export const featuredTools = directoryTools.slice(6, 18);
-export const frequentTools = directoryTools.slice(0, 24);
+export const frequentTools = directoryTools.slice(0, 15);

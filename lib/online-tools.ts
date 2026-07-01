@@ -255,6 +255,216 @@ export const onlineTools: OnlineTool[] = [
     sample: "println 'Hello Groovy'"
   },
   {
+    slug: "html-online-tool",
+    name: "HTML Online Tool",
+    description: "Edit HTML markup and preview a clean simulated result.",
+    mode: "code",
+    iconName: "code",
+    accent: "text-orange-700 bg-orange-50",
+    placeholder: "<main>\n  <h1>Hello HTML</h1>\n</main>",
+    sample: "<main>\n  <h1>Hello HTML</h1>\n  <p>Build a simple page section.</p>\n</main>"
+  },
+  {
+    slug: "css-online-tool",
+    name: "CSS Online Tool",
+    description: "Test CSS rules and inspect a mock styling output.",
+    mode: "code",
+    iconName: "code",
+    accent: "text-sky-700 bg-sky-50",
+    placeholder: ".button {\n  color: white;\n  background: #2563eb;\n}",
+    sample: ".button {\n  color: white;\n  background: #2563eb;\n  border-radius: 6px;\n}"
+  },
+  {
+    slug: "javascript-online-tool",
+    name: "JavaScript Online Tool",
+    description: "Run JavaScript snippets with a simulated console.",
+    mode: "code",
+    iconName: "code",
+    accent: "text-yellow-700 bg-yellow-50",
+    placeholder: "console.log('Hello JavaScript');",
+    sample: "const tools = ['format', 'convert', 'check'];\nconsole.log(tools.join(', '));"
+  },
+  {
+    slug: "sql-online-tool",
+    name: "SQL Online Tool",
+    description: "Write SQL queries and view a mock table result.",
+    mode: "database",
+    iconName: "fileText",
+    accent: "text-indigo-700 bg-indigo-50",
+    placeholder: "SELECT id, email FROM users LIMIT 5;",
+    sample: "SELECT id, email, status FROM users WHERE status = 'active';"
+  },
+  {
+    slug: "markdown-online-tool",
+    name: "Markdown Online Tool",
+    description: "Draft Markdown text and generate a readable preview.",
+    mode: "docs",
+    iconName: "fileText",
+    accent: "text-slate-700 bg-slate-100",
+    placeholder: "# Title\n\n- Item one\n- Item two",
+    sample: "# CodeConvert Notes\n\n- Format code\n- Convert text\n- Check output"
+  },
+  {
+    slug: "xml-online-tool",
+    name: "XML Online Tool",
+    description: "Edit XML markup and inspect structured output.",
+    mode: "code",
+    iconName: "code",
+    accent: "text-blue-700 bg-blue-50",
+    placeholder: "<root>\n  <item>Hello XML</item>\n</root>",
+    sample: "<root>\n  <item id=\"1\">Hello XML</item>\n</root>"
+  },
+  {
+    slug: "json-online-tool",
+    name: "JSON Online Tool",
+    description: "Validate and format JSON data in a browser workspace.",
+    mode: "json",
+    iconName: "fileText",
+    accent: "text-emerald-700 bg-emerald-50",
+    placeholder: "{\"message\":\"Hello JSON\"}",
+    sample: "{\"message\":\"Hello JSON\",\"active\":true}"
+  },
+  {
+    slug: "yaml-online-tool",
+    name: "YAML Online Tool",
+    description: "Edit YAML snippets and inspect readable output.",
+    mode: "code",
+    iconName: "fileText",
+    accent: "text-orange-700 bg-orange-50",
+    placeholder: "message: Hello YAML\nactive: true",
+    sample: "message: Hello YAML\nitems:\n  - format\n  - convert"
+  },
+  {
+    slug: "react-online-tool",
+    name: "React Online Tool",
+    description: "Sketch React components with a mock preview output.",
+    mode: "code",
+    iconName: "code",
+    accent: "text-cyan-700 bg-cyan-50",
+    placeholder: "function App() {\n  return <h1>Hello React</h1>;\n}",
+    sample: "function App() {\n  return <button>Run tool</button>;\n}"
+  },
+  {
+    slug: "vue-online-tool",
+    name: "Vue Online Tool",
+    description: "Draft Vue component snippets in a compact editor.",
+    mode: "code",
+    iconName: "code",
+    accent: "text-green-700 bg-green-50",
+    placeholder: "<template>\n  <h1>Hello Vue</h1>\n</template>",
+    sample: "<template>\n  <button>{{ label }}</button>\n</template>"
+  },
+  {
+    slug: "angular-online-tool",
+    name: "Angular Online Tool",
+    description: "Try Angular template and component snippets.",
+    mode: "code",
+    iconName: "code",
+    accent: "text-red-700 bg-red-50",
+    placeholder: "@Component({ template: '<h1>Hello Angular</h1>' })",
+    sample: "@Component({ template: '<button>Run</button>' })\nexport class AppComponent {}"
+  },
+  {
+    slug: "dart-online-tool",
+    name: "Dart Online Tool",
+    description: "Run Dart snippets with simulated console output.",
+    mode: "code",
+    iconName: "code",
+    accent: "text-sky-700 bg-sky-50",
+    placeholder: "void main() {\n  print('Hello Dart');\n}",
+    sample: "void main() {\n  print('Hello Dart');\n}"
+  },
+  {
+    slug: "julia-online-tool",
+    name: "Julia Online Tool",
+    description: "Try Julia code and inspect mock output.",
+    mode: "code",
+    iconName: "code",
+    accent: "text-purple-700 bg-purple-50",
+    placeholder: "println(\"Hello Julia\")",
+    sample: "println(\"Hello Julia\")\nsum([1, 2, 3])"
+  },
+  {
+    slug: "haskell-online-tool",
+    name: "Haskell Online Tool",
+    description: "Run Haskell examples in a mock compiler.",
+    mode: "code",
+    iconName: "code",
+    accent: "text-violet-700 bg-violet-50",
+    placeholder: "main = putStrLn \"Hello Haskell\"",
+    sample: "main = putStrLn \"Hello Haskell\""
+  },
+  {
+    slug: "elixir-online-tool",
+    name: "Elixir Online Tool",
+    description: "Execute Elixir snippets with simulated output.",
+    mode: "code",
+    iconName: "code",
+    accent: "text-fuchsia-700 bg-fuchsia-50",
+    placeholder: "IO.puts(\"Hello Elixir\")",
+    sample: "IO.puts(\"Hello Elixir\")"
+  },
+  {
+    slug: "clojure-online-tool",
+    name: "Clojure Online Tool",
+    description: "Try Clojure forms in a lightweight workspace.",
+    mode: "code",
+    iconName: "code",
+    accent: "text-blue-700 bg-blue-50",
+    placeholder: "(println \"Hello Clojure\")",
+    sample: "(println \"Hello Clojure\")"
+  },
+  {
+    slug: "cobol-online-tool",
+    name: "COBOL Online Tool",
+    description: "Inspect COBOL snippets with mock compiler output.",
+    mode: "code",
+    iconName: "code",
+    accent: "text-stone-700 bg-stone-100",
+    placeholder: "DISPLAY 'Hello COBOL'.",
+    sample: "IDENTIFICATION DIVISION.\nPROGRAM-ID. HELLO.\nPROCEDURE DIVISION.\nDISPLAY 'Hello COBOL'."
+  },
+  {
+    slug: "fortran-online-tool",
+    name: "Fortran Online Tool",
+    description: "Run Fortran examples in a simulated compiler.",
+    mode: "code",
+    iconName: "code",
+    accent: "text-indigo-700 bg-indigo-50",
+    placeholder: "program hello\n  print *, 'Hello Fortran'\nend program hello",
+    sample: "program hello\n  print *, 'Hello Fortran'\nend program hello"
+  },
+  {
+    slug: "objective-c-online-tool",
+    name: "Objective-C Online Tool",
+    description: "Prototype Objective-C snippets with mock output.",
+    mode: "code",
+    iconName: "code",
+    accent: "text-slate-700 bg-slate-100",
+    placeholder: "NSLog(@\"Hello Objective-C\");",
+    sample: "#import <Foundation/Foundation.h>\nint main(){ NSLog(@\"Hello Objective-C\"); }"
+  },
+  {
+    slug: "powershell-online-tool",
+    name: "PowerShell Online Tool",
+    description: "Test PowerShell commands in a mock console.",
+    mode: "code",
+    iconName: "code",
+    accent: "text-blue-700 bg-blue-50",
+    placeholder: "Write-Output \"Hello PowerShell\"",
+    sample: "Write-Output \"Hello PowerShell\"\nGet-Date"
+  },
+  {
+    slug: "matlab-online-tool",
+    name: "MATLAB Online Tool",
+    description: "Run MATLAB-style snippets with simulated output.",
+    mode: "code",
+    iconName: "code",
+    accent: "text-orange-700 bg-orange-50",
+    placeholder: "disp('Hello MATLAB')",
+    sample: "disp('Hello MATLAB')\nx = [1 2 3];"
+  },
+  {
     slug: "regexr",
     name: "RegExr",
     description: "Build and test regular expressions in the browser.",
