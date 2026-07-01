@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { dictionaryOverrides } from "@/lib/i18n-overrides";
 
 export const translationLanguages = [
   { code: "EN", label: "English", htmlLang: "en" },
@@ -12,7 +13,7 @@ export const translationLanguages = [
   { code: "TR", label: "Turkish", htmlLang: "tr" },
   { code: "PL", label: "Polish", htmlLang: "pl" },
   { code: "CN", label: "简体中文", htmlLang: "zh-Hans" },
-  { code: "TW", label: "Traditional Chinese", htmlLang: "zh-Hant" }
+  { code: "TW", label: "繁體中文", htmlLang: "zh-Hant" }
 ] as const;
 
 export type LanguageCode = (typeof translationLanguages)[number]["code"];
@@ -785,7 +786,7 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const value = useMemo<I18nContextValue>(() => {
-    const t = (key: string) => dictionaries[language][key] ?? dictionaries.EN[key] ?? key;
+    const t = (key: string) => dictionaryOverrides[language]?.[key] ?? dictionaries[language][key] ?? dictionaryOverrides.EN?.[key] ?? dictionaries.EN[key] ?? key;
     return { language, setLanguage: applyLanguage, t };
   }, [language]);
 
