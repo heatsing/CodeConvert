@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { Flame, Search } from "lucide-react";
-import { categories, directoryTools, featuredTools, frequentTools, getCategoryId, getCategoryLabel } from "@/lib/home-tools";
+import { categories, directoryTools, frequentTools, getCategoryId, getCategoryLabel } from "@/lib/home-tools";
 import { useI18n } from "@/lib/i18n";
 import { developerOnlineTools, languageOnlineTools, onlineTools } from "@/lib/online-tools";
 import { toolIcons } from "@/lib/tool-icons";
@@ -171,25 +171,16 @@ export function HomeDirectory() {
             </button>
           </div>
 
-          <div className="mt-5 text-left">
-            <p className="mb-2 text-[12px] font-black text-slate-600">{t("home.frequentlyUsed")}</p>
+          <div id="popular" className="mt-5 text-left">
+            <div className="mb-2 flex items-center gap-2 text-[12px] font-black text-slate-600">
+              <Flame className="h-4 w-4 text-orange-600" />
+              {t("home.popular")}
+            </div>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
               {frequentTools.map((tool) => (
                 <ToolTile key={tool.name} tool={tool} />
               ))}
             </div>
-          </div>
-        </section>
-
-        <section id="popular" className="grid gap-2">
-          <div className="flex items-center gap-2 text-[15px] font-black text-slate-950">
-            <Flame className="h-4 w-4 text-orange-600" />
-            {t("home.popular")}
-          </div>
-          <div className="grid gap-3 [grid-template-columns:repeat(auto-fit,minmax(230px,1fr))]">
-            {featuredTools.map((tool) => (
-              <ToolTile key={tool.name} tool={tool} />
-            ))}
           </div>
         </section>
 

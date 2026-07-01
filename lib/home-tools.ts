@@ -439,5 +439,4 @@ export const directoryToolBySlug = Object.fromEntries(
   directoryTools.map((tool) => [directoryToolSlug(tool.name), tool])
 ) as Record<string, DirectoryTool>;
 
-export const featuredTools = directoryTools.slice(6, 18);
-export const frequentTools = directoryTools.slice(0, 15);
+export const frequentTools = directoryTools.slice(0, 20);
