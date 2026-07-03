@@ -26,6 +26,15 @@ function lowerFirst(value: string) {
   return value ? `${value.charAt(0).toLowerCase()}${value.slice(1)}` : value;
 }
 
+function trimSentence(value: string, maxLength = 160) {
+  const normalized = value.replace(/\s+/g, " ").trim();
+  if (normalized.length <= maxLength) return normalized;
+
+  const clipped = normalized.slice(0, maxLength - 1);
+  const lastSpace = clipped.lastIndexOf(" ");
+  return `${clipped.slice(0, lastSpace > 110 ? lastSpace : maxLength - 1).replace(/[,.]\s*$/, "")}.`;
+}
+
 function verbForName(name: string) {
   const lowerName = name.toLowerCase();
   if (lowerName.includes("encode")) return "encode";
@@ -41,6 +50,34 @@ function verbForName(name: string) {
   if (lowerName.includes("converter") || lowerName.includes("convert")) return "convert";
   if (lowerName.includes("sort")) return "sort";
   return "process";
+}
+
+function metaActionForName(name: string, category: string) {
+  const lowerName = name.toLowerCase();
+  if (lowerName.includes("base64")) return "encode, decode, or convert Base64 text and developer data";
+  if (lowerName.includes("url")) return "encode, decode, format, or inspect URL text and parameters";
+  if (lowerName.includes("jwt")) return "create, decode, inspect, or validate JWT-style token text";
+  if (lowerName.includes("json")) return "format, validate, convert, or inspect JSON data";
+  if (lowerName.includes("xml")) return "format, validate, convert, or inspect XML markup";
+  if (lowerName.includes("yaml")) return "format, validate, convert, or inspect YAML data";
+  if (lowerName.includes("html")) return "format, encode, decode, minify, or inspect HTML markup";
+  if (lowerName.includes("css") || lowerName.includes("scss") || lowerName.includes("less")) return "format, beautify, minify, or validate stylesheet code";
+  if (lowerName.includes("javascript") || lowerName.includes("typescript")) return "format, validate, convert, or clean JavaScript and TypeScript code";
+  if (lowerName.includes("regex")) return "test, generate, explain, or transform regular expressions";
+  if (lowerName.includes("hash") || lowerName.includes("md5") || lowerName.includes("sha")) return "generate, inspect, or verify hash values";
+  if (lowerName.includes("password")) return "generate or inspect password text for safer workflows";
+  if (lowerName.includes("dns") || lowerName.includes("ip") || lowerName.includes("whois") || lowerName.includes("domain")) return "inspect network, DNS, IP, or domain data";
+  if (lowerName.includes("formatter") || lowerName.includes("beautifier")) return "format and beautify code or structured data";
+  if (lowerName.includes("minifier") || lowerName.includes("minify")) return "minify code and remove extra whitespace";
+  if (lowerName.includes("encode") || lowerName.includes("encoder")) return "encode text, URLs, code, or developer data";
+  if (lowerName.includes("decode") || lowerName.includes("decoder")) return "decode encoded strings, tokens, or developer data";
+  if (lowerName.includes("converter") || lowerName.includes("convert")) return "convert text, code, data, or formats";
+  if (lowerName.includes("generator")) return "generate useful developer output";
+  if (lowerName.includes("validator") || lowerName.includes("checker") || lowerName.includes("tester")) return "check, validate, and inspect developer input";
+  if (lowerName.includes("remover") || lowerName.includes("remove")) return "remove unwanted text, code, formatting, or characters";
+  if (lowerName.includes("counter")) return "count and analyze text or developer input";
+  if (lowerName.includes("translator")) return "translate text, symbols, code, or encoded data";
+  return `process ${getCategoryLabel(category).toLowerCase()} input`;
 }
 
 function textTitle(tool: DirectoryTool) {
@@ -214,10 +251,53 @@ export function getCoreToolHeader(tool: ToolConfig): ToolHeaderCopy {
   };
 }
 
+export function getCoreToolMetaDescription(tool: ToolConfig) {
+  const descriptions: Record<string, string> = {
+    "code-converter": "Free code converter online. Convert code between programming languages, upload files, then copy or download clean output in your browser.",
+    "code-generator": "Free code generator online. Turn prompts into starter code for popular languages, then copy or download editable output. No signup required.",
+    "code-explainer": "Free code explainer online. Paste code to get a clear explanation of behavior, inputs, outputs, and edge cases in a fast browser workspace.",
+    "comment-remover": "Free comment remover online. Remove inline and block comments from code, keep structure readable, then copy or download the cleaned result.",
+    "code-checker": "Free code checker online. Inspect snippets for bugs, syntax issues, readability problems, and improvement ideas before editing or sharing.",
+    "code-to-pdf": "Free code to PDF prep tool online. Format source code as clean document-style text for reports, handoffs, downloads, and future PDF export."
+  };
+
+  return descriptions[tool.slug] ?? trimSentence(`Free ${tool.name} online. ${tool.description} Paste input, run the tool, then copy or download the result.`);
+}
+
 export function getDirectoryToolMetaDescription(tool: DirectoryTool) {
-  return getDirectoryToolHeader(tool).description;
+  const pair = getConversionPair(tool.name);
+  if (pair) {
+    return trimSentence(`Free ${pair.from} to ${pair.to} converter online. Paste ${pair.from} code, run the converter, then copy or download clean ${pair.to} output.`);
+  }
+
+  if (tool.category === "Text") {
+    return trimSentence(`Free ${tool.name} online. ${textTitle(tool).toLowerCase()}, clean pasted text instantly, then copy or download the result. No signup required.`);
+  }
+
+  if (tool.category === "Font Styles") {
+    return trimSentence(`Free ${tool.name} online. Convert normal text into Unicode font styles for bios, captions, usernames, and posts, then copy the result.`);
+  }
+
+  const action = metaActionForName(tool.name, tool.category);
+  return trimSentence(`Free ${tool.name} online. Use this ${getCategoryLabel(tool.category).toLowerCase()} tool to ${action}, then copy or download the result. No signup required.`);
 }
 
 export function getOnlineToolMetaDescription(tool: OnlineTool) {
-  return getOnlineToolHeader(tool).description;
+  if (tool.name.toLowerCase().includes("code to image")) {
+    return "Free Code to Image tool online. Create shareable code image previews for docs, tutorials, and social posts, then copy or download the result.";
+  }
+
+  const modeCopy: Record<string, string> = {
+    regex: "test regular expressions against sample text",
+    api: "draft API requests and inspect mock responses",
+    redis: "practice Redis commands with simulated output",
+    database: "sketch schemas, queries, and mock database results",
+    ascii: "create ASCII-style diagrams from structured notes",
+    visual: "turn plain input into readable visual preview output",
+    docs: "draft documentation, wiki notes, and project summaries",
+    json: "format, validate, and inspect JSON data",
+    code: "write, run, and review code snippets in a browser workspace"
+  };
+
+  return trimSentence(`Free ${tool.name} online. Use this developer tool to ${modeCopy[tool.mode] ?? modeCopy.code}, then copy or download the result. No signup required.`);
 }
