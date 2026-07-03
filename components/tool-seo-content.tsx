@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { directoryTools, getCategoryLabel } from "@/lib/home-tools";
+import { directoryTools, getCategoryId, getCategoryLabel } from "@/lib/home-tools";
 import { useI18n, type LanguageCode } from "@/lib/i18n";
 import { onlineTools } from "@/lib/online-tools";
 import { buildToolFaqs } from "@/lib/seo";
@@ -114,6 +114,56 @@ function toolOutputExample(title: string, categoryLabel: string) {
   return "Processed output appears here after the tool runs.";
 }
 
+function normalizeText(value: string) {
+  return value.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+}
+
+function keywordIntent(title: string, categoryLabel: string, conversionPair: ConversionPair | null) {
+  const normalizedTitle = normalizeText(title);
+  if (conversionPair) return `convert ${conversionPair.from} code to ${conversionPair.to}`;
+  if (normalizedTitle.includes("json")) return "format, validate, convert, or inspect JSON data";
+  if (normalizedTitle.includes("xml")) return "format, validate, convert, or inspect XML markup";
+  if (normalizedTitle.includes("html")) return "clean, encode, decode, or format HTML";
+  if (normalizedTitle.includes("css") || normalizedTitle.includes("scss") || normalizedTitle.includes("less")) return "format, beautify, or minify stylesheet code";
+  if (normalizedTitle.includes("base64")) return "encode, decode, or convert Base64 text";
+  if (normalizedTitle.includes("url")) return "encode, decode, or inspect URL strings";
+  if (normalizedTitle.includes("regex")) return "test, generate, or explain regular expressions";
+  if (normalizedTitle.includes("hash") || normalizedTitle.includes("md5") || normalizedTitle.includes("sha")) return "generate and inspect hash values";
+  if (normalizedTitle.includes("remove")) return "remove unwanted characters, formatting, comments, or repeated content";
+  if (normalizedTitle.includes("case")) return "convert text case for titles, labels, names, and content cleanup";
+  if (normalizedTitle.includes("font") || categoryLabel === "Font Styles") return "create styled Unicode text for bios, captions, usernames, and posts";
+  if (normalizedTitle.includes("code")) return "process code snippets in a focused browser workspace";
+  return `process ${categoryLabel.toLowerCase()} input quickly`;
+}
+
+function toolHref(tool: { name: string } & ({ href: string } | { slug: string })) {
+  return "href" in tool ? tool.href : `/${tool.slug}`;
+}
+
+function uniqueRelatedLinks(title: string, category: string, categoryLabel: string) {
+  const normalizedTitle = normalizeText(title);
+  const directoryMatches = directoryTools
+    .filter((tool) => tool.category.toLowerCase() === category.toLowerCase())
+    .filter((tool) => !normalizedTitle.includes(normalizeText(tool.name)) && !normalizeText(tool.name).includes(normalizedTitle))
+    .slice(0, 6);
+  const onlineMatches = onlineTools
+    .filter((tool) => tool.mode.toLowerCase() === category.toLowerCase())
+    .filter((tool) => !normalizedTitle.includes(normalizeText(tool.name)) && !normalizeText(tool.name).includes(normalizedTitle))
+    .slice(0, 6);
+
+  const fallbackLinks = [
+    { name: "Code Converter", href: "/code-converter" },
+    { name: "JSON Formatter", href: "/json-formatter" },
+    { name: "Base64 Encode", href: "/base64-encode" },
+    { name: "Regex Tester Tool", href: "/regex-tester-tool" },
+    { name: categoryLabel, href: `/#${getCategoryId(category)}` }
+  ];
+
+  return [...directoryMatches, ...onlineMatches, ...fallbackLinks]
+    .filter((tool, index, tools) => tools.findIndex((item) => toolHref(item) === toolHref(tool)) === index)
+    .slice(0, 5);
+}
+
 function CodePanel({ label, code }: { label: string; code: string }) {
   return (
     <div className="min-w-0">
@@ -138,6 +188,8 @@ export function ToolSeoContent({ title, description, category }: ToolSeoContentP
     .slice(0, 18);
   const sampleLinks = relatedLinks.length > 0 ? relatedLinks : relatedOnlineLinks;
   const faqs = buildToolFaqs(title, categoryLabel);
+  const intent = keywordIntent(title, categoryLabel, conversionPair);
+  const seoLinks = uniqueRelatedLinks(title, category, categoryLabel);
   const inputExample = conversionPair ? codeSample(conversionPair.from, "palindrome") : toolInputExample(title, categoryLabel);
   const outputExample = conversionPair ? codeSample(conversionPair.to, "palindrome") : toolOutputExample(title, categoryLabel);
   const secondInputExample = conversionPair ? codeSample(conversionPair.from, "evenOdd") : toolInputExample(title, categoryLabel);
@@ -156,6 +208,20 @@ export function ToolSeoContent({ title, description, category }: ToolSeoContentP
             <h2 className="text-xl font-black text-slate-950">{copy.howTo}</h2>
             <p className="mt-3 text-sm leading-6 text-slate-700">
               {useIntro} {description}
+            </p>
+            <p className="mt-3 text-sm leading-6 text-slate-700">
+              Use <strong>{title}</strong> when you need to <strong>{intent}</strong> without installing desktop software.
+              The workflow is designed for quick browser-based editing: paste your input, review the generated output,
+              then copy or download the result. For related tasks, open{" "}
+              {seoLinks.slice(0, 3).map((tool, index) => (
+                <span key={toolHref(tool)}>
+                  {index > 0 ? (index === seoLinks.slice(0, 3).length - 1 ? ", or " : ", ") : ""}
+                  <Link href={toolHref(tool)} className="font-bold text-blue-700 underline-offset-4 hover:underline">
+                    {tool.name}
+                  </Link>
+                </span>
+              ))}
+              .
             </p>
             <ol className="mt-4 list-decimal space-y-2 pl-5 text-sm leading-6 text-slate-700">
               <li>{copy.step1}</li>
@@ -210,6 +276,19 @@ export function ToolSeoContent({ title, description, category }: ToolSeoContentP
           <h2 className="text-xl font-black text-slate-950">
             {conversionPair ? `${conversionPair.from} ${copy.to} ${conversionPair.to}` : title}
           </h2>
+          <p className="mt-3 text-sm leading-6 text-slate-700">
+            A good <strong>{title}</strong> page should make the main task obvious, keep the input and output close together,
+            and provide relevant next steps through descriptive anchor links. If your workflow changes, continue with{" "}
+            {seoLinks.slice(0, 4).map((tool, index) => (
+              <span key={`context-${toolHref(tool)}`}>
+                {index > 0 ? (index === seoLinks.slice(0, 4).length - 1 ? ", or " : ", ") : ""}
+                <Link href={toolHref(tool)} className="font-bold text-blue-700 underline-offset-4 hover:underline">
+                  {tool.name}
+                </Link>
+              </span>
+            ))}
+            .
+          </p>
           <div className="mt-4 overflow-hidden rounded-md border">
             <table className="w-full text-left text-sm">
               <thead className="bg-slate-100 text-slate-950">
@@ -260,6 +339,10 @@ export function ToolSeoContent({ title, description, category }: ToolSeoContentP
         {sampleLinks.length > 0 && (
           <section className="mt-8">
             <h2 className="text-xl font-black text-slate-950">{copy.tryMore} {relatedHeading}</h2>
+            <p className="mt-3 text-sm leading-6 text-slate-700">
+              Explore more <strong>{relatedHeading}</strong> with clear anchor links for common developer workflows.
+              These pages help search engines and AI assistants understand how each tool connects to nearby tasks.
+            </p>
             <div className="mt-4 flex flex-wrap gap-3">
               {sampleLinks.slice(0, 12).map((tool) => (
                 <Link key={tool.name} href={"href" in tool ? tool.href : `/${tool.slug}`} className="rounded-md bg-slate-100 px-4 py-2 text-sm font-bold text-slate-700 hover:bg-blue-50 hover:text-blue-700">
