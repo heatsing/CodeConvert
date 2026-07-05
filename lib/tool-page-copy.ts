@@ -106,6 +106,8 @@ function textTitle(tool: DirectoryTool) {
     "Title Case Converter": "Convert Text to Title Case",
     "Whitespace Remover": "Remove Extra Whitespace from Text",
     "Wingdings Translator": "Translate Wingdings and Symbol Text",
+    "Word Counter": "Count Words in Text",
+    "Character Counter": "Count Characters in Text",
     "Word Cloud Generator": "Generate Word Frequency Output",
     "Word Frequency Counter": "Count Word Frequency in Text"
   };
