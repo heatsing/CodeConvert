@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { HomeDirectory } from "@/components/home-directory";
 import { directoryTools } from "@/lib/home-tools";
-import { buildJsonLdScripts, buildMetadata } from "@/lib/seo";
-import { siteUrl } from "@/lib/site";
+import { buildJsonLdScripts, buildMetadata, buildOrganizationJsonLd } from "@/lib/seo";
+import { siteLogoUrl, siteUrl } from "@/lib/site";
 
 export const metadata: Metadata = buildMetadata({
   title: "Quick Code Conversion Tools | CodeConvert.net",
@@ -28,6 +28,16 @@ export default function Page() {
     "@type": "WebSite",
     name: "CodeConvert.net",
     url: siteUrl,
+    publisher: {
+      "@type": "Organization",
+      name: "CodeConvert.net",
+      logo: {
+        "@type": "ImageObject",
+        url: siteLogoUrl,
+        width: 1152,
+        height: 217
+      }
+    },
     potentialAction: {
       "@type": "SearchAction",
       target: `${siteUrl}/?q={search_term_string}`,
@@ -37,7 +47,7 @@ export default function Page() {
 
   return (
     <>
-      {buildJsonLdScripts([website, itemList])}
+      {buildJsonLdScripts([buildOrganizationJsonLd(), website, itemList])}
       <HomeDirectory />
     </>
   );

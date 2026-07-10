@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { createElement } from "react";
 import { getCategoryLabel, type DirectoryTool } from "@/lib/home-tools";
 import type { OnlineTool } from "@/lib/online-tools";
-import { siteUrl } from "@/lib/site";
+import { siteIconUrl, siteLogoUrl, siteUrl } from "@/lib/site";
 import {
   getCoreToolHeader,
   getCoreToolMetaDescription,
@@ -231,6 +231,22 @@ export function buildBreadcrumbJsonLd(items: { name: string; url: string }[]) {
       name: item.name,
       item: item.url
     }))
+  };
+}
+
+export function buildOrganizationJsonLd() {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: brandName,
+    url: siteUrl,
+    logo: {
+      "@type": "ImageObject",
+      url: siteLogoUrl,
+      width: 1152,
+      height: 217
+    },
+    image: siteIconUrl
   };
 }
 
