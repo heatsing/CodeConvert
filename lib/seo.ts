@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { createElement } from "react";
 import { getCategoryLabel, type DirectoryTool } from "@/lib/home-tools";
 import type { OnlineTool } from "@/lib/online-tools";
+import { intentKeywords, keywordVariants, uniqueKeywords } from "@/lib/seo-keywords";
 import { siteIconUrl, siteLogoUrl, siteUrl } from "@/lib/site";
 import {
   getCoreToolHeader,
@@ -63,16 +64,6 @@ function buildOnlineMetaDescription(tool: OnlineTool) {
   return getOnlineToolMetaDescription(tool);
 }
 
-function keywordVariants(name: string) {
-  return [
-    name,
-    `${name} online`,
-    `free ${name}`,
-    `free ${name} online`,
-    `${name} tool`
-  ];
-}
-
 export function buildMetadata({
   title,
   description,
@@ -127,7 +118,15 @@ export function buildToolMetadata(tool: ToolConfig): Metadata {
     title: headerCopy.title,
     description: buildCoreToolMetaDescription(tool),
     path: `/${tool.slug}`,
-    keywords: [...keywordVariants(tool.name), tool.title, "free online code tool", "developer tool", "copy output", "download output"]
+    keywords: uniqueKeywords([
+      ...keywordVariants(tool.name),
+      ...intentKeywords(tool.name, "Code", getCategoryLabel("Code")),
+      tool.title,
+      "free online code tool",
+      "developer tool",
+      "copy output",
+      "download output"
+    ])
   });
 }
 
@@ -139,15 +138,16 @@ export function buildDirectoryToolMetadata(tool: DirectoryTool): Metadata {
     title,
     description,
     path: tool.href,
-    keywords: [
+    keywords: uniqueKeywords([
       ...keywordVariants(tool.name),
+      ...intentKeywords(tool.name, tool.category, getCategoryLabel(tool.category)),
       `${getCategoryLabel(tool.category)} tool`,
       `${getCategoryLabel(tool.category)} online`,
       "free online tool",
       "online developer tool",
       "copy output",
       "download output"
-    ]
+    ])
   });
 }
 
@@ -157,7 +157,16 @@ export function buildOnlineToolMetadata(tool: OnlineTool): Metadata {
     title: headerCopy.title,
     description: buildOnlineMetaDescription(tool),
     path: `/${tool.slug}`,
-    keywords: [...keywordVariants(tool.name), "online coding workspace", "developer tool", "code playground", "free online tool"]
+    keywords: uniqueKeywords([
+      ...keywordVariants(tool.name),
+      ...intentKeywords(tool.name, "Code", getCategoryLabel("Code")),
+      "online coding workspace",
+      "developer tool",
+      "code playground",
+      "free online tool",
+      "browser code runner",
+      "developer productivity tool"
+    ])
   });
 }
 

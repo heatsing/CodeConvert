@@ -5,6 +5,7 @@ import { directoryTools, getCategoryId, getCategoryLabel } from "@/lib/home-tool
 import { useI18n, type LanguageCode } from "@/lib/i18n";
 import { onlineTools } from "@/lib/online-tools";
 import { buildToolFaqs } from "@/lib/seo";
+import { keywordIntent, keywordPhrases, normalizeSearchText } from "@/lib/seo-keywords";
 
 type ToolSeoContentProps = {
   title: string;
@@ -114,41 +115,19 @@ function toolOutputExample(title: string, categoryLabel: string) {
   return "Processed output appears here after the tool runs.";
 }
 
-function normalizeText(value: string) {
-  return value.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
-}
-
-function keywordIntent(title: string, categoryLabel: string, conversionPair: ConversionPair | null) {
-  const normalizedTitle = normalizeText(title);
-  if (conversionPair) return `convert ${conversionPair.from} code to ${conversionPair.to}`;
-  if (normalizedTitle.includes("json")) return "format, validate, convert, or inspect JSON data";
-  if (normalizedTitle.includes("xml")) return "format, validate, convert, or inspect XML markup";
-  if (normalizedTitle.includes("html")) return "clean, encode, decode, or format HTML";
-  if (normalizedTitle.includes("css") || normalizedTitle.includes("scss") || normalizedTitle.includes("less")) return "format, beautify, or minify stylesheet code";
-  if (normalizedTitle.includes("base64")) return "encode, decode, or convert Base64 text";
-  if (normalizedTitle.includes("url")) return "encode, decode, or inspect URL strings";
-  if (normalizedTitle.includes("regex")) return "test, generate, or explain regular expressions";
-  if (normalizedTitle.includes("hash") || normalizedTitle.includes("md5") || normalizedTitle.includes("sha")) return "generate and inspect hash values";
-  if (normalizedTitle.includes("remove")) return "remove unwanted characters, formatting, comments, or repeated content";
-  if (normalizedTitle.includes("case")) return "convert text case for titles, labels, names, and content cleanup";
-  if (normalizedTitle.includes("font") || categoryLabel === "Font Styles") return "create styled Unicode text for bios, captions, usernames, and posts";
-  if (normalizedTitle.includes("code")) return "process code snippets in a focused browser workspace";
-  return `process ${categoryLabel.toLowerCase()} input quickly`;
-}
-
 function toolHref(tool: { name: string } & ({ href: string } | { slug: string })) {
   return "href" in tool ? tool.href : `/${tool.slug}`;
 }
 
 function uniqueRelatedLinks(title: string, category: string, categoryLabel: string) {
-  const normalizedTitle = normalizeText(title);
+  const normalizedTitle = normalizeSearchText(title);
   const directoryMatches = directoryTools
     .filter((tool) => tool.category.toLowerCase() === category.toLowerCase())
-    .filter((tool) => !normalizedTitle.includes(normalizeText(tool.name)) && !normalizeText(tool.name).includes(normalizedTitle))
+    .filter((tool) => !normalizedTitle.includes(normalizeSearchText(tool.name)) && !normalizeSearchText(tool.name).includes(normalizedTitle))
     .slice(0, 6);
   const onlineMatches = onlineTools
     .filter((tool) => tool.mode.toLowerCase() === category.toLowerCase())
-    .filter((tool) => !normalizedTitle.includes(normalizeText(tool.name)) && !normalizeText(tool.name).includes(normalizedTitle))
+    .filter((tool) => !normalizedTitle.includes(normalizeSearchText(tool.name)) && !normalizeSearchText(tool.name).includes(normalizedTitle))
     .slice(0, 6);
 
   const fallbackLinks = [
@@ -189,6 +168,7 @@ export function ToolSeoContent({ title, description, category }: ToolSeoContentP
   const sampleLinks = relatedLinks.length > 0 ? relatedLinks : relatedOnlineLinks;
   const faqs = buildToolFaqs(title, categoryLabel);
   const intent = keywordIntent(title, categoryLabel, conversionPair);
+  const phrases = keywordPhrases(title, categoryLabel, conversionPair);
   const seoLinks = uniqueRelatedLinks(title, category, categoryLabel);
   const inputExample = conversionPair ? codeSample(conversionPair.from, "palindrome") : toolInputExample(title, categoryLabel);
   const outputExample = conversionPair ? codeSample(conversionPair.to, "palindrome") : toolOutputExample(title, categoryLabel);
@@ -222,6 +202,16 @@ export function ToolSeoContent({ title, description, category }: ToolSeoContentP
                 </span>
               ))}
               .
+            </p>
+            <p className="mt-3 text-sm leading-6 text-slate-700">
+              This page is optimized around practical searches such as{" "}
+              {phrases.slice(0, 6).map((phrase, index) => (
+                <span key={phrase}>
+                  {index > 0 ? (index === phrases.slice(0, 6).length - 1 ? ", and " : ", ") : ""}
+                  <strong>{phrase}</strong>
+                </span>
+              ))}
+              , while keeping the tool itself simple enough for everyday cleanup, formatting, conversion, validation, and code review tasks.
             </p>
             <ol className="mt-4 list-decimal space-y-2 pl-5 text-sm leading-6 text-slate-700">
               <li>{copy.step1}</li>
@@ -278,7 +268,22 @@ export function ToolSeoContent({ title, description, category }: ToolSeoContentP
           </h2>
           <p className="mt-3 text-sm leading-6 text-slate-700">
             A good <strong>{title}</strong> page should make the main task obvious, keep the input and output close together,
-            and provide relevant next steps through descriptive anchor links. If your workflow changes, continue with{" "}
+            and provide relevant next steps through descriptive anchor links.{" "}
+            {phrases.length > 6 ? (
+              <>
+                It also helps users compare related searches like{" "}
+                {phrases.slice(6, 9).map((phrase, index) => (
+                  <span key={`phrase-${phrase}`}>
+                    {index > 0 ? (index === phrases.slice(6, 9).length - 1 ? ", and " : ", ") : ""}
+                    <strong>{phrase}</strong>
+                  </span>
+                ))}
+                .{" "}
+              </>
+            ) : (
+              "It also keeps related search intent clear for quick comparison. "
+            )}
+            If your workflow changes, continue with{" "}
             {seoLinks.slice(0, 4).map((tool, index) => (
               <span key={`context-${toolHref(tool)}`}>
                 {index > 0 ? (index === seoLinks.slice(0, 4).length - 1 ? ", or " : ", ") : ""}
