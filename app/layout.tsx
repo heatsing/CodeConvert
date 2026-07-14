@@ -9,8 +9,8 @@ import { siteUrl } from "@/lib/site";
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "Quick Code Conversion Tools | CodeConvert.net",
-    template: "%s | CodeConvert.net"
+    default: "Quick Code Conversion Tools - CodeConvert",
+    template: "%s - CodeConvert"
   },
   description: "Free browser-based coding tools for converting, encoding, decoding, formatting, generating, explaining, checking, cleaning, and exporting developer text.",
   applicationName: "CodeConvert.net",

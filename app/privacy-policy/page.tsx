@@ -9,7 +9,7 @@ export const metadata: Metadata = {
     canonical: `${siteUrl}/privacy-policy`
   },
   openGraph: {
-    title: "Privacy Policy | CodeConvert.net",
+    title: "Privacy Policy - CodeConvert",
     description: "Privacy information for CodeConvert.net developer tools.",
     url: `${siteUrl}/privacy-policy`,
     siteName: "CodeConvert.net",

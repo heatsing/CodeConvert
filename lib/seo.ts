@@ -15,6 +15,7 @@ import {
 import type { ToolConfig } from "@/lib/tools";
 
 const brandName = "CodeConvert.net";
+const titleBrandName = "CodeConvert";
 const defaultOgImage = "/android-chrome-512x512.png";
 
 type SeoTool = {
@@ -39,7 +40,7 @@ export function getLanguageConverterDescription(tool: DirectoryTool) {
 }
 
 function withBrand(title: string) {
-  return title.includes(brandName) ? title : `${title} | ${brandName}`;
+  return title.includes(titleBrandName) ? title : `${title} - ${titleBrandName}`;
 }
 
 function getConversionPair(title: string) {

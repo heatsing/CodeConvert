@@ -9,7 +9,7 @@ export const metadata: Metadata = {
     canonical: `${siteUrl}/terms-of-service`
   },
   openGraph: {
-    title: "Terms of Service | CodeConvert.net",
+    title: "Terms of Service - CodeConvert",
     description: "Terms for using CodeConvert.net developer tools.",
     url: `${siteUrl}/terms-of-service`,
     siteName: "CodeConvert.net",
