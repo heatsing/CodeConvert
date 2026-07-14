@@ -80,6 +80,63 @@ function metaActionForName(name: string, category: string) {
   return `process ${getCategoryLabel(category).toLowerCase()} input`;
 }
 
+function metaInputForCategory(category: string) {
+  if (category === "Encode" || category === "Decode" || category === "Encoding") return "encoded text, URLs, tokens, or character data";
+  if (category === "Formatter" || category === "Format" || category === "Beautifiers") return "code, markup, or structured data";
+  if (category === "Security") return "hashes, tokens, headers, passwords, or security text";
+  if (category === "Network") return "URLs, domains, IP addresses, DNS values, or network text";
+  if (category === "Regex") return "patterns, flags, and sample text";
+  if (category === "Code") return "code snippets, JSON, XML, SQL, or developer data";
+  if (category === "Convert") return "text, code, data, or format-specific input";
+  if (category === "Utility") return "developer text, lists, identifiers, or utility input";
+  return "text, code, URLs, tokens, or structured data";
+}
+
+function specificDirectoryMetaDescription(tool: DirectoryTool) {
+  const descriptions: Record<string, string> = {
+    "JSON Formatter": "Free JSON Formatter online. Format, validate, and beautify JSON data in your browser, then copy or download clean structured output.",
+    "JSON5 Formatter": "Free JSON5 Formatter online. Format JSON5 data with comments and relaxed syntax, then copy or download readable output.",
+    "JSON Formatter & Minifier": "Free JSON Formatter and Minifier online. Beautify JSON for reading or minify JSON for compact sharing, then copy the result.",
+    "JSON Beautifier": "Free JSON Beautifier online. Turn compact or messy JSON into readable structured data with clean indentation and copy-ready output.",
+    "JSON Validator": "Free JSON Validator online. Check JSON syntax, inspect formatting issues, and copy or download the corrected structured output.",
+    "XML Formatter": "Free XML Formatter online. Beautify XML markup, improve indentation, and prepare readable XML for review, docs, or debugging.",
+    "XML Beautifier": "Free XML Beautifier online. Reformat compact XML into clear, readable markup and copy or download the cleaned result.",
+    "HTML Formatter": "Free HTML Formatter online. Format HTML markup, improve indentation, and prepare cleaner code for editing, review, or publishing.",
+    "HTML Formatter, Minifier & Beautifier": "Free HTML Formatter online. Beautify, minify, and clean HTML markup in the browser, then copy or download the result.",
+    "CSS Formatter": "Free CSS Formatter online. Beautify CSS rules, clean indentation, and prepare stylesheet code for review or editing.",
+    "CSS Beautifier": "Free CSS Beautifier online. Turn minified or messy CSS into readable stylesheet code with copy-ready formatting.",
+    "JavaScript Formatter": "Free JavaScript Formatter online. Beautify JS code, clean indentation, and prepare scripts for debugging or review.",
+    "Javascript Beautifier": "Free Javascript Beautifier online. Reformat compact JavaScript into readable code that is easier to inspect, edit, and share.",
+    "TypeScript Formatter": "Free TypeScript Formatter online. Format TS code, improve readability, and copy or download cleaner source output.",
+    "SQL Formatter": "Free SQL Formatter online. Beautify SQL queries, align clauses, and prepare readable database code for review or sharing.",
+    "YAML Formatter": "Free YAML Formatter online. Format YAML data, clean indentation, and prepare configuration files for review or editing.",
+    "Markdown Formatter": "Free Markdown Formatter online. Clean Markdown structure, improve readability, and prepare copy-ready documentation text.",
+    "GraphQL Formatter": "Free GraphQL Formatter online. Beautify queries, mutations, and schema snippets for easier API review and debugging.",
+    "Base64 Encode": "Free Base64 Encode tool online. Convert text, code, JSON, or developer data to Base64 and copy or download the encoded result.",
+    "Base64 Decode": "Free Base64 Decode tool online. Decode Base64 strings into readable text or data, then copy or download the cleaned output.",
+    "Base64 Encode and Decode": "Free Base64 Encode and Decode tool online. Convert text to Base64 or decode Base64 strings in a fast browser workspace.",
+    "URL Encode": "Free URL Encode tool online. Encode URLs, query strings, and special characters for safe links, APIs, and browser requests.",
+    "URL Decode": "Free URL Decode tool online. Decode URL strings, query parameters, and escaped characters into readable text.",
+    "URL Encode and Decode": "Free URL Encode and Decode tool online. Encode or decode URLs, query strings, and web parameters in your browser.",
+    "JWT Decode": "Free JWT Decode tool online. Decode JWT token headers and payloads, inspect claims, and copy readable token sections.",
+    "JWT Encode": "Free JWT Encode tool online. Create JWT-like token text for testing, documentation, and developer workflows.",
+    "Regex Tester Tool": "Free Regex Tester tool online. Test regular expressions against sample text, review matches, and refine patterns faster.",
+    "Binary Code Translator": "Free Binary Code Translator online. Convert binary code to readable text or translate text into binary output.",
+    "Code to Image": "Free Code to Image tool online. Create shareable code image previews for docs, tutorials, social posts, and team notes.",
+    "Small Text Generator": "Free Small Text Generator online. Convert normal text into small Unicode characters for bios, captions, usernames, and posts.",
+    "Character Remover": "Free Character Remover online. Remove specific letters, symbols, or unwanted characters from pasted text with clean output.",
+    "Remove Line Breaks": "Free Remove Line Breaks tool online. Join broken lines, clean copied paragraphs, and prepare text for documents or forms.",
+    "Duplicate Line Remover": "Free Duplicate Line Remover online. Remove repeated lines while keeping the first occurrence and original order.",
+    "Duplicate Word Finder": "Free Duplicate Word Finder online. Find repeated words in pasted text, clean drafts, and improve readability before publishing.",
+    "Word Counter": "Free Word Counter online. Count words, characters, and lines in pasted text for writing, editing, SEO, and content checks.",
+    "Character Counter": "Free Character Counter online. Count characters, letters, words, and text length for posts, forms, titles, and descriptions.",
+    "Whitespace Remover": "Free Whitespace Remover online. Remove extra spaces, tabs, and blank text from pasted content, then copy the cleaned result.",
+    "Title Case Converter": "Free Title Case Converter online. Convert headings, titles, and labels into clean title case for publishing or editing."
+  };
+
+  return descriptions[tool.name] ?? null;
+}
+
 function textTitle(tool: DirectoryTool) {
   const titles: Record<string, string> = {
     "APA Citation Generator": "Generate APA Citations from Text",
@@ -267,6 +324,9 @@ export function getCoreToolMetaDescription(tool: ToolConfig) {
 }
 
 export function getDirectoryToolMetaDescription(tool: DirectoryTool) {
+  const specificDescription = specificDirectoryMetaDescription(tool);
+  if (specificDescription) return trimSentence(specificDescription);
+
   const pair = getConversionPair(tool.name);
   if (pair) {
     return trimSentence(`Free ${pair.from} to ${pair.to} converter online. Paste ${pair.from} code, run the converter, then copy or download clean ${pair.to} output.`);
@@ -281,7 +341,8 @@ export function getDirectoryToolMetaDescription(tool: DirectoryTool) {
   }
 
   const action = metaActionForName(tool.name, tool.category);
-  return trimSentence(`Free ${tool.name} online. Use this ${getCategoryLabel(tool.category).toLowerCase()} tool to ${action}, then copy or download the result. No signup required.`);
+  const input = metaInputForCategory(tool.category);
+  return trimSentence(`Free ${tool.name} online for ${action}. Paste ${input}, run it in your browser, then copy or download a clean result.`);
 }
 
 export function getOnlineToolMetaDescription(tool: OnlineTool) {

@@ -1,19 +1,25 @@
 import type { Metadata } from "next";
 import { LegalPage } from "@/components/legal-page";
-import { siteUrl } from "@/lib/site";
+import { siteOpenGraphAlternateLocales, siteOpenGraphLocale, siteUrl } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Terms of Service",
   description: "Read the CodeConvert.net terms of service for using free online code, formatter, encoder, decoder, text, and developer tools.",
   alternates: {
-    canonical: `${siteUrl}/terms-of-service`
+    canonical: `${siteUrl}/terms-of-service`,
+    languages: {
+      "x-default": `${siteUrl}/terms-of-service`,
+      en: `${siteUrl}/terms-of-service`
+    }
   },
   openGraph: {
     title: "Terms of Service - CodeConvert",
-    description: "Terms for using CodeConvert.net developer tools.",
+    description: "Read the CodeConvert.net terms of service for using free online code, formatter, encoder, decoder, text, and developer tools.",
     url: `${siteUrl}/terms-of-service`,
     siteName: "CodeConvert.net",
-    type: "website"
+    type: "website",
+    locale: siteOpenGraphLocale,
+    alternateLocale: siteOpenGraphAlternateLocales
   }
 };
 

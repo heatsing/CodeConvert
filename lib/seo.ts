@@ -3,7 +3,7 @@ import { createElement } from "react";
 import { getCategoryLabel, type DirectoryTool } from "@/lib/home-tools";
 import type { OnlineTool } from "@/lib/online-tools";
 import { intentKeywords, keywordVariants, uniqueKeywords } from "@/lib/seo-keywords";
-import { siteIconUrl, siteLogoUrl, siteUrl } from "@/lib/site";
+import { siteAvailableLanguages, siteIconUrl, siteLogoUrl, siteOpenGraphAlternateLocales, siteOpenGraphLocale, siteUrl } from "@/lib/site";
 import {
   getCoreToolHeader,
   getCoreToolMetaDescription,
@@ -87,7 +87,11 @@ export function buildMetadata({
     description,
     keywords,
     alternates: {
-      canonical: url
+      canonical: url,
+      languages: {
+        "x-default": url,
+        en: url
+      }
     },
     openGraph: {
       title: brandedTitle,
@@ -95,6 +99,8 @@ export function buildMetadata({
       url,
       siteName: brandName,
       type: "website",
+      locale: siteOpenGraphLocale,
+      alternateLocale: siteOpenGraphAlternateLocales,
       images: [
         {
           url: imageUrl,
@@ -175,19 +181,19 @@ export function buildToolFaqs(toolName: string, category: string) {
   return [
     {
       question: `What is ${toolName}?`,
-      answer: `${toolName} is a free online ${category.toLowerCase()} tool for processing pasted text, code, data, or developer input in a fast browser workspace.`
+      answer: `${toolName} is a free online ${category.toLowerCase()} tool for processing pasted text, code, data, or developer input in a fast browser workspace with copy and download output.`
     },
     {
       question: `How do I use ${toolName}?`,
-      answer: "Paste or upload your input, run the tool, review the output, then copy or download the result as a text file."
+      answer: `Paste or upload your input, run ${toolName}, review the generated output, then copy or download the result as a text file.`
     },
     {
       question: `Is ${toolName} free?`,
-      answer: "Yes. The tool is available for free and does not require login for the MVP workflow."
+      answer: `Yes. ${toolName} is available as a free online tool and does not require login for the browser-based workflow.`
     },
     {
       question: `Does ${toolName} store my input?`,
-      answer: "The current MVP runs in the browser UI and is designed without accounts, databases, or saved user history."
+      answer: "The current workflow is designed without accounts, databases, or saved user history. Review sensitive code or text before pasting it into any online tool."
     }
   ];
 }
@@ -216,6 +222,7 @@ export function buildSoftwareApplicationJsonLd(tool: SeoTool) {
     operatingSystem: "Web",
     url: tool.url,
     description: tool.description,
+    availableLanguage: siteAvailableLanguages,
     featureList: [
       `${tool.name} input editor`,
       "Copy output",
