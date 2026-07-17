@@ -26,6 +26,10 @@ function lowerFirst(value: string) {
   return value ? `${value.charAt(0).toLowerCase()}${value.slice(1)}` : value;
 }
 
+function capitalizeSentence(value: string) {
+  return value ? `${value.charAt(0).toUpperCase()}${value.slice(1)}` : value;
+}
+
 function trimSentence(value: string, maxLength = 160) {
   const normalized = value.replace(/\s+/g, " ").trim();
   if (normalized.length <= maxLength) return normalized;
@@ -99,17 +103,36 @@ function specificDirectoryMetaDescription(tool: DirectoryTool) {
     "JSON Formatter & Minifier": "Free JSON Formatter and Minifier online. Beautify JSON for reading or minify JSON for compact sharing, then copy the result.",
     "JSON Beautifier": "Free JSON Beautifier online. Turn compact or messy JSON into readable structured data with clean indentation and copy-ready output.",
     "JSON Validator": "Free JSON Validator online. Check JSON syntax, inspect formatting issues, and copy or download the corrected structured output.",
+    "JSON Viewer": "Free JSON Viewer online. Paste JSON data to inspect nested objects, arrays, and readable formatting in a clean browser workspace.",
+    "JSON Editor": "Free JSON Editor online. Edit, format, and review JSON data side by side before copying or downloading the cleaned result.",
+    "JSON Path Tester": "Free JSONPath Tester online. Test JSONPath-style queries against sample JSON and inspect matching values faster.",
+    "JSON to YAML Converter": "Free JSON to YAML Converter online. Convert JSON objects into readable YAML configuration text and copy the result.",
+    "JSON to XML": "Free JSON to XML Converter online. Turn JSON data into XML-style markup for integrations, docs, and developer testing.",
+    "JSON to CSV": "Free JSON to CSV Converter online. Convert JSON arrays or objects into CSV-style rows for spreadsheets, imports, and reports.",
+    "CSV to JSON": "Free CSV to JSON Converter online. Transform CSV rows into structured JSON data for APIs, scripts, and data cleanup.",
     "XML Formatter": "Free XML Formatter online. Beautify XML markup, improve indentation, and prepare readable XML for review, docs, or debugging.",
     "XML Beautifier": "Free XML Beautifier online. Reformat compact XML into clear, readable markup and copy or download the cleaned result.",
+    "XML Viewer": "Free XML Viewer online. Inspect XML markup with readable indentation so tags, attributes, and nested nodes are easier to review.",
+    "XML Validator": "Free XML Validator online. Check XML-like markup for tag structure issues and prepare cleaner text for debugging.",
+    "XML to JSON": "Free XML to JSON Converter online. Convert XML-style markup into readable JSON for APIs, scripts, and structured data workflows.",
     "HTML Formatter": "Free HTML Formatter online. Format HTML markup, improve indentation, and prepare cleaner code for editing, review, or publishing.",
     "HTML Formatter, Minifier & Beautifier": "Free HTML Formatter online. Beautify, minify, and clean HTML markup in the browser, then copy or download the result.",
+    "HTML Encode": "Free HTML Encode tool online. Escape reserved HTML characters so markup can be displayed safely in pages, docs, and code examples.",
+    "HTML Decode": "Free HTML Decode tool online. Decode HTML entities into readable characters for editing copied markup, text, and snippets.",
+    "HTML Entity Encode": "Free HTML Entity Encode tool online. Convert reserved characters into HTML entities for safer web output and examples.",
+    "HTML Entity Decode": "Free HTML Entity Decode tool online. Convert HTML entities back into readable text for cleanup, review, and publishing.",
     "CSS Formatter": "Free CSS Formatter online. Beautify CSS rules, clean indentation, and prepare stylesheet code for review or editing.",
     "CSS Beautifier": "Free CSS Beautifier online. Turn minified or messy CSS into readable stylesheet code with copy-ready formatting.",
+    "CSS Minifier": "Free CSS Minifier online. Compress CSS rules, remove extra whitespace, and prepare smaller stylesheet output for testing.",
     "JavaScript Formatter": "Free JavaScript Formatter online. Beautify JS code, clean indentation, and prepare scripts for debugging or review.",
     "Javascript Beautifier": "Free Javascript Beautifier online. Reformat compact JavaScript into readable code that is easier to inspect, edit, and share.",
+    "JavaScript Minifier": "Free JavaScript Minifier online. Compress JavaScript snippets by removing extra whitespace and preparing compact output.",
+    "JavaScript Encode": "Free JavaScript Encode tool online. Escape JavaScript strings for code examples, JSON snippets, and safer text embedding.",
+    "JavaScript Decode": "Free JavaScript Decode tool online. Decode escaped JavaScript strings into readable text for review and cleanup.",
     "TypeScript Formatter": "Free TypeScript Formatter online. Format TS code, improve readability, and copy or download cleaner source output.",
     "SQL Formatter": "Free SQL Formatter online. Beautify SQL queries, align clauses, and prepare readable database code for review or sharing.",
     "YAML Formatter": "Free YAML Formatter online. Format YAML data, clean indentation, and prepare configuration files for review or editing.",
+    "YAML Validator": "Free YAML Validator online. Check YAML-style configuration text for structure problems before using it in projects.",
     "Markdown Formatter": "Free Markdown Formatter online. Clean Markdown structure, improve readability, and prepare copy-ready documentation text.",
     "GraphQL Formatter": "Free GraphQL Formatter online. Beautify queries, mutations, and schema snippets for easier API review and debugging.",
     "Base64 Encode": "Free Base64 Encode tool online. Convert text, code, JSON, or developer data to Base64 and copy or download the encoded result.",
@@ -121,8 +144,28 @@ function specificDirectoryMetaDescription(tool: DirectoryTool) {
     "JWT Decode": "Free JWT Decode tool online. Decode JWT token headers and payloads, inspect claims, and copy readable token sections.",
     "JWT Encode": "Free JWT Encode tool online. Create JWT-like token text for testing, documentation, and developer workflows.",
     "Regex Tester Tool": "Free Regex Tester tool online. Test regular expressions against sample text, review matches, and refine patterns faster.",
+    "Regex Tester": "Free Regex Tester online. Match patterns against sample text, inspect results, and tune regular expressions before using them.",
+    "Regex Generator": "Free Regex Generator online. Draft regular expression patterns from plain examples and refine them in the browser.",
+    "Regex Extractor": "Free Regex Extractor online. Extract matching text from pasted content using pattern-based matching and copy the results.",
+    "Regex Replace": "Free Regex Replace tool online. Replace text by pattern, test substitutions, and review cleaned output before saving.",
+    "Regex Explainer": "Free Regex Explainer online. Break down regular expression patterns into readable parts for learning and review.",
+    "Regex Validator": "Free Regex Validator online. Check regex syntax and catch pattern issues before using expressions in code.",
     "Binary Code Translator": "Free Binary Code Translator online. Convert binary code to readable text or translate text into binary output.",
     "Code to Image": "Free Code to Image tool online. Create shareable code image previews for docs, tutorials, social posts, and team notes.",
+    "Code Formatter": "Free Code Formatter online. Format messy source snippets into readable code for review, documentation, and sharing.",
+    "Code Beautifier": "Free Code Beautifier online. Beautify source code with cleaner spacing and indentation before copying the output.",
+    "Code Minifier": "Free Code Minifier online. Compact source snippets by removing extra whitespace and preparing smaller code output.",
+    "Code Diff": "Free Code Diff tool online. Compare two code blocks, review changed lines, and prepare cleaner review notes.",
+    "JSON to TypeScript": "Free JSON to TypeScript tool online. Generate TypeScript-style types from JSON examples for API models and docs.",
+    "JSON to Java": "Free JSON to Java tool online. Generate Java-style model text from JSON data for quick scaffolding and documentation.",
+    "JSON to Python": "Free JSON to Python tool online. Generate Python data model ideas from JSON samples for scripts, APIs, and examples.",
+    "Hash Generator": "Free Hash Generator online. Generate hash-style values from text for checks, examples, and developer workflows.",
+    "MD5 Hash Generator": "Free MD5 Hash Generator online. Create MD5 hashes from text input for checksums, examples, and legacy integrations.",
+    "SHA256 Generator": "Free SHA256 Generator online. Generate SHA-256 hash values from pasted text for verification and developer testing.",
+    "HTTP Headers": "Free HTTP Headers tool online. Inspect header-style text, organize request and response values, and copy readable output.",
+    "URL Parser": "Free URL Parser online. Split URLs into protocol, host, path, query string, and fragment parts for debugging.",
+    "Query String Parser": "Free Query String Parser online. Parse URL query parameters into readable key-value output for API and tracking review.",
+    "DNS Record Viewer": "Free DNS Record Viewer online. Organize DNS record text for domains, hosts, and troubleshooting notes.",
     "Small Text Generator": "Free Small Text Generator online. Convert normal text into small Unicode characters for bios, captions, usernames, and posts.",
     "Character Remover": "Free Character Remover online. Remove specific letters, symbols, or unwanted characters from pasted text with clean output.",
     "Remove Line Breaks": "Free Remove Line Breaks tool online. Join broken lines, clean copied paragraphs, and prepare text for documents or forms.",
@@ -173,9 +216,22 @@ function textTitle(tool: DirectoryTool) {
 }
 
 function textDescription(tool: DirectoryTool) {
-  if (tool.name === "Character Remover") {
-    return "Transform your text by removing unwanted characters with precision and ease. Whether you are cleaning data for a presentation, preparing content for a database, or standardizing information across your organization, this character removal tool helps you get exactly the result you need.";
-  }
+  const descriptions: Record<string, string> = {
+    "Character Remover": "Transform your text by removing unwanted characters with precision and ease. Whether you are cleaning data for a presentation, preparing content for a database, or standardizing information across your organization, this character removal tool helps you get exactly the result you need.",
+    "Remove Line Breaks": "Turn broken copied text into clean paragraphs by removing unwanted line breaks. Use it for PDF text, email drafts, spreadsheet exports, and pasted content that needs to flow naturally again.",
+    "Duplicate Line Remover": "Clean lists, logs, keyword exports, and pasted notes by removing repeated lines while keeping the first occurrence in its original order.",
+    "Duplicate Word Finder": "Find repeated words in drafts, descriptions, and copied text so you can catch accidental duplicates before publishing or sharing.",
+    "Word Counter": "Count words, characters, lines, and text length for articles, metadata, social posts, briefs, and editing checks in one fast workspace.",
+    "Character Counter": "Check character counts, word counts, and text length for titles, descriptions, forms, posts, and messages before you publish.",
+    "Whitespace Remover": "Remove extra spaces, tabs, blank lines, and messy gaps from pasted content so the result is easier to read, store, or reuse.",
+    "Title Case Converter": "Convert headings, labels, titles, and article names into clean title case for publishing, SEO drafts, and editorial workflows.",
+    "Sentence Case Converter": "Convert pasted text into sentence case for cleaner paragraphs, descriptions, headings, and documentation.",
+    "Find and Replace Text": "Search for words, phrases, or characters and replace them across pasted text without opening a separate editor.",
+    "Plain Text Converter": "Strip rich formatting from copied content and turn it into clean plain text for documents, CMS fields, forms, and notes.",
+    "Small Text Generator": "Convert normal text into small Unicode-style characters that can be copied into bios, captions, usernames, and short social posts."
+  };
+
+  if (descriptions[tool.name]) return descriptions[tool.name];
 
   const action = verbForName(tool.name);
   const purpose = tool.description.replace(/\.$/, "").toLowerCase();
@@ -228,9 +284,17 @@ function directoryDescription(tool: DirectoryTool) {
 
   if (tool.headerDescription) return tool.headerDescription;
 
+  const specificDescription = specificDirectoryMetaDescription(tool);
+  if (specificDescription) {
+    return specificDescription
+      .replace(/^Free\s+/i, "")
+      .replace(/\s+online\./i, " online.")
+      .replace(/\s+No signup required\.$/i, "");
+  }
+
   const action = verbForName(tool.name);
   const category = getCategoryLabel(tool.category).toLowerCase();
-  return `Use ${tool.name} to ${action} ${category} input in a fast online workspace. Paste text, code, URLs, tokens, or structured data, run the tool instantly, then copy or download a clean result without installing extra software.`;
+  return `${tool.name} gives you a focused online workspace to ${action} ${category} input without switching apps. Paste text, code, URLs, tokens, or structured data, run the tool instantly, then copy or download a clean result for review, documentation, or development.`;
 }
 
 export function getDirectoryToolHeader(tool: DirectoryTool): ToolHeaderCopy {
@@ -342,7 +406,7 @@ export function getDirectoryToolMetaDescription(tool: DirectoryTool) {
 
   const action = metaActionForName(tool.name, tool.category);
   const input = metaInputForCategory(tool.category);
-  return trimSentence(`Free ${tool.name} online for ${action}. Paste ${input}, run it in your browser, then copy or download a clean result.`);
+  return trimSentence(`Free ${tool.name} online. ${capitalizeSentence(action)} from pasted ${input}, review the output, then copy or download the clean result.`);
 }
 
 export function getOnlineToolMetaDescription(tool: OnlineTool) {
@@ -362,5 +426,5 @@ export function getOnlineToolMetaDescription(tool: OnlineTool) {
     code: "write, run, and review code snippets in a browser workspace"
   };
 
-  return trimSentence(`Free ${tool.name} online. Use this developer tool to ${modeCopy[tool.mode] ?? modeCopy.code}, then copy or download the result. No signup required.`);
+  return trimSentence(`Free ${tool.name} online for developers. ${capitalizeSentence(modeCopy[tool.mode] ?? modeCopy.code)}, review the side-by-side output, then copy or download the result.`);
 }

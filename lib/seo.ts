@@ -178,18 +178,49 @@ export function buildOnlineToolMetadata(tool: OnlineTool): Metadata {
 }
 
 export function buildToolFaqs(toolName: string, category: string) {
+  const normalizedCategory = category.toLowerCase();
+  const lowerToolName = toolName.toLowerCase();
+  const task = lowerToolName.includes("formatter") || lowerToolName.includes("beautifier")
+    ? "clean indentation, improve readability, and prepare formatted output"
+    : lowerToolName.includes("encode")
+      ? "convert readable input into an encoded string"
+      : lowerToolName.includes("decode")
+        ? "turn encoded input back into readable output"
+        : lowerToolName.includes("regex")
+          ? "test, refine, or understand regular expression patterns"
+          : lowerToolName.includes("counter")
+            ? "measure text length, counts, and structure"
+            : lowerToolName.includes("remove")
+              ? "remove unwanted characters, formatting, comments, or repeated content"
+              : lowerToolName.includes("converter") || lowerToolName.includes("convert")
+                ? "convert input from one format, style, or language to another"
+                : "process pasted input and produce cleaner output";
+  const inputType = normalizedCategory.includes("text")
+    ? "text, drafts, lists, paragraphs, or copied content"
+    : normalizedCategory.includes("code")
+      ? "source code, snippets, JSON, SQL, or developer data"
+      : normalizedCategory.includes("regex")
+        ? "patterns, flags, and sample text"
+        : normalizedCategory.includes("network")
+          ? "URLs, domains, IP addresses, headers, or query strings"
+          : normalizedCategory.includes("security")
+            ? "tokens, hashes, passwords, headers, or security-related text"
+            : normalizedCategory.includes("format")
+              ? "code, markup, configuration, or structured data"
+              : "text, code, data, URLs, or structured input";
+
   return [
     {
       question: `What is ${toolName}?`,
-      answer: `${toolName} is a free online ${category.toLowerCase()} tool for processing pasted text, code, data, or developer input in a fast browser workspace with copy and download output.`
+      answer: `${toolName} is a free online ${category.toLowerCase()} tool built to ${task} in a browser workspace with side-by-side input and output.`
     },
     {
       question: `How do I use ${toolName}?`,
-      answer: `Paste or upload your input, run ${toolName}, review the generated output, then copy or download the result as a text file.`
+      answer: `Paste or upload ${inputType}, run ${toolName}, review the generated result, then copy the output or download it as a text file.`
     },
     {
-      question: `Is ${toolName} free?`,
-      answer: `Yes. ${toolName} is available as a free online tool and does not require login for the browser-based workflow.`
+      question: `When should I use ${toolName}?`,
+      answer: `Use ${toolName} for quick cleanup, formatting, conversion, validation, documentation, and review tasks where you need a copy-ready result without installing another app.`
     },
     {
       question: `Does ${toolName} store my input?`,

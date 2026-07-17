@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { notFound, redirect } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import { TOOLS, toolBySlug, type ToolSlug } from "@/lib/tools";
 import { buildToolMetadata } from "@/lib/seo";
 
@@ -24,5 +24,5 @@ export default function ToolPage({ params }: ToolPageProps) {
   const tool = toolBySlug[params.slug as ToolSlug];
   if (!tool) notFound();
 
-  redirect(`/${tool.slug}`);
+  permanentRedirect(`/${tool.slug}`);
 }

@@ -119,6 +119,27 @@ function toolHref(tool: { name: string } & ({ href: string } | { slug: string })
   return "href" in tool ? tool.href : `/${tool.slug}`;
 }
 
+function relatedAnchorLabel(name: string) {
+  const lowerName = name.toLowerCase();
+  if (lowerName.includes("json formatter")) return "format JSON online";
+  if (lowerName.includes("json validator")) return "validate JSON syntax";
+  if (lowerName.includes("base64 encode")) return "encode Base64 text";
+  if (lowerName.includes("base64 decode")) return "decode Base64 strings";
+  if (lowerName.includes("url encode")) return "encode URL parameters";
+  if (lowerName.includes("url decode")) return "decode URL strings";
+  if (lowerName.includes("regex tester")) return "test a regular expression";
+  if (lowerName.includes("regex")) return name.replace(/^Regex/i, "work with regex");
+  if (lowerName.includes("remove line breaks")) return "remove line breaks";
+  if (lowerName.includes("duplicate line")) return "remove duplicate lines";
+  if (lowerName.includes("duplicate word")) return "find duplicate words";
+  if (lowerName.includes("word counter")) return "count words online";
+  if (lowerName.includes("character counter")) return "count characters online";
+  if (lowerName.includes("formatter")) return `format ${name.replace(/\s*Formatter$/i, "")}`;
+  if (lowerName.includes("beautifier")) return `beautify ${name.replace(/\s*Beautifier$/i, "")}`;
+  if (lowerName.includes("converter")) return name.replace(/\s+Converter$/i, " converter");
+  return name;
+}
+
 function uniqueRelatedLinks(title: string, category: string, categoryLabel: string) {
   const normalizedTitle = normalizeSearchText(title);
   const directoryMatches = directoryTools
@@ -197,21 +218,21 @@ export function ToolSeoContent({ title, description, category }: ToolSeoContentP
                 <span key={toolHref(tool)}>
                   {index > 0 ? (index === seoLinks.slice(0, 3).length - 1 ? ", or " : ", ") : ""}
                   <Link href={toolHref(tool)} className="font-bold text-blue-700 underline-offset-4 hover:underline">
-                    {tool.name}
+                    {relatedAnchorLabel(tool.name)}
                   </Link>
                 </span>
               ))}
               .
             </p>
             <p className="mt-3 text-sm leading-6 text-slate-700">
-              This page is optimized around practical searches such as{" "}
+              People often reach this tool through practical searches such as{" "}
               {phrases.slice(0, 6).map((phrase, index) => (
                 <span key={phrase}>
                   {index > 0 ? (index === phrases.slice(0, 6).length - 1 ? ", and " : ", ") : ""}
                   <strong>{phrase}</strong>
                 </span>
               ))}
-              , while keeping the tool itself simple enough for everyday cleanup, formatting, conversion, validation, and code review tasks.
+              . The wording is reflected in the tool, examples, and nearby links so the page stays useful for everyday cleanup, formatting, conversion, validation, and code review tasks.
             </p>
             <ol className="mt-4 list-decimal space-y-2 pl-5 text-sm leading-6 text-slate-700">
               <li>{copy.step1}</li>
@@ -267,8 +288,8 @@ export function ToolSeoContent({ title, description, category }: ToolSeoContentP
             {conversionPair ? `${conversionPair.from} ${copy.to} ${conversionPair.to}` : title}
           </h2>
           <p className="mt-3 text-sm leading-6 text-slate-700">
-            A good <strong>{title}</strong> page should make the main task obvious, keep the input and output close together,
-            and provide relevant next steps through descriptive anchor links.{" "}
+            A useful <strong>{title}</strong> workflow should make the main task obvious, keep input and output close together,
+            and give clear next steps through descriptive links to related tools.{" "}
             {phrases.length > 6 ? (
               <>
                 It also helps users compare related searches like{" "}
@@ -288,7 +309,7 @@ export function ToolSeoContent({ title, description, category }: ToolSeoContentP
               <span key={`context-${toolHref(tool)}`}>
                 {index > 0 ? (index === seoLinks.slice(0, 4).length - 1 ? ", or " : ", ") : ""}
                 <Link href={toolHref(tool)} className="font-bold text-blue-700 underline-offset-4 hover:underline">
-                  {tool.name}
+                  {relatedAnchorLabel(tool.name)}
                 </Link>
               </span>
             ))}
@@ -345,13 +366,13 @@ export function ToolSeoContent({ title, description, category }: ToolSeoContentP
           <section className="mt-8">
             <h2 className="text-xl font-black text-slate-950">{copy.tryMore} {relatedHeading}</h2>
             <p className="mt-3 text-sm leading-6 text-slate-700">
-              Explore more <strong>{relatedHeading}</strong> with clear anchor links for common developer workflows.
-              These pages help search engines and AI assistants understand how each tool connects to nearby tasks.
+              Explore more <strong>{relatedHeading}</strong> for nearby cleanup, formatting, conversion, and validation tasks.
+              Each link points to a specific action so it is easier to continue the same workflow.
             </p>
             <div className="mt-4 flex flex-wrap gap-3">
               {sampleLinks.slice(0, 12).map((tool) => (
                 <Link key={tool.name} href={"href" in tool ? tool.href : `/${tool.slug}`} className="rounded-md bg-slate-100 px-4 py-2 text-sm font-bold text-slate-700 hover:bg-blue-50 hover:text-blue-700">
-                  {tool.name}
+                  {relatedAnchorLabel(tool.name)}
                 </Link>
               ))}
             </div>
