@@ -1,6 +1,7 @@
 import { directoryTools } from "@/lib/home-tools";
 import { languageConverterTools } from "@/lib/language-converters";
 import { onlineTools } from "@/lib/online-tools";
+import { shouldIndexDirectoryTool, shouldIndexOnlineTool } from "@/lib/seo-quality";
 import { siteIconUrl, siteLogoUrl, siteUrl } from "@/lib/site";
 
 type SitemapEntry = {
@@ -39,27 +40,17 @@ export function GET() {
       priority: 1,
       images: [siteLogoUrl, siteIconUrl]
     },
-    {
-      url: `${siteUrl}/privacy-policy`,
-      changeFrequency: "monthly",
-      priority: 0.3
-    },
-    {
-      url: `${siteUrl}/terms-of-service`,
-      changeFrequency: "monthly",
-      priority: 0.3
-    },
-    ...directoryTools.map((tool) => ({
+    ...directoryTools.filter(shouldIndexDirectoryTool).map((tool) => ({
       url: `${siteUrl}${tool.href}`,
       changeFrequency: "weekly" as const,
       priority: 0.7
     })),
-    ...languageConverterTools.map((tool) => ({
+    ...languageConverterTools.filter(shouldIndexDirectoryTool).map((tool) => ({
       url: `${siteUrl}${tool.href}`,
       changeFrequency: "weekly" as const,
       priority: 0.7
     })),
-    ...onlineTools.map((tool) => ({
+    ...onlineTools.filter(shouldIndexOnlineTool).map((tool) => ({
       url: `${siteUrl}/${tool.slug}`,
       changeFrequency: "weekly" as const,
       priority: 0.65

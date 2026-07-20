@@ -92,6 +92,9 @@ function codeSample(language: string, example: "palindrome" | "evenOdd") {
 
 function toolInputExample(title: string, categoryLabel: string) {
   const lowerTitle = title.toLowerCase();
+  if (lowerTitle.includes("json to xml")) return '{\n  "user": {\n    "name": "John",\n    "active": true,\n    "roles": ["admin", "editor"]\n  }\n}';
+  if (lowerTitle.includes("xml to json")) return '<user>\n  <name>John</name>\n  <active>true</active>\n  <roles>\n    <role>admin</role>\n    <role>editor</role>\n  </roles>\n</user>';
+  if (lowerTitle.includes("html to markdown")) return '<h1>Release Notes</h1>\n<p>Version 2.0 improves the API response format.</p>\n<ul>\n  <li>Cleaner JSON output</li>\n  <li>Faster validation</li>\n</ul>';
   if (lowerTitle.includes("base64")) return "Hello from CodeConvert.net";
   if (lowerTitle.includes("json")) return '{"name":"CodeConvert","tools":["format","convert","check"]}';
   if (lowerTitle.includes("regex")) return "Email alice@example.com and ticket user-123 are in this text.";
@@ -105,6 +108,9 @@ function toolInputExample(title: string, categoryLabel: string) {
 
 function toolOutputExample(title: string, categoryLabel: string) {
   const lowerTitle = title.toLowerCase();
+  if (lowerTitle.includes("json to xml")) return '<root>\n  <user>\n    <name>John</name>\n    <active>true</active>\n    <roles>\n      <item>admin</item>\n      <item>editor</item>\n    </roles>\n  </user>\n</root>';
+  if (lowerTitle.includes("xml to json")) return '{\n  "user": {\n    "name": "John",\n    "active": true,\n    "roles": {\n      "role": ["admin", "editor"]\n    }\n  }\n}';
+  if (lowerTitle.includes("html to markdown")) return '# Release Notes\n\nVersion 2.0 improves the API response format.\n\n- Cleaner JSON output\n- Faster validation';
   if (lowerTitle.includes("base64 encode")) return "SGVsbG8gZnJvbSBDb2RlQ29udmVydC5uZXQ=";
   if (lowerTitle.includes("json")) return "{\n  \"name\": \"CodeConvert\",\n  \"tools\": [\n    \"format\",\n    \"convert\",\n    \"check\"\n  ]\n}";
   if (lowerTitle.includes("duplicate line")) return "apple\nbanana\norange";
@@ -164,6 +170,51 @@ function uniqueRelatedLinks(title: string, category: string, categoryLabel: stri
     .slice(0, 5);
 }
 
+function whatHeading(title: string) {
+  return `What is ${title}?`;
+}
+
+function howHeading(title: string) {
+  const lowerTitle = title.toLowerCase();
+  if (lowerTitle.includes("json to xml")) return "How to Convert JSON to XML?";
+  if (lowerTitle.includes("xml to json")) return "How to Convert XML to JSON?";
+  if (lowerTitle.includes("html to markdown")) return "How to Convert HTML to Markdown?";
+  if (lowerTitle.includes("json formatter")) return "How to Format JSON?";
+  if (lowerTitle.includes("base64")) return "How to Encode Text to Base64?";
+  if (lowerTitle.includes("remove line breaks")) return "How to Remove Line Breaks?";
+  return copySafeHowHeading(title);
+}
+
+function copySafeHowHeading(title: string) {
+  return `How to Use ${title}?`;
+}
+
+function exampleIntro(title: string, conversionPair: ConversionPair | null) {
+  const lowerTitle = title.toLowerCase();
+  if (lowerTitle.includes("json to xml")) return "The examples below show how object values, booleans, and arrays can be represented in XML-style markup. Always review array naming rules before using the result in production.";
+  if (lowerTitle.includes("xml to json")) return "The examples below show how nested XML tags can be converted into JSON objects and arrays for API testing, scripts, and data cleanup.";
+  if (lowerTitle.includes("html to markdown")) return "The examples below show how headings, paragraphs, and lists can be converted from HTML into readable Markdown for documentation workflows.";
+  if (lowerTitle.includes("json formatter")) return "The examples below show compact JSON becoming readable formatted JSON with predictable indentation and preserved values.";
+  if (lowerTitle.includes("base64")) return "The examples below show plain text being encoded into a Base64 string that can be copied into tests, docs, or developer payloads.";
+  if (lowerTitle.includes("remove line breaks")) return "The examples below show broken copied text becoming a single clean paragraph while preserving the original words.";
+
+  return conversionPair
+    ? `The examples below show common ${conversionPair.from} to ${conversionPair.to} conversion patterns. Generated code should always be reviewed before production use.`
+    : `The examples below show the kind of input and output you can expect when using ${title}.`;
+}
+
+function useCases(title: string, categoryLabel: string) {
+  const lowerTitle = title.toLowerCase();
+  if (lowerTitle.includes("json to xml")) return ["Convert API JSON responses into XML payload examples.", "Prepare integration samples for SOAP, enterprise, or legacy systems.", "Document structured data in XML-like form for testing and handoff.", "Compare JSON and XML representations during data migration."];
+  if (lowerTitle.includes("xml to json")) return ["Turn XML API responses into JSON for frontend debugging.", "Clean XML snippets before importing them into scripts or test fixtures.", "Compare XML and JSON structures during service migration.", "Create readable JSON examples for documentation and API notes."];
+  if (lowerTitle.includes("html to markdown")) return ["Move HTML content into Markdown documentation.", "Clean CMS exports before editing README or knowledge base pages.", "Convert blog snippets into Markdown drafts.", "Prepare developer docs from existing HTML markup."];
+  if (lowerTitle.includes("json formatter")) return ["Format API responses before debugging.", "Validate JSON configuration files and test fixtures.", "Make compact logs easier to inspect.", "Prepare structured data examples for documentation."];
+  if (lowerTitle.includes("base64")) return ["Encode short strings for API examples and fixtures.", "Prepare Base64 text for tests, docs, or payload notes.", "Check encoded output before pasting into configuration.", "Convert JSON or small snippets into a transport-safe string."];
+  if (lowerTitle.includes("remove line breaks")) return ["Clean copied PDF paragraphs.", "Prepare pasted text for forms, spreadsheets, and CMS fields.", "Fix email drafts with unwanted hard wraps.", "Normalize scraped text before editing or publishing."];
+
+  return [`Process ${categoryLabel.toLowerCase()} input for quick review.`, "Prepare copy-ready output for docs, forms, or development.", "Clean pasted snippets before sharing with a team.", "Run fast browser checks without installing another app."];
+}
+
 function CodePanel({ label, code }: { label: string; code: string }) {
   return (
     <div className="min-w-0">
@@ -196,6 +247,10 @@ export function ToolSeoContent({ title, description, category }: ToolSeoContentP
   const secondInputExample = conversionPair ? codeSample(conversionPair.from, "evenOdd") : toolInputExample(title, categoryLabel);
   const secondOutputExample = conversionPair ? codeSample(conversionPair.to, "evenOdd") : toolOutputExample(title, categoryLabel);
   const relatedHeading = categoryLabel.toLowerCase().endsWith("tools") ? categoryLabel.toLowerCase() : `${categoryLabel.toLowerCase()} tools`;
+  const currentWhatHeading = whatHeading(title);
+  const currentHowHeading = howHeading(title);
+  const currentExampleIntro = exampleIntro(title, conversionPair);
+  const currentUseCases = useCases(title, categoryLabel);
 
   const useIntro = conversionPair
     ? `This free online converter helps you convert ${conversionPair.from} code to ${conversionPair.to} in a focused browser workspace.`
@@ -206,7 +261,7 @@ export function ToolSeoContent({ title, description, category }: ToolSeoContentP
       <article className="rounded-lg border bg-white p-6 shadow-soft sm:p-8">
         <section className="grid gap-6 lg:grid-cols-[1fr_220px] lg:items-center">
           <div>
-            <h2 className="text-xl font-black text-slate-950">{copy.howTo}</h2>
+            <h2 className="text-xl font-black text-slate-950">{currentWhatHeading}</h2>
             <p className="mt-3 text-sm leading-6 text-slate-700">
               {useIntro} {description}
             </p>
@@ -234,6 +289,7 @@ export function ToolSeoContent({ title, description, category }: ToolSeoContentP
               ))}
               . The wording is reflected in the tool, examples, and nearby links so the page stays useful for everyday cleanup, formatting, conversion, validation, and code review tasks.
             </p>
+            <h2 className="mt-5 text-lg font-black text-slate-950">{currentHowHeading}</h2>
             <ol className="mt-4 list-decimal space-y-2 pl-5 text-sm leading-6 text-slate-700">
               <li>{copy.step1}</li>
               <li>{conversionPair ? `${conversionPair.from} ${copy.to} ${conversionPair.to}` : copy.settingsStep}</li>
@@ -251,9 +307,7 @@ export function ToolSeoContent({ title, description, category }: ToolSeoContentP
         <section className="mt-8">
           <h2 className="text-xl font-black text-slate-950">{copy.examples}</h2>
           <p className="mt-3 text-sm leading-6 text-slate-700">
-            {conversionPair
-              ? `The examples below show common ${conversionPair.from} to ${conversionPair.to} conversion patterns. Generated code should always be reviewed before production use.`
-              : `The examples below show the kind of input and output you can expect when using ${title}.`}
+            {currentExampleIntro}
           </p>
 
           <div className="mt-5 space-y-8">
@@ -280,6 +334,17 @@ export function ToolSeoContent({ title, description, category }: ToolSeoContentP
                 <CodePanel label={conversionPair?.to ?? copy.output} code={secondOutputExample} />
               </div>
             </div>
+          </div>
+        </section>
+
+        <section className="mt-8">
+          <h2 className="text-xl font-black text-slate-950">Common Use Cases</h2>
+          <div className="mt-4 grid gap-3 sm:grid-cols-2">
+            {currentUseCases.map((useCase) => (
+              <div key={useCase} className="rounded-md border bg-slate-50 p-4 text-sm leading-6 text-slate-700">
+                {useCase}
+              </div>
+            ))}
           </div>
         </section>
 

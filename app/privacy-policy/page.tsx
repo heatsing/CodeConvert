@@ -5,6 +5,14 @@ import { siteOpenGraphAlternateLocales, siteOpenGraphLocale, siteUrl } from "@/l
 export const metadata: Metadata = {
   title: "Privacy Policy",
   description: "Read the CodeConvert.net privacy policy, including what data our browser-based developer tools process and how analytics may be used.",
+  robots: {
+    index: false,
+    follow: true,
+    googleBot: {
+      index: false,
+      follow: true
+    }
+  },
   alternates: {
     canonical: `${siteUrl}/privacy-policy`,
     languages: {

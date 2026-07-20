@@ -247,6 +247,17 @@ function fontDescription(tool: DirectoryTool) {
 }
 
 function directoryTitle(tool: DirectoryTool) {
+  const priorityTitles: Record<string, string> = {
+    "JSON to XML": "JSON to XML Converter",
+    "XML to JSON": "XML to JSON Converter",
+    "HTML to Markdown": "HTML to Markdown Converter",
+    "JSON Formatter": "JSON Formatter",
+    "Base64 Encode": "Base64 Encoder",
+    "Remove Line Breaks": "Remove Line Breaks from Text"
+  };
+
+  if (priorityTitles[tool.name]) return priorityTitles[tool.name];
+
   const pair = getConversionPair(tool.name);
   if (pair) return `Convert ${pair.from} Code to ${pair.to} Online`;
   if (tool.category === "Text") return textTitle(tool);
@@ -269,6 +280,17 @@ function directoryTitle(tool: DirectoryTool) {
 }
 
 function directoryDescription(tool: DirectoryTool) {
+  const priorityDescriptions: Record<string, string> = {
+    "JSON to XML": "Convert JSON data into XML markup for API handoffs, legacy integrations, configuration files, and developer testing. Paste JSON on the left, run the converter, then copy clean XML from the output panel.",
+    "XML to JSON": "Convert XML markup into readable JSON for API work, scripts, data cleanup, and debugging. Paste XML input, generate structured JSON, then review and copy the result.",
+    "HTML to Markdown": "Convert HTML markup into clean Markdown for documentation, CMS migration, README files, and content editing. Paste HTML, run the converter, and copy Markdown that is easier to edit.",
+    "JSON Formatter": "Format and validate messy JSON data with clean indentation, readable nesting, and copy-ready output. Use it for API responses, config files, logs, and structured data review.",
+    "Base64 Encode": "Encode text, code, JSON, URLs, or developer data into Base64 in a browser workspace. Paste your input, run the encoder, then copy or download the encoded string.",
+    "Remove Line Breaks": "Turn broken copied text into clean paragraphs by removing unwanted line breaks. Use it for PDF text, email drafts, spreadsheet exports, and pasted content that needs to flow naturally again."
+  };
+
+  if (priorityDescriptions[tool.name]) return priorityDescriptions[tool.name];
+
   if (tool.category === "Text") return textDescription(tool);
   if (tool.category === "Font Styles") return fontDescription(tool);
 

@@ -5,6 +5,14 @@ import { siteOpenGraphAlternateLocales, siteOpenGraphLocale, siteUrl } from "@/l
 export const metadata: Metadata = {
   title: "Terms of Service",
   description: "Read the CodeConvert.net terms of service for using free online code, formatter, encoder, decoder, text, and developer tools.",
+  robots: {
+    index: false,
+    follow: true,
+    googleBot: {
+      index: false,
+      follow: true
+    }
+  },
   alternates: {
     canonical: `${siteUrl}/terms-of-service`,
     languages: {
