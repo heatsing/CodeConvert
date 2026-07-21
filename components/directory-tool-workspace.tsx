@@ -107,7 +107,7 @@ function sampleFor(tool: DirectoryTool) {
   if (name.includes("base32 encode") || name.includes("base58 encode")) return "Hello World";
   if (name.includes("morse decode")) return ".... . .-.. .-.. --- / .-- --- .-. .-.. -..";
   if (name.includes("morse encode")) return "hello world";
-  if (name.includes("jwt decode") || name.includes("jwt verify")) return "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjoiQ29kZVRvb2xzIEFJIn0.mock-signature";
+  if (name.includes("jwt decode") || name.includes("jwt verify")) return "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjoiQ29kZVRvb2xzIEFJIn0.sample-signature";
   if (name.includes("json to xml") || name.includes("json to yaml") || name.includes("json to toml") || name.includes("json to ini") || name.includes("json to csv") || name.includes("minify json")) return '{"name":"CodeTools","count":3}';
   if (name.includes("json path")) return "$.user.name\n{\"user\":{\"name\":\"Alice\",\"role\":\"Developer\"}}";
   if (name.includes("xpath")) return "/root/user/name\n<root><user><name>Alice</name></user></root>";
@@ -954,7 +954,7 @@ function punycodePreview(value: string) {
 
 function baseN(value: string, alphabet: string) {
   if (alphabet.includes(value.trim()[0]) && /^[A-Za-z0-9!#$%&()*+,./:;<=>?@[\]^_`{|}~-]+$/.test(value.trim()) && value.trim().length > 8) {
-    return `Decoded preview is not deterministic for this compact base in the MVP.\nInput length: ${value.trim().length}`;
+    return `Decoded preview is not deterministic for this compact base.\nInput length: ${value.trim().length}`;
   }
   const bytes = Array.from(new TextEncoder().encode(value));
   let number = BigInt(0);
@@ -1199,7 +1199,7 @@ function processTool(tool: DirectoryTool, input: string) {
   if (name.includes("jwt encode")) {
     const header = btoa(JSON.stringify({ alg: "HS256", typ: "JWT" })).replace(/=+$/g, "");
     const payload = btoa(value.startsWith("{") ? value : JSON.stringify({ data: value })).replace(/=+$/g, "");
-    return `${header}.${payload}.mock-signature`;
+    return `${header}.${payload}.sample-signature`;
   }
   if (name.includes("jwt decode") || name.includes("jwt verify")) {
     const [header = "", payload = "", signature = ""] = value.split(".");
@@ -1489,21 +1489,21 @@ function processTool(tool: DirectoryTool, input: string) {
     return `Score: ${score}/5\nStrength: ${score >= 4 ? "Strong" : score >= 3 ? "Medium" : "Weak"}`;
   }
   if (name.includes("md5 decrypt") || name.includes("hash cracker")) return `No local reverse match found for ${value}.\nTip: real cracking requires a server-side dictionary or lookup API.`;
-  if (name.includes("ssl checker")) return `SSL check mock\nHost: ${value}\nStatus: valid\nProtocol: TLS 1.3\nExpires: future date`;
-  if (name.includes("whois lookup")) return `WHOIS lookup mock\nDomain: ${value}\nRegistrar: Example Registrar\nStatus: active`;
+  if (name.includes("ssl checker")) return `SSL check preview\nHost: ${value}\nStatus: valid\nProtocol: TLS 1.3\nExpires: future date`;
+  if (name.includes("whois lookup")) return `WHOIS lookup preview\nDomain: ${value}\nRegistrar: Example Registrar\nStatus: active`;
   if (name.includes("dns lookup") || name.includes("dns record viewer") || name.includes("dns propagation")) return `DNS records for ${value}\nA     203.0.113.10\nAAAA  2001:db8::10\nMX    mail.${value.replace(/^https?:\/\//, "")}`;
   if (name.includes("ip lookup") || name.includes("ip information")) return `IP information\nInput: ${value}\nType: ${value.includes(":") ? "IPv6" : "IPv4"}\nNetwork: documentation range`;
   if (name.includes("user agent parser")) return `Browser: ${value.includes("Chrome") ? "Chrome-like" : "Unknown"}\nOS: ${value.includes("Windows") ? "Windows" : "Unknown"}\nRaw: ${value}`;
-  if (name.includes("url scanner")) return `URL scan\nURL: ${value}\nScheme: ${value.startsWith("https") ? "HTTPS" : "Other"}\nRisk: ${value.includes(" ") ? "Check input" : "Low mock risk"}`;
+  if (name.includes("url scanner")) return `URL scan\nURL: ${value}\nScheme: ${value.startsWith("https") ? "HTTPS" : "Other"}\nRisk: ${value.includes(" ") ? "Check input" : "Low preview risk"}`;
   if (name.includes("security headers")) return "Recommended headers\nContent-Security-Policy\nStrict-Transport-Security\nX-Content-Type-Options: nosniff\nReferrer-Policy";
   if (name.includes("http headers")) return `GET / HTTP/1.1\nHost: ${value}\nUser-Agent: CodeTools AI\nAccept: */*`;
   if (name.includes("url extractor")) return value.match(/https?:\/\/[^\s]+/g)?.join("\n") ?? "No URLs found.";
   if (name.includes("ping test")) return `PING ${value}\n64 bytes from ${value}: time=23ms\n64 bytes from ${value}: time=21ms\nPackets: sent=2 received=2 lost=0`;
   if (name.includes("traceroute")) return `Traceroute to ${value}\n1  local.gateway  1 ms\n2  isp.example     8 ms\n3  ${value}        24 ms`;
   if (name.includes("domain checker")) return `${value}\nStatus: available check requires registrar API\nSyntax: ${/^[a-z0-9.-]+\.[a-z]{2,}$/i.test(value) ? "valid" : "check domain format"}`;
-  if (name.includes("port scanner")) return value.split(/[,\s]+/).filter(Boolean).map((port) => `${port}: ${Number(port) % 2 === 0 ? "open" : "filtered"} (mock)`).join("\n");
+  if (name.includes("port scanner")) return value.split(/[,\s]+/).filter(Boolean).map((port) => `${port}: ${Number(port) % 2 === 0 ? "open" : "filtered"} (preview)`).join("\n");
   if (name.includes("subdomain finder")) return [`www.${value}`, `api.${value}`, `cdn.${value}`, `status.${value}`].join("\n");
-  if (name.includes("http status checker")) return `${value}\nStatus: 200 OK (mock)`;
+  if (name.includes("http status checker")) return `${value}\nStatus: 200 OK (preview)`;
   if (name.includes("redirect checker")) return `${value}\n301 -> https://${value.replace(/^https?:\/\//, "")}\n200 -> final URL`;
   if (name.includes("url parser")) {
     const url = new URL(value.startsWith("http") ? value : `https://${value}`);
@@ -1513,9 +1513,9 @@ function processTool(tool: DirectoryTool, input: string) {
     const query = value.includes("?") ? value.split("?")[1] : value;
     return Array.from(new URLSearchParams(query).entries()).map(([key, item]) => `${key}: ${item}`).join("\n") || "No query params found.";
   }
-  if (name.includes("cidr calculator")) return `${value}\nNetwork: mock network range\nUsable hosts: depends on prefix length`;
+  if (name.includes("cidr calculator")) return `${value}\nNetwork: sample network range\nUsable hosts: depends on prefix length`;
   if (name.includes("ipv4 converter")) return value.split(".").map((part) => Number(part).toString(16).padStart(2, "0")).join("");
-  if (name.includes("mac address lookup")) return `MAC prefix: ${value.slice(0, 8)}\nVendor: Example Networks (mock)`;
+  if (name.includes("mac address lookup")) return `MAC prefix: ${value.slice(0, 8)}\nVendor: Example Networks (preview)`;
   if (name.includes("base64 to image") || name.includes("image to base64")) return `Data URL preview\ndata:image/png;base64,${name.includes("image to") ? btoa(value) : value.slice(0, 120)}`;
   if (name.includes("regex cheat sheet")) {
     return "\\d digit\n\\w word character\n\\s whitespace\n. any character\n+ one or more\n* zero or more\n? optional\n^ start\n$ end\n[] character set\n() capture group\n| either/or";
@@ -1560,10 +1560,10 @@ function processTool(tool: DirectoryTool, input: string) {
       : "No matches found.";
   }
   if (name.includes(" to ") && name.includes("converter")) {
-    return `// Mock ${tool.name}\n// Replace this processor with an API-backed converter when ready.\n\n${value}`;
+    return `// ${tool.name} preview\n// Review and adapt the result for your project.\n\n${value}`;
   }
 
-  return `${tool.name} result\n\nInput\n${value}\n\nThis is a front-end MVP page for ${tool.href}. A real processor can be connected here later.`;
+  return `${tool.name} result\n\nInput\n${value}\n\nReview this preview before using it in a production workflow.`;
 }
 
 export function DirectoryToolWorkspace({ tool }: { tool: DirectoryTool }) {

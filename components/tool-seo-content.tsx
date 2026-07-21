@@ -5,7 +5,8 @@ import { directoryTools, getCategoryId, getCategoryLabel } from "@/lib/home-tool
 import { useI18n, type LanguageCode } from "@/lib/i18n";
 import { onlineTools } from "@/lib/online-tools";
 import { buildToolFaqs } from "@/lib/seo";
-import { keywordIntent, keywordPhrases, normalizeSearchText } from "@/lib/seo-keywords";
+import { keywordIntent, normalizeSearchText } from "@/lib/seo-keywords";
+import { shouldIndexDirectoryTool, shouldIndexOnlineTool } from "@/lib/seo-quality";
 
 type ToolSeoContentProps = {
   title: string;
@@ -149,10 +150,12 @@ function relatedAnchorLabel(name: string) {
 function uniqueRelatedLinks(title: string, category: string, categoryLabel: string) {
   const normalizedTitle = normalizeSearchText(title);
   const directoryMatches = directoryTools
+    .filter(shouldIndexDirectoryTool)
     .filter((tool) => tool.category.toLowerCase() === category.toLowerCase())
     .filter((tool) => !normalizedTitle.includes(normalizeSearchText(tool.name)) && !normalizeSearchText(tool.name).includes(normalizedTitle))
     .slice(0, 6);
   const onlineMatches = onlineTools
+    .filter(shouldIndexOnlineTool)
     .filter((tool) => tool.mode.toLowerCase() === category.toLowerCase())
     .filter((tool) => !normalizedTitle.includes(normalizeSearchText(tool.name)) && !normalizeSearchText(tool.name).includes(normalizedTitle))
     .slice(0, 6);
@@ -232,15 +235,16 @@ export function ToolSeoContent({ title, description, category }: ToolSeoContentP
   const categoryLabel = getCategoryLabel(category);
   const conversionPair = getConversionPair(title);
   const relatedLinks = directoryTools
+    .filter(shouldIndexDirectoryTool)
     .filter((tool) => tool.category.toLowerCase() === category.toLowerCase() && tool.name !== title)
     .slice(0, 18);
   const relatedOnlineLinks = onlineTools
+    .filter(shouldIndexOnlineTool)
     .filter((tool) => tool.mode.toLowerCase() === category.toLowerCase() && tool.name !== title)
     .slice(0, 18);
   const sampleLinks = relatedLinks.length > 0 ? relatedLinks : relatedOnlineLinks;
   const faqs = buildToolFaqs(title, categoryLabel);
   const intent = keywordIntent(title, categoryLabel, conversionPair);
-  const phrases = keywordPhrases(title, categoryLabel, conversionPair);
   const seoLinks = uniqueRelatedLinks(title, category, categoryLabel);
   const inputExample = conversionPair ? codeSample(conversionPair.from, "palindrome") : toolInputExample(title, categoryLabel);
   const outputExample = conversionPair ? codeSample(conversionPair.to, "palindrome") : toolOutputExample(title, categoryLabel);
@@ -280,14 +284,9 @@ export function ToolSeoContent({ title, description, category }: ToolSeoContentP
               .
             </p>
             <p className="mt-3 text-sm leading-6 text-slate-700">
-              People often reach this tool through practical searches such as{" "}
-              {phrases.slice(0, 6).map((phrase, index) => (
-                <span key={phrase}>
-                  {index > 0 ? (index === phrases.slice(0, 6).length - 1 ? ", and " : ", ") : ""}
-                  <strong>{phrase}</strong>
-                </span>
-              ))}
-              . The wording is reflected in the tool, examples, and nearby links so the page stays useful for everyday cleanup, formatting, conversion, validation, and code review tasks.
+              Before using the result, check the input format, scan the output for edge cases, and make sure the final text
+              matches the system or document where you plan to paste it. Small browser tools are best for quick cleanup and
+              review, not as a substitute for production validation.
             </p>
             <h2 className="mt-5 text-lg font-black text-slate-950">{currentHowHeading}</h2>
             <ol className="mt-4 list-decimal space-y-2 pl-5 text-sm leading-6 text-slate-700">
@@ -354,21 +353,8 @@ export function ToolSeoContent({ title, description, category }: ToolSeoContentP
           </h2>
           <p className="mt-3 text-sm leading-6 text-slate-700">
             A useful <strong>{title}</strong> workflow should make the main task obvious, keep input and output close together,
-            and give clear next steps through descriptive links to related tools.{" "}
-            {phrases.length > 6 ? (
-              <>
-                It also helps users compare related searches like{" "}
-                {phrases.slice(6, 9).map((phrase, index) => (
-                  <span key={`phrase-${phrase}`}>
-                    {index > 0 ? (index === phrases.slice(6, 9).length - 1 ? ", and " : ", ") : ""}
-                    <strong>{phrase}</strong>
-                  </span>
-                ))}
-                .{" "}
-              </>
-            ) : (
-              "It also keeps related search intent clear for quick comparison. "
-            )}
+            and give clear next steps through descriptive links to related tools. The table below summarizes what usually
+            changes between the pasted input and the generated result, so you know what to inspect before copying it.
             If your workflow changes, continue with{" "}
             {seoLinks.slice(0, 4).map((tool, index) => (
               <span key={`context-${toolHref(tool)}`}>

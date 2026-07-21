@@ -52,13 +52,8 @@ const indexableDirectorySlugs = new Set([
   "regex-replace",
   "regex-explainer",
   "binary-code-translator",
-  "md5-hash-generator",
-  "hash-generator",
-  "sha256-generator",
-  "http-headers",
   "url-parser",
   "query-string-parser",
-  "code-to-image",
   "code-formatter",
   "code-beautifier",
   "code-diff",
@@ -76,35 +71,7 @@ const indexableDirectorySlugs = new Set([
   "small-text-generator"
 ]);
 
-const indexableOnlineSlugs = new Set([
-  "code-to-image",
-  "json-online-tool",
-  "html-online-tool",
-  "css-online-tool",
-  "javascript-online-tool",
-  "sql-online-tool",
-  "xml-online-tool",
-  "yaml-online-tool",
-  "markdown-online-tool",
-  "regexr",
-  "regex101",
-  "json-parser"
-]);
-
-const indexableLanguageSlugs = new Set([
-  "javascript",
-  "typescript",
-  "python",
-  "java",
-  "php",
-  "sql",
-  "go",
-  "rust",
-  "csharp",
-  "cpp",
-  "bash",
-  "powershell"
-]);
+const indexableOnlineSlugs = new Set<string>([]);
 
 function slugFromHref(href: string) {
   return href.replace(/^\//, "").replace(/\/$/, "");
@@ -118,7 +85,7 @@ function isIndexableLanguageConverterSlug(slug: string) {
   const match = slug.match(/^(.+)-to-(.+)-converter$/);
   if (!match) return false;
 
-  return indexableLanguageSlugs.has(match[1]) && indexableLanguageSlugs.has(match[2]);
+  return false;
 }
 
 export function getDirectoryToolIndexClass(tool: DirectoryTool): SeoIndexClass {

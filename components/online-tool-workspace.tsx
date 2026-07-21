@@ -33,7 +33,7 @@ function runOnlineTool(tool: OnlineTool, input: string, sampleText: string) {
         ok: true,
         tool: tool.name,
         request: source,
-        data: [{ id: 1, name: "Mock resource" }]
+        data: [{ id: 1, name: "Sample resource" }]
       },
       null,
       2
@@ -49,13 +49,13 @@ function runOnlineTool(tool: OnlineTool, input: string, sampleText: string) {
         if (command.startsWith("SET ")) return `${line}\nOK`;
         if (command.startsWith("GET ")) return `${line}\n"hello"`;
         if (command === "PING") return "PING\nPONG";
-        return `${line}\nQUEUED (mock)`;
+        return `${line}\nQUEUED`;
       })
       .join("\n\n");
   }
 
   if (tool.mode === "database") {
-    return `Mock database output\n\nInput\n${source}\n\nResult\n| id | name       | status |\n| 1  | demo_row   | active |\n| 2  | sample_row | draft  |`;
+    return `Database result preview\n\nInput\n${source}\n\nResult\n| id | name       | status |\n| 1  | demo_row   | active |\n| 2  | sample_row | draft  |`;
   }
 
   if (tool.mode === "ascii") {
@@ -64,14 +64,14 @@ function runOnlineTool(tool: OnlineTool, input: string, sampleText: string) {
   }
 
   if (tool.mode === "visual") {
-    return `Visual preview model\n\n${source}\n\nSteps\n1. Parse the input.\n2. Build a readable visual representation.\n3. Render a shareable preview in a future canvas/SVG layer.`;
+    return `Visual structure preview\n\n${source}\n\nSteps\n1. Parse the input.\n2. Build a readable visual representation.\n3. Prepare the structure for a shareable diagram or image.`;
   }
 
   if (tool.mode === "docs") {
-    return `Generated draft\n\nTitle: ${tool.name} Output\n\n${source}\n\n- Summary prepared from your input.\n- This MVP can later connect to an AI or documentation API.\n- Copy or download the result when ready.`;
+    return `Generated draft\n\nTitle: ${tool.name} Output\n\n${source}\n\n- Summary prepared from your input.\n- Review the draft for project-specific details.\n- Copy or download the result when ready.`;
   }
 
-  return `Mock execution for ${tool.name}\n\nInput\n${source}\n\nOutput\nProgram finished successfully.\nstdout: Hello from the simulated runtime.`;
+  return `Execution preview for ${tool.name}\n\nInput\n${source}\n\nOutput\nProgram finished successfully.\nstdout: Hello from the sample runtime.`;
 }
 
 export function OnlineToolWorkspace({ tool }: { tool: OnlineTool }) {
