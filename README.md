@@ -147,10 +147,25 @@ http://localhost:3000
 ## Quality Checks
 
 ```bash
+npm run seo:check
 npm run lint
 npm run typecheck
 npm run build
 ```
+
+## Adding Programmatic SEO Content
+
+Indexable tool pages read their long-form content from `data/tools/<slug>.json`. To add or promote a page:
+
+1. Add the tool to the existing tool catalog so its current URL and workspace continue to work.
+2. Copy an existing JSON file in `data/tools` and rename it to the exact page slug.
+3. Write an independent introduction, audience, input, outcome, review guidance, examples, tips, FAQs, and related tool list.
+4. Add the slug to the indexable set in `lib/seo-quality.ts` only after the content is complete.
+5. Run `npm run seo:check`, followed by the normal lint, type, and build checks.
+
+The page component does not need to be copied or edited. `app/[slug]/page.tsx` loads the JSON during static rendering and passes it into the existing visual components.
+
+The optional `scripts/seed-tool-content.mjs` command only creates missing starter files. It does not overwrite existing JSON unless it is run with `--force`.
 
 ## Current MVP Notes
 

@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "lint": "next lint",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "seo:check": "node scripts/check-tool-content.mjs",
+    "seo:live-check": "node scripts/check-live-seo.mjs"
   },
   "dependencies": {
     "@radix-ui/react-dropdown-menu": "^2.1.15",

@@ -4,7 +4,6 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, Copy, Download, Loader2, Play, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { ToolSeoContent } from "@/components/tool-seo-content";
 import { useI18n } from "@/lib/i18n";
 import type { OnlineTool } from "@/lib/online-tools";
 import { getOnlineToolHeader } from "@/lib/tool-page-copy";
@@ -127,7 +126,6 @@ export function OnlineToolWorkspace({ tool }: { tool: OnlineTool }) {
   };
 
   return (
-    <>
       <main className="mx-auto max-w-[1200px] px-4 py-8">
         <Link href="/" className="inline-flex items-center gap-2 text-sm font-bold text-slate-600 hover:text-blue-700">
           <ArrowLeft className="h-4 w-4" />
@@ -201,7 +199,5 @@ export function OnlineToolWorkspace({ tool }: { tool: OnlineTool }) {
         </div>
         </section>
       </main>
-      <ToolSeoContent title={headerCopy.title} description={headerCopy.description} category={tool.mode} />
-    </>
   );
 }

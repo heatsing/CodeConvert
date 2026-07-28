@@ -4,7 +4,6 @@ import { useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, Copy, Download, Loader2, Play, Share2, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { ToolSeoContent } from "@/components/tool-seo-content";
 import { getCategoryLabel, type DirectoryTool } from "@/lib/home-tools";
 import { useI18n } from "@/lib/i18n";
 import { getDirectoryToolHeader } from "@/lib/tool-page-copy";
@@ -1625,7 +1624,6 @@ export function DirectoryToolWorkspace({ tool }: { tool: DirectoryTool }) {
     const hasOption = hasTextOption(tool);
 
     return (
-      <>
         <main className="bg-gradient-to-b from-cyan-50 to-white px-4 py-8 text-slate-950">
           <section className="mx-auto max-w-[1200px]">
             <Link href="/" className="inline-flex items-center gap-2 text-sm font-bold text-slate-600 hover:text-blue-700">
@@ -1721,13 +1719,10 @@ export function DirectoryToolWorkspace({ tool }: { tool: DirectoryTool }) {
             </section>
           </section>
         </main>
-        <ToolSeoContent title={headerCopy.title} description={pageDescription} category={tool.category} />
-      </>
     );
   }
 
   return (
-    <>
       <main className="mx-auto max-w-[1200px] px-4 py-8">
         <Link href="/" className="inline-flex items-center gap-2 text-sm font-bold text-slate-600 hover:text-blue-700">
           <ArrowLeft className="h-4 w-4" />
@@ -1790,7 +1785,5 @@ export function DirectoryToolWorkspace({ tool }: { tool: DirectoryTool }) {
         </div>
         </section>
       </main>
-      <ToolSeoContent title={headerCopy.title} description={pageDescription} category={tool.category} />
-    </>
   );
 }

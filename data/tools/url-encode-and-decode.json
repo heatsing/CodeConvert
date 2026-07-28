@@ -1,0 +1,91 @@
+{
+  "slug": "url-encode-and-decode",
+  "title": "URL Encode and Decode",
+  "description": "URL Encode and Decode helps people encode URL components, query parameters, reserved characters, and percent encoding and review the result before using it in another system.",
+  "intro": "URL Encode and Decode is for a concrete handoff: take URL components, query parameters, reserved characters, and percent encoding from a real task, produce the form the next editor, API, document, or workflow expects, and keep enough context to verify what changed.",
+  "audience": "Web developers, API testers, support engineers, and people debugging transported text",
+  "input": "A representative sample of URL components, query parameters, reserved characters, and percent encoding copied from the API, file, codebase, log, document, or request involved in the task.",
+  "outcome": "A readable or transport-safe result whose character encoding, reserved characters, and padding have been checked.",
+  "review": "Check URL components, query parameters, reserved characters, and percent encoding, malformed input, escaped values, and destination-specific rules before relying on the result.",
+  "bestFor": "Small and medium URL components, query parameters, reserved characters, and percent encoding samples used for debugging, documentation, migration preparation, review, and reproducible tests.",
+  "steps": [
+    "Paste a representative URL components, query parameters, reserved characters, and percent encoding from the task you are working on.",
+    "Run URL Encode and Decode and compare the first meaningful change with the source.",
+    "Inspect URL components, query parameters, reserved characters, and percent encoding plus any destination-specific constraints.",
+    "Copy or download the result, then validate it in the editor, runtime, API, form, or publishing system where it will be used."
+  ],
+  "useCases": [
+    "URL Encode and Decode for a real development or integration task rather than a synthetic keyword example.",
+    "Preparing URL Encode and Decode input and output for a bug report, documentation page, test fixture, or technical handoff.",
+    "Using URL Encode and Decode to compare the source and result before a migration, import, release, or review.",
+    "Using URL Encode and Decode to diagnose escaped, encoded, or unreadable values in requests, URLs, logs, and configuration."
+  ],
+  "examples": [
+    {
+      "title": "URL Encode and Decode with a representative sample",
+      "description": "This URL Encode and Decode example uses URL components, query parameters, reserved characters, and percent encoding that resembles a small production fixture, so the main change can be checked line by line.",
+      "input": "campaign=summer sale&source=email",
+      "output": "campaign%3Dsummer%20sale%26source%3Demail"
+    },
+    {
+      "title": "URL Encode and Decode edge-case review",
+      "description": "The second URL Encode and Decode pass focuses on the part most likely to fail: nested values, escaping, or destination rules.",
+      "input": "campaign=summer sale&source=email\n\nReview case: preserve empty, repeated, or non-ASCII values where applicable.",
+      "output": "campaign%3Dsummer%20sale%26source%3Demail\n\nReview note: confirm this result in the destination workflow."
+    }
+  ],
+  "tips": [
+    "Keep the original URL Encode and Decode input beside the result until the destination check passes.",
+    "Use realistic URL components, query parameters, reserved characters, and percent encoding instead of a one-word sample when validating URL Encode and Decode.",
+    "URL Encode and Decode does not provide encryption; never treat its encoded output as private or secure.",
+    "Run the normal project, API, schema, browser, or editorial validation after using URL Encode and Decode."
+  ],
+  "faq": [
+    {
+      "question": "Who uses URL Encode and Decode?",
+      "answer": "Web developers, API testers, support engineers, and people debugging transported text use URL Encode and Decode when they need to encode URL components, query parameters, reserved characters, and percent encoding before continuing work in another editor, system, or document."
+    },
+    {
+      "question": "What should I paste into URL Encode and Decode?",
+      "answer": "Paste a focused but representative sample of URL components, query parameters, reserved characters, and percent encoding into URL Encode and Decode. Include the nesting, punctuation, characters, or edge cases that affect the real task."
+    },
+    {
+      "question": "What does URL Encode and Decode change?",
+      "answer": "URL Encode and Decode changes the representation needed for this task. Compare the output with the source to confirm that values and intended meaning remain correct."
+    },
+    {
+      "question": "What should I check after using URL Encode and Decode?",
+      "answer": "After URL Encode and Decode, review URL components, query parameters, reserved characters, and percent encoding, escaped values, malformed input, and the rules enforced by the destination system."
+    },
+    {
+      "question": "Can I use the URL Encode and Decode output in production?",
+      "answer": "Use the URL Encode and Decode result as reviewed working output, then run the destination system's normal validation, tests, schema checks, or editorial review before production use."
+    },
+    {
+      "question": "Does URL Encode and Decode store my input?",
+      "answer": "URL Encode and Decode has no account or saved-history feature. Even so, remove passwords, private keys, session cookies, personal data, and production secrets before using any online tool."
+    }
+  ],
+  "relatedTools": [
+    "url-parser",
+    "query-string-parser",
+    "url-encode",
+    "url-decode",
+    "jwt-decode"
+  ],
+  "keywords": [
+    "url encode and decode",
+    "url encode and decode online",
+    "encode url components, query parameters, reserved characters, and percent encoding",
+    "encode tool",
+    "browser based tool"
+  ],
+  "h1": "URL Encode and Decode",
+  "commonMistakes": [
+    "Running URL Encode and Decode with a sample that does not represent the real input.",
+    "Using the URL Encode and Decode result without comparing it with the original source.",
+    "Skipping validation in the editor, runtime, API, or document that receives the output."
+  ],
+  "updatedAt": "2026-07-28",
+  "seoScore": 100
+}

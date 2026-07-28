@@ -645,7 +645,7 @@ export const onlineTools: OnlineTool[] = [
     sample: "Client -> API -> Worker -> Database"
   },
   {
-    slug: "codelF",
+    slug: "codelf",
     name: "codeIf",
     description: "Generate naming ideas for variables and functions.",
     mode: "docs",
@@ -826,7 +826,9 @@ export const onlineTools: OnlineTool[] = [
   }
 ];
 
-export const onlineToolBySlug = Object.fromEntries(onlineTools.map((tool) => [tool.slug, tool])) as Record<string, OnlineTool>;
+export const onlineToolBySlug = Object.fromEntries(
+  onlineTools.map((tool) => [tool.slug.toLowerCase(), tool])
+) as Record<string, OnlineTool>;
 
 export const languageOnlineTools = onlineTools.filter((tool) => tool.slug.endsWith("-online-tool"));
 

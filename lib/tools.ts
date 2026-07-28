@@ -27,7 +27,7 @@ export type ToolConfig = {
 const sharedFaqs = [
   {
     question: "Does this tool send code to an AI service?",
-    answer: "Not in this MVP. The interface is wired for future API calls, but the current result is generated locally with mock output."
+    answer: "No. The current tool processes input locally in your browser and does not send it to an AI service."
   },
   {
     question: "Can I upload source files?",

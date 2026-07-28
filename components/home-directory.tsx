@@ -48,6 +48,7 @@ function ToolTile({ tool, compact = false }: { tool: (typeof directoryTools)[num
   return (
     <Link
       href={tool.href}
+      prefetch={false}
       className={`group flex items-center gap-3 rounded-md border bg-white shadow-sm transition hover:border-blue-200 hover:shadow-md ${
         compact ? "min-h-11 px-3 py-2" : "min-h-20 px-4 py-3"
       }`}
@@ -193,6 +194,7 @@ export function HomeDirectory() {
                 <Link
                   key={tool.slug}
                   href={`/${tool.slug}`}
+                  prefetch={false}
                   className="group flex min-h-20 items-center gap-3 rounded-md border bg-white px-4 py-3 shadow-sm transition hover:border-blue-200 hover:shadow-md"
                 >
                   <span className={`grid h-8 w-8 shrink-0 place-items-center rounded-md ${tool.accent}`}>
@@ -221,6 +223,7 @@ export function HomeDirectory() {
                 <Link
                   key={tool.slug}
                   href={`/${tool.slug}`}
+                  prefetch={false}
                   className="group flex min-h-20 gap-3 rounded-md bg-slate-50 px-3 py-2.5 transition hover:bg-white hover:shadow-md"
                 >
                   <span className={`grid h-9 w-9 shrink-0 place-items-center rounded-md ${tool.accent}`}>

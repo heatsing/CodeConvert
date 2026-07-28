@@ -1,0 +1,92 @@
+{
+  "slug": "word-counter",
+  "title": "Word Counter",
+  "description": "Word Counter helps people count working text copied from documents, forms, spreadsheets, email, or a CMS and review the result before using it in another system.",
+  "intro": "Word Counter is for a concrete handoff: take working text copied from documents, forms, spreadsheets, email, or a CMS from a real task, produce the form the next editor, API, document, or workflow expects, and keep enough context to verify what changed.",
+  "audience": "Writers, editors, marketers, students, operations teams, and developers cleaning copied text",
+  "input": "The actual paragraph, list, title, or draft that needs word counter, including the problem area.",
+  "outcome": "A word counter result that preserves the intended meaning and is ready to test in its destination.",
+  "review": "Read the changed section in context and confirm intentional punctuation, spacing, capitalization, repetition, and paragraph boundaries remain correct.",
+  "bestFor": "Small and medium working text copied from documents, forms, spreadsheets, email, or a CMS samples used for debugging, documentation, migration preparation, review, and reproducible tests.",
+  "steps": [
+    "Paste a representative text sample from the task you are working on.",
+    "Run Word Counter and compare the first meaningful change with the source.",
+    "Inspect words, punctuation, spacing, and intentional structure.",
+    "Copy or download the result, then validate it in the editor, runtime, API, form, or publishing system where it will be used."
+  ],
+  "useCases": [
+    "Word Counter for a real editing or publishing task rather than a synthetic keyword example.",
+    "Preparing Word Counter input and output for a bug report, documentation page, test fixture, or technical handoff.",
+    "Using Word Counter to compare the source and result before a migration, import, release, or review.",
+    "Word Counter helps catch structural or meaning-changing mistakes before the output reaches another system."
+  ],
+  "examples": [
+    {
+      "title": "Word Counter with a representative sample",
+      "description": "This Word Counter example uses working text copied from documents, forms, spreadsheets, email, or a CMS that resembles a small production fixture, so the main change can be checked line by line.",
+      "input": "Clear release notes help teams understand what changed.",
+      "output": "Words: 9\nCharacters: 55\nLines: 1"
+    },
+    {
+      "title": "Word Counter edge-case review",
+      "description": "The second Word Counter pass focuses on the part most likely to fail: intentional spacing and punctuation.",
+      "input": "Clear release notes help teams understand what changed.\n\nReview case: preserve empty, repeated, or non-ASCII values where applicable.",
+      "output": "Words: 9\nCharacters: 55\nLines: 1\n\nReview note: confirm this result in the destination workflow."
+    }
+  ],
+  "tips": [
+    "Keep the original Word Counter input beside the result until the destination check passes.",
+    "Use realistic working text copied from documents, forms, spreadsheets, email, or a CMS instead of a one-word sample when validating Word Counter.",
+    "Do not assume the visual cleanup from Word Counter proves that working text copied from documents, forms, spreadsheets, email, or a CMS is valid.",
+    "Run the normal project, API, schema, browser, or editorial validation after using Word Counter."
+  ],
+  "faq": [
+    {
+      "question": "Who uses Word Counter?",
+      "answer": "Writers, editors, marketers, students, operations teams, and developers cleaning copied text use Word Counter when they need to count working text copied from documents, forms, spreadsheets, email, or a CMS before continuing work in another editor, system, or document."
+    },
+    {
+      "question": "What should I paste into Word Counter?",
+      "answer": "Paste a focused but representative sample of working text copied from documents, forms, spreadsheets, email, or a CMS into Word Counter. Include the nesting, punctuation, characters, or edge cases that affect the real task."
+    },
+    {
+      "question": "What does Word Counter change?",
+      "answer": "Word Counter changes the representation needed for this task. Compare the output with the source to confirm that values and intended meaning remain correct."
+    },
+    {
+      "question": "What should I check after using Word Counter?",
+      "answer": "After Word Counter, review punctuation, spacing, capitalization, intentional repetition, paragraph boundaries, and any publishing length limit."
+    },
+    {
+      "question": "Can I use the Word Counter output in production?",
+      "answer": "Use the Word Counter result as reviewed working output, then run the destination system's normal validation, tests, schema checks, or editorial review before production use."
+    },
+    {
+      "question": "Does Word Counter store my input?",
+      "answer": "Word Counter has no account or saved-history feature. Even so, remove passwords, private keys, session cookies, personal data, and production secrets before using any online tool."
+    }
+  ],
+  "relatedTools": [
+    "remove-line-breaks",
+    "character-remover",
+    "duplicate-line-remover",
+    "duplicate-word-finder",
+    "character-counter",
+    "whitespace-remover"
+  ],
+  "keywords": [
+    "word counter",
+    "word counter online",
+    "count working text copied from documents, forms, spreadsheets, email, or a cms",
+    "text tool",
+    "browser based tool"
+  ],
+  "h1": "Word Counter",
+  "commonMistakes": [
+    "Running Word Counter with a sample that does not represent the real input.",
+    "Using the Word Counter result without comparing it with the original source.",
+    "Skipping validation in the editor, runtime, API, or document that receives the output."
+  ],
+  "updatedAt": "2026-07-28",
+  "seoScore": 100
+}

@@ -6,11 +6,9 @@ import { Button } from "@/components/ui/button";
 import { CodeEditorBox } from "@/components/code-editor-box";
 import { FileUpload } from "@/components/file-upload";
 import { LanguageSelect } from "@/components/language-select";
-import { OtherTools } from "@/components/other-tools";
 import { OutputBox } from "@/components/output-box";
-import { ToolSeoContent } from "@/components/tool-seo-content";
 import { useI18n } from "@/lib/i18n";
-import { mockResult } from "@/lib/mock-ai";
+import { runLocalTool } from "@/lib/mock-ai";
 import { getCoreToolHeader } from "@/lib/tool-page-copy";
 import { toolIcons } from "@/lib/tool-icons";
 import type { ToolConfig } from "@/lib/tools";
@@ -48,7 +46,7 @@ export function ToolLayout({ tool }: ToolLayoutProps) {
     setStatus("");
     setLoading(true);
     try {
-      const result = await mockResult({ tool, input, sourceLanguage, targetLanguage });
+      const result = await runLocalTool({ tool, input, sourceLanguage, targetLanguage });
       setOutput(result);
       setStatus(`${tool.name} ${t("tool.finished")} ${languageSummary}.`);
     } catch {
@@ -87,7 +85,7 @@ export function ToolLayout({ tool }: ToolLayoutProps) {
   };
 
   return (
-    <main className="mx-auto grid max-w-[1200px] gap-8 px-4 py-8 sm:py-10">
+    <>
       <section className="rounded-lg border bg-white p-5 shadow-soft sm:p-7">
         <div className="grid gap-5 lg:grid-cols-[1fr_auto] lg:items-start">
           <div className="flex gap-4">
@@ -156,8 +154,6 @@ export function ToolLayout({ tool }: ToolLayoutProps) {
         </div>
       </section>
 
-      <ToolSeoContent title={headerCopy.title} description={headerCopy.description} category="Code" />
-      <OtherTools currentSlug={tool.slug} />
-    </main>
+    </>
   );
 }

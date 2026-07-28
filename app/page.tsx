@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { HomeDirectory } from "@/components/home-directory";
 import { directoryTools } from "@/lib/home-tools";
 import { buildJsonLdScripts, buildMetadata, buildOrganizationJsonLd } from "@/lib/seo";
+import { shouldIndexDirectoryTool } from "@/lib/seo-quality";
 import { siteLogoUrl, siteUrl } from "@/lib/site";
 
 export const metadata: Metadata = buildMetadata({
@@ -16,7 +17,7 @@ export default function Page() {
     "@context": "https://schema.org",
     "@type": "ItemList",
     name: "Free online code tools",
-    itemListElement: directoryTools.slice(0, 60).map((tool, index) => ({
+    itemListElement: directoryTools.filter(shouldIndexDirectoryTool).slice(0, 60).map((tool, index) => ({
       "@type": "ListItem",
       position: index + 1,
       name: tool.name,
@@ -37,11 +38,6 @@ export default function Page() {
         width: 1152,
         height: 217
       }
-    },
-    potentialAction: {
-      "@type": "SearchAction",
-      target: `${siteUrl}/?q={search_term_string}`,
-      "query-input": "required name=search_term_string"
     }
   };
 

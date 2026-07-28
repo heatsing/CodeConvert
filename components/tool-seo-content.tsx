@@ -1,17 +1,20 @@
-"use client";
-
 import Link from "next/link";
+import type { ReactNode } from "react";
+import { SeoContentLabel } from "@/components/seo-content-label";
 import { directoryTools, getCategoryId, getCategoryLabel } from "@/lib/home-tools";
-import { useI18n, type LanguageCode } from "@/lib/i18n";
+import type { LanguageCode } from "@/lib/i18n";
 import { onlineTools } from "@/lib/online-tools";
 import { buildToolFaqs } from "@/lib/seo";
-import { keywordIntent, normalizeSearchText } from "@/lib/seo-keywords";
+import { normalizeSearchText } from "@/lib/seo-keywords";
 import { shouldIndexDirectoryTool, shouldIndexOnlineTool } from "@/lib/seo-quality";
+import type { ToolPageContent } from "@/lib/tool-content-types";
+import { getToolUserIntent } from "@/lib/tool-user-intent";
 
 type ToolSeoContentProps = {
   title: string;
   description: string;
   category: string;
+  content: ToolPageContent;
 };
 
 type ConversionPair = {
@@ -164,13 +167,30 @@ function uniqueRelatedLinks(title: string, category: string, categoryLabel: stri
     { name: "Code Converter", href: "/code-converter" },
     { name: "JSON Formatter", href: "/json-formatter" },
     { name: "Base64 Encode", href: "/base64-encode" },
-    { name: "Regex Tester Tool", href: "/regex-tester-tool" },
+    { name: "Regex Tester", href: "/regex-tester" },
     { name: categoryLabel, href: `/#${getCategoryId(category)}` }
   ];
 
   return [...directoryMatches, ...onlineMatches, ...fallbackLinks]
     .filter((tool, index, tools) => tools.findIndex((item) => toolHref(item) === toolHref(tool)) === index)
     .slice(0, 5);
+}
+
+function configuredRelatedLinks(slugs: string[]) {
+  const links: Array<(typeof directoryTools)[number] | (typeof onlineTools)[number]> = [];
+
+  for (const slug of slugs) {
+    const href = `/${slug.replace(/^\/|\/$/g, "")}`;
+    const directoryTool = directoryTools.find((tool) => tool.href === href);
+    if (directoryTool) {
+      links.push(directoryTool);
+      continue;
+    }
+    const onlineTool = onlineTools.find((tool) => `/${tool.slug}` === href);
+    if (onlineTool) links.push(onlineTool);
+  }
+
+  return links;
 }
 
 function whatHeading(title: string) {
@@ -206,19 +226,7 @@ function exampleIntro(title: string, conversionPair: ConversionPair | null) {
     : `The examples below show the kind of input and output you can expect when using ${title}.`;
 }
 
-function useCases(title: string, categoryLabel: string) {
-  const lowerTitle = title.toLowerCase();
-  if (lowerTitle.includes("json to xml")) return ["Convert API JSON responses into XML payload examples.", "Prepare integration samples for SOAP, enterprise, or legacy systems.", "Document structured data in XML-like form for testing and handoff.", "Compare JSON and XML representations during data migration."];
-  if (lowerTitle.includes("xml to json")) return ["Turn XML API responses into JSON for frontend debugging.", "Clean XML snippets before importing them into scripts or test fixtures.", "Compare XML and JSON structures during service migration.", "Create readable JSON examples for documentation and API notes."];
-  if (lowerTitle.includes("html to markdown")) return ["Move HTML content into Markdown documentation.", "Clean CMS exports before editing README or knowledge base pages.", "Convert blog snippets into Markdown drafts.", "Prepare developer docs from existing HTML markup."];
-  if (lowerTitle.includes("json formatter")) return ["Format API responses before debugging.", "Validate JSON configuration files and test fixtures.", "Make compact logs easier to inspect.", "Prepare structured data examples for documentation."];
-  if (lowerTitle.includes("base64")) return ["Encode short strings for API examples and fixtures.", "Prepare Base64 text for tests, docs, or payload notes.", "Check encoded output before pasting into configuration.", "Convert JSON or small snippets into a transport-safe string."];
-  if (lowerTitle.includes("remove line breaks")) return ["Clean copied PDF paragraphs.", "Prepare pasted text for forms, spreadsheets, and CMS fields.", "Fix email drafts with unwanted hard wraps.", "Normalize scraped text before editing or publishing."];
-
-  return [`Process ${categoryLabel.toLowerCase()} input for quick review.`, "Prepare copy-ready output for docs, forms, or development.", "Clean pasted snippets before sharing with a team.", "Run fast browser checks without installing another app."];
-}
-
-function CodePanel({ label, code }: { label: string; code: string }) {
+function CodePanel({ label, code }: { label: ReactNode; code: string }) {
   return (
     <div className="min-w-0">
       <p className="mb-2 text-sm font-black text-slate-950">{label}</p>
@@ -229,9 +237,7 @@ function CodePanel({ label, code }: { label: string; code: string }) {
   );
 }
 
-export function ToolSeoContent({ title, description, category }: ToolSeoContentProps) {
-  const { language } = useI18n();
-  const copy = seoCopy[language] ?? seoCopy.EN;
+export function ToolSeoContent({ title, description, category, content }: ToolSeoContentProps) {
   const categoryLabel = getCategoryLabel(category);
   const conversionPair = getConversionPair(title);
   const relatedLinks = directoryTools
@@ -242,23 +248,28 @@ export function ToolSeoContent({ title, description, category }: ToolSeoContentP
     .filter(shouldIndexOnlineTool)
     .filter((tool) => tool.mode.toLowerCase() === category.toLowerCase() && tool.name !== title)
     .slice(0, 18);
-  const sampleLinks = relatedLinks.length > 0 ? relatedLinks : relatedOnlineLinks;
-  const faqs = buildToolFaqs(title, categoryLabel);
-  const intent = keywordIntent(title, categoryLabel, conversionPair);
-  const seoLinks = uniqueRelatedLinks(title, category, categoryLabel);
-  const inputExample = conversionPair ? codeSample(conversionPair.from, "palindrome") : toolInputExample(title, categoryLabel);
-  const outputExample = conversionPair ? codeSample(conversionPair.to, "palindrome") : toolOutputExample(title, categoryLabel);
-  const secondInputExample = conversionPair ? codeSample(conversionPair.from, "evenOdd") : toolInputExample(title, categoryLabel);
-  const secondOutputExample = conversionPair ? codeSample(conversionPair.to, "evenOdd") : toolOutputExample(title, categoryLabel);
+  const configuredLinks = configuredRelatedLinks(content.relatedTools);
+  const sampleLinks = configuredLinks.length > 0 ? configuredLinks : relatedLinks.length > 0 ? relatedLinks : relatedOnlineLinks;
+  const faqs = content.faq.length > 0 ? content.faq : buildToolFaqs(title, categoryLabel);
+  const userIntent = getToolUserIntent(title, category);
+  const seoLinks = [...configuredLinks, ...uniqueRelatedLinks(title, category, categoryLabel)]
+    .filter((tool, index, tools) => tools.findIndex((item) => toolHref(item) === toolHref(tool)) === index)
+    .slice(0, 5);
+  const inputExample = content.examples[0]?.input ?? (conversionPair ? codeSample(conversionPair.from, "palindrome") : toolInputExample(title, categoryLabel));
+  const outputExample = content.examples[0]?.output ?? (conversionPair ? codeSample(conversionPair.to, "palindrome") : toolOutputExample(title, categoryLabel));
+  const secondInputExample = content.examples[1]?.input ?? (conversionPair ? codeSample(conversionPair.from, "evenOdd") : toolInputExample(title, categoryLabel));
+  const secondOutputExample = content.examples[1]?.output ?? (conversionPair ? codeSample(conversionPair.to, "evenOdd") : toolOutputExample(title, categoryLabel));
   const relatedHeading = categoryLabel.toLowerCase().endsWith("tools") ? categoryLabel.toLowerCase() : `${categoryLabel.toLowerCase()} tools`;
   const currentWhatHeading = whatHeading(title);
   const currentHowHeading = howHeading(title);
   const currentExampleIntro = exampleIntro(title, conversionPair);
-  const currentUseCases = useCases(title, categoryLabel);
-
-  const useIntro = conversionPair
-    ? `This free online converter helps you convert ${conversionPair.from} code to ${conversionPair.to} in a focused browser workspace.`
-    : `This free online ${categoryLabel.toLowerCase()} tool helps you process pasted input and produce a clean result in a focused browser workspace.`;
+  const audience = content.audience || userIntent.audience;
+  const input = content.input || userIntent.input;
+  const outcome = content.outcome || userIntent.outcome;
+  const review = content.review || userIntent.review;
+  const bestFor = content.bestFor || userIntent.bestFor;
+  const steps = content.steps || userIntent.steps;
+  const useCases = content.useCases || userIntent.useCases;
 
   return (
     <div className="mx-auto max-w-[1200px] px-4 pb-10">
@@ -267,12 +278,12 @@ export function ToolSeoContent({ title, description, category }: ToolSeoContentP
           <div>
             <h2 className="text-xl font-black text-slate-950">{currentWhatHeading}</h2>
             <p className="mt-3 text-sm leading-6 text-slate-700">
-              {useIntro} {description}
+              {content.intro} <strong>{audience}</strong> use it when {userIntent.situation.charAt(0).toLowerCase()}
+              {userIntent.situation.slice(1)} {description}
             </p>
             <p className="mt-3 text-sm leading-6 text-slate-700">
-              Use <strong>{title}</strong> when you need to <strong>{intent}</strong> without installing desktop software.
-              The workflow is designed for quick browser-based editing: paste your input, review the generated output,
-              then copy or download the result. For related tasks, open{" "}
+              Start with <strong>{input}</strong> A useful result is <strong>{outcome.charAt(0).toLowerCase()}
+              {outcome.slice(1)}</strong> For the next step in the same workflow, open{" "}
               {seoLinks.slice(0, 3).map((tool, index) => (
                 <span key={toolHref(tool)}>
                   {index > 0 ? (index === seoLinks.slice(0, 3).length - 1 ? ", or " : ", ") : ""}
@@ -284,53 +295,50 @@ export function ToolSeoContent({ title, description, category }: ToolSeoContentP
               .
             </p>
             <p className="mt-3 text-sm leading-6 text-slate-700">
-              Before using the result, check the input format, scan the output for edge cases, and make sure the final text
-              matches the system or document where you plan to paste it. Small browser tools are best for quick cleanup and
-              review, not as a substitute for production validation.
+              <strong>Before you use the output:</strong> {review}
             </p>
             <h2 className="mt-5 text-lg font-black text-slate-950">{currentHowHeading}</h2>
             <ol className="mt-4 list-decimal space-y-2 pl-5 text-sm leading-6 text-slate-700">
-              <li>{copy.step1}</li>
-              <li>{conversionPair ? `${conversionPair.from} ${copy.to} ${conversionPair.to}` : copy.settingsStep}</li>
-              <li>{copy.step3}</li>
-              <li>{copy.step4}</li>
+              {steps.map((step) => (
+                <li key={step}>{step}</li>
+              ))}
             </ol>
           </div>
           <div className="hidden rounded-lg border bg-gradient-to-br from-blue-50 via-white to-violet-50 p-5 text-center lg:block">
             <p className="text-sm font-black text-slate-600">{conversionPair?.from ?? categoryLabel}</p>
-            <div className="my-5 text-3xl font-black text-blue-700">{copy.to}</div>
-            <p className="text-sm font-black text-slate-600">{conversionPair?.to ?? copy.output}</p>
+            <div className="my-5 text-3xl font-black text-blue-700"><SeoContentLabel label="to" /></div>
+            <p className="text-sm font-black text-slate-600">{conversionPair?.to ?? <SeoContentLabel label="output" />}</p>
           </div>
         </section>
 
         <section className="mt-8">
-          <h2 className="text-xl font-black text-slate-950">{copy.examples}</h2>
+          <h2 className="text-xl font-black text-slate-950"><SeoContentLabel label="examples" /></h2>
           <p className="mt-3 text-sm leading-6 text-slate-700">
             {currentExampleIntro}
           </p>
 
           <div className="mt-5 space-y-8">
             <div>
-              <h3 className="text-base font-black text-slate-950">{copy.example1}</h3>
+              <h3 className="text-base font-black text-slate-950">{content.examples[0]?.title ?? <SeoContentLabel label="example1" />}</h3>
               <p className="mt-2 text-sm leading-6 text-slate-600">
-                {conversionPair ? copy.simpleFunction : copy.simpleFunction}
+                {content.examples[0]?.description ?? "This sample starts with a small, representative input so the main transformation is easy to verify."}
               </p>
               <div className="mt-4 grid gap-4 lg:grid-cols-[1fr_80px_1fr] lg:items-center">
-                <CodePanel label={conversionPair?.from ?? copy.input} code={inputExample} />
-                <div className="hidden text-center text-2xl font-black text-blue-600 lg:block">{copy.to}</div>
-                <CodePanel label={conversionPair?.to ?? copy.output} code={outputExample} />
+                <CodePanel label={conversionPair?.from ?? <SeoContentLabel label="input" />} code={inputExample} />
+                <div className="hidden text-center text-2xl font-black text-blue-600 lg:block"><SeoContentLabel label="to" /></div>
+                <CodePanel label={conversionPair?.to ?? <SeoContentLabel label="output" />} code={outputExample} />
               </div>
             </div>
 
             <div>
-              <h3 className="text-base font-black text-slate-950">{copy.example2}</h3>
+              <h3 className="text-base font-black text-slate-950">{content.examples[1]?.title ?? <SeoContentLabel label="example2" />}</h3>
               <p className="mt-2 text-sm leading-6 text-slate-600">
-                {conversionPair ? copy.practicalCheck : copy.practicalCheck}
+                {content.examples[1]?.description ?? "Run a second sample with different values or edge cases before applying the result to a larger workflow."}
               </p>
               <div className="mt-4 grid gap-4 lg:grid-cols-[1fr_80px_1fr] lg:items-center">
-                <CodePanel label={conversionPair?.from ?? copy.input} code={secondInputExample} />
-                <div className="hidden text-center text-2xl font-black text-blue-600 lg:block">{copy.to}</div>
-                <CodePanel label={conversionPair?.to ?? copy.output} code={secondOutputExample} />
+                <CodePanel label={conversionPair?.from ?? <SeoContentLabel label="input" />} code={secondInputExample} />
+                <div className="hidden text-center text-2xl font-black text-blue-600 lg:block"><SeoContentLabel label="to" /></div>
+                <CodePanel label={conversionPair?.to ?? <SeoContentLabel label="output" />} code={secondOutputExample} />
               </div>
             </div>
           </div>
@@ -339,7 +347,7 @@ export function ToolSeoContent({ title, description, category }: ToolSeoContentP
         <section className="mt-8">
           <h2 className="text-xl font-black text-slate-950">Common Use Cases</h2>
           <div className="mt-4 grid gap-3 sm:grid-cols-2">
-            {currentUseCases.map((useCase) => (
+            {useCases.map((useCase) => (
               <div key={useCase} className="rounded-md border bg-slate-50 p-4 text-sm leading-6 text-slate-700">
                 {useCase}
               </div>
@@ -349,13 +357,12 @@ export function ToolSeoContent({ title, description, category }: ToolSeoContentP
 
         <section className="mt-8">
           <h2 className="text-xl font-black text-slate-950">
-            {conversionPair ? `${conversionPair.from} ${copy.to} ${conversionPair.to}` : title}
+            What to Check Before You Use the Result
           </h2>
           <p className="mt-3 text-sm leading-6 text-slate-700">
-            A useful <strong>{title}</strong> workflow should make the main task obvious, keep input and output close together,
-            and give clear next steps through descriptive links to related tools. The table below summarizes what usually
-            changes between the pasted input and the generated result, so you know what to inspect before copying it.
-            If your workflow changes, continue with{" "}
+            The output from <strong>{title}</strong> is most useful when you compare it with the original input and test it
+            where it will actually be used. The table separates the source state, expected result, and review responsibility.
+            If the next task changes, continue with{" "}
             {seoLinks.slice(0, 4).map((tool, index) => (
               <span key={`context-${toolHref(tool)}`}>
                 {index > 0 ? (index === seoLinks.slice(0, 4).length - 1 ? ", or " : ", ") : ""}
@@ -370,31 +377,31 @@ export function ToolSeoContent({ title, description, category }: ToolSeoContentP
             <table className="w-full text-left text-sm">
               <thead className="bg-slate-100 text-slate-950">
                 <tr>
-                  <th className="px-4 py-3 font-black">{copy.characteristic}</th>
-                  <th className="px-4 py-3 font-black">{conversionPair?.from ?? copy.input}</th>
-                  <th className="px-4 py-3 font-black">{conversionPair?.to ?? copy.output}</th>
+                  <th className="px-4 py-3 font-black">Stage</th>
+                  <th className="px-4 py-3 font-black">What you have</th>
+                  <th className="px-4 py-3 font-black">What good looks like</th>
                 </tr>
               </thead>
               <tbody className="divide-y">
                 <tr>
-                  <td className="px-4 py-3 font-semibold text-slate-900">{copy.syntax}</td>
-                  <td className="px-4 py-3 text-slate-600">{conversionPair ? `${conversionPair.from} code may use language-specific syntax, libraries, and runtime conventions.` : "Raw input may be messy, duplicated, encoded, minified, or hard to scan."}</td>
-                  <td className="px-4 py-3 text-slate-600">{conversionPair ? `${conversionPair.to} output should be checked for idiomatic syntax and equivalent behavior.` : "The result is normalized into a clearer text output that is easier to copy or save."}</td>
+                  <td className="px-4 py-3 font-semibold text-slate-900">Input</td>
+                  <td className="px-4 py-3 text-slate-600">{userIntent.inputState}</td>
+                  <td className="px-4 py-3 text-slate-600">{content.tips[0]}</td>
                 </tr>
                 <tr>
-                  <td className="px-4 py-3 font-semibold text-slate-900">{copy.workflow}</td>
-                  <td className="px-4 py-3 text-slate-600">Paste a focused snippet, sample data, or text block into the editor.</td>
-                  <td className="px-4 py-3 text-slate-600">Review the output, then copy, download, or refine the input and run it again.</td>
+                  <td className="px-4 py-3 font-semibold text-slate-900">Result</td>
+                  <td className="px-4 py-3 text-slate-600">{userIntent.outputState}</td>
+                  <td className="px-4 py-3 text-slate-600">{content.tips[1]}</td>
                 </tr>
                 <tr>
-                  <td className="px-4 py-3 font-semibold text-slate-900">{copy.review}</td>
-                  <td className="px-4 py-3 text-slate-600">Inputs can include edge cases, comments, unusual spacing, or project-specific names.</td>
-                  <td className="px-4 py-3 text-slate-600">Outputs should be validated before using them in a production codebase or document.</td>
+                  <td className="px-4 py-3 font-semibold text-slate-900">Review</td>
+                  <td className="px-4 py-3 text-slate-600">Keep the original available for a side-by-side comparison.</td>
+                  <td className="px-4 py-3 text-slate-600">{content.tips[2]}</td>
                 </tr>
                 <tr>
-                  <td className="px-4 py-3 font-semibold text-slate-900">{copy.bestUse}</td>
-                  <td className="px-4 py-3 text-slate-600">Small examples, quick checks, text cleanup, code snippets, and developer utilities.</td>
-                  <td className="px-4 py-3 text-slate-600">A fast starting point for manual review, refactoring, documentation, or sharing.</td>
+                  <td className="px-4 py-3 font-semibold text-slate-900">Best fit</td>
+                  <td className="px-4 py-3 text-slate-600">{bestFor}</td>
+                  <td className="px-4 py-3 text-slate-600">{content.tips[3]}</td>
                 </tr>
               </tbody>
             </table>
@@ -402,7 +409,7 @@ export function ToolSeoContent({ title, description, category }: ToolSeoContentP
         </section>
 
         <section className="mt-8 rounded-lg bg-sky-50 p-5 sm:p-6">
-          <h2 className="text-xl font-black text-slate-950">{copy.faq}</h2>
+          <h2 className="text-xl font-black text-slate-950"><SeoContentLabel label="faq" /></h2>
           <div className="mt-4 grid gap-3">
             {faqs.map((faq) => (
               <details key={faq.question} className="rounded-md bg-white p-4 shadow-sm">
@@ -415,10 +422,10 @@ export function ToolSeoContent({ title, description, category }: ToolSeoContentP
 
         {sampleLinks.length > 0 && (
           <section className="mt-8">
-            <h2 className="text-xl font-black text-slate-950">{copy.tryMore} {relatedHeading}</h2>
+            <h2 className="text-xl font-black text-slate-950"><SeoContentLabel label="tryMore" /> {relatedHeading}</h2>
             <p className="mt-3 text-sm leading-6 text-slate-700">
-              Explore more <strong>{relatedHeading}</strong> for nearby cleanup, formatting, conversion, and validation tasks.
-              Each link points to a specific action so it is easier to continue the same workflow.
+              Continue with a related <strong>{relatedHeading}</strong> when the next step uses the same input or helps verify
+              the result. These links stay within the current task group.
             </p>
             <div className="mt-4 flex flex-wrap gap-3">
               {sampleLinks.slice(0, 12).map((tool) => (

@@ -1,0 +1,91 @@
+{
+  "slug": "css-minifier",
+  "title": "CSS Minifier",
+  "description": "CSS Minifier helps people minify CSS selectors, declarations, media rules, and custom properties and review the result before using it in another system.",
+  "intro": "CSS Minifier is for a concrete handoff: take CSS selectors, declarations, media rules, and custom properties from a real task, produce the form the next editor, API, document, or workflow expects, and keep enough context to verify what changed.",
+  "audience": "Frontend developers, UI engineers, reviewers, and people debugging stylesheet output",
+  "input": "A representative sample of CSS selectors, declarations, media rules, and custom properties copied from the API, file, codebase, log, document, or request involved in the task.",
+  "outcome": "A css minifier result that preserves the intended meaning and is ready to test in its destination.",
+  "review": "Check CSS selectors, declarations, media rules, and custom properties, malformed input, escaped values, and destination-specific rules before relying on the result.",
+  "bestFor": "Small and medium CSS selectors, declarations, media rules, and custom properties samples used for debugging, documentation, migration preparation, review, and reproducible tests.",
+  "steps": [
+    "Paste a representative CSS selectors, declarations, media rules, and custom properties from the task you are working on.",
+    "Run CSS Minifier and compare the first meaningful change with the source.",
+    "Inspect CSS selectors, declarations, media rules, and custom properties plus any destination-specific constraints.",
+    "Copy or download the result, then validate it in the editor, runtime, API, form, or publishing system where it will be used."
+  ],
+  "useCases": [
+    "CSS Minifier for a real development or integration task rather than a synthetic keyword example.",
+    "Preparing CSS Minifier input and output for a bug report, documentation page, test fixture, or technical handoff.",
+    "Using CSS Minifier to compare the source and result before a migration, import, release, or review.",
+    "CSS Minifier helps catch structural or meaning-changing mistakes before the output reaches another system."
+  ],
+  "examples": [
+    {
+      "title": "CSS Minifier with a representative sample",
+      "description": "This CSS Minifier example uses CSS selectors, declarations, media rules, and custom properties that resembles a small production fixture, so the main change can be checked line by line.",
+      "input": ".notice {\n  border: 1px solid #ddd;\n  padding: 12px;\n}",
+      "output": ".notice{border:1px solid #ddd;padding:12px}"
+    },
+    {
+      "title": "CSS Minifier edge-case review",
+      "description": "The second CSS Minifier pass focuses on the part most likely to fail: nested values, escaping, or destination rules.",
+      "input": ".notice {\n  border: 1px solid #ddd;\n  padding: 12px;\n}\n\nReview case: preserve empty, repeated, or non-ASCII values where applicable.",
+      "output": ".notice{border:1px solid #ddd;padding:12px}\n\nReview note: confirm this result in the destination workflow."
+    }
+  ],
+  "tips": [
+    "Keep the original CSS Minifier input beside the result until the destination check passes.",
+    "Use realistic CSS selectors, declarations, media rules, and custom properties instead of a one-word sample when validating CSS Minifier.",
+    "Do not assume the visual cleanup from CSS Minifier proves that CSS selectors, declarations, media rules, and custom properties is valid.",
+    "Run the normal project, API, schema, browser, or editorial validation after using CSS Minifier."
+  ],
+  "faq": [
+    {
+      "question": "Who uses CSS Minifier?",
+      "answer": "Frontend developers, UI engineers, reviewers, and people debugging stylesheet output use CSS Minifier when they need to minify CSS selectors, declarations, media rules, and custom properties before continuing work in another editor, system, or document."
+    },
+    {
+      "question": "What should I paste into CSS Minifier?",
+      "answer": "Paste a focused but representative sample of CSS selectors, declarations, media rules, and custom properties into CSS Minifier. Include the nesting, punctuation, characters, or edge cases that affect the real task."
+    },
+    {
+      "question": "What does CSS Minifier change?",
+      "answer": "CSS Minifier changes the representation needed for this task. Compare the output with the source to confirm that values and intended meaning remain correct."
+    },
+    {
+      "question": "What should I check after using CSS Minifier?",
+      "answer": "After CSS Minifier, review CSS selectors, declarations, media rules, and custom properties, escaped values, malformed input, and the rules enforced by the destination system."
+    },
+    {
+      "question": "Can I use the CSS Minifier output in production?",
+      "answer": "Use the CSS Minifier result as reviewed working output, then run the destination system's normal validation, tests, schema checks, or editorial review before production use."
+    },
+    {
+      "question": "Does CSS Minifier store my input?",
+      "answer": "CSS Minifier has no account or saved-history feature. Even so, remove passwords, private keys, session cookies, personal data, and production secrets before using any online tool."
+    }
+  ],
+  "relatedTools": [
+    "css-formatter",
+    "css-beautifier",
+    "javascript-formatter",
+    "javascript-minifier",
+    "typescript-formatter"
+  ],
+  "keywords": [
+    "css minifier",
+    "css minifier online",
+    "minify css selectors, declarations, media rules, and custom properties",
+    "css tool",
+    "browser based tool"
+  ],
+  "h1": "CSS Minifier",
+  "commonMistakes": [
+    "Running CSS Minifier with a sample that does not represent the real input.",
+    "Using the CSS Minifier result without comparing it with the original source.",
+    "Skipping validation in the editor, runtime, API, or document that receives the output."
+  ],
+  "updatedAt": "2026-07-28",
+  "seoScore": 100
+}
