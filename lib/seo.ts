@@ -504,7 +504,7 @@ export function buildJsonLdScripts(items: unknown[]) {
     createElement("script", {
       key: index,
       type: "application/ld+json",
-      dangerouslySetInnerHTML: { __html: JSON.stringify(item) }
+      dangerouslySetInnerHTML: { __html: JSON.stringify(item).replace(/</g, "\\u003c") }
     })
   );
 }

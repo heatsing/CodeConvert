@@ -9,6 +9,7 @@ type FileUploadProps = {
 };
 
 const allowedExtensions = [".txt", ".js", ".py", ".java", ".ts"];
+const maxFileSize = 5 * 1024 * 1024;
 
 export function FileUpload({ onLoad, onError }: FileUploadProps) {
   const { t } = useI18n();
@@ -19,6 +20,11 @@ export function FileUpload({ onLoad, onError }: FileUploadProps) {
 
     if (!allowedExtensions.includes(extension)) {
       onError(t("tool.unsupportedFile"));
+      return;
+    }
+
+    if (file.size > maxFileSize) {
+      onError("Files must be 5 MB or smaller.");
       return;
     }
 

@@ -8,8 +8,9 @@ import { useI18n } from "@/lib/i18n";
 import type { OnlineTool } from "@/lib/online-tools";
 import { getOnlineToolHeader } from "@/lib/tool-page-copy";
 import { toolIcons } from "@/lib/tool-icons";
+import { parseRegexLiteral, runSafeRegex } from "@/lib/safe-regex";
 
-function runOnlineTool(tool: OnlineTool, input: string, sampleText: string) {
+async function runOnlineTool(tool: OnlineTool, input: string, sampleText: string) {
   const source = input.trim() || tool.sample;
 
   if (tool.mode === "json") {
@@ -18,12 +19,12 @@ function runOnlineTool(tool: OnlineTool, input: string, sampleText: string) {
   }
 
   if (tool.mode === "regex") {
-    const literal = source.trim().match(/^\/(.+)\/([dgimsuvy]*)$/);
-    const regex = literal ? new RegExp(literal[1], literal[2].includes("g") ? literal[2] : `${literal[2]}g`) : new RegExp(source, "g");
-    const matches = Array.from(sampleText.matchAll(regex), (match) => match[0]);
+    const { pattern, flags } = parseRegexLiteral(source);
+    const { result, regex } = await runSafeRegex({ pattern, flags, text: sampleText });
+    const matches = result as string[];
     return matches.length
-      ? `Pattern: ${regex.toString()}\nMatches (${matches.length})\n${matches.map((match, index) => `${index + 1}. ${match}`).join("\n")}`
-      : `Pattern: ${regex.toString()}\nNo matches found in the test text.`;
+      ? `Pattern: ${regex}\nMatches (${matches.length})\n${matches.map((match, index) => `${index + 1}. ${match}`).join("\n")}`
+      : `Pattern: ${regex}\nNo matches found in the test text.`;
   }
 
   if (tool.mode === "api") {
@@ -97,7 +98,7 @@ export function OnlineToolWorkspace({ tool }: { tool: OnlineTool }) {
     setOutput("");
     await new Promise((resolve) => setTimeout(resolve, 350));
     try {
-      setOutput(runOnlineTool(tool, input, sampleText));
+      setOutput(await runOnlineTool(tool, input, sampleText));
     } catch (err) {
       setError(err instanceof Error ? err.message : t("online.processError"));
     } finally {

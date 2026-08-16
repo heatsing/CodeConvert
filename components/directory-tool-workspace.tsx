@@ -8,6 +8,7 @@ import { getCategoryLabel, type DirectoryTool } from "@/lib/home-tools";
 import { useI18n } from "@/lib/i18n";
 import { getDirectoryToolHeader } from "@/lib/tool-page-copy";
 import { toolIcons } from "@/lib/tool-icons";
+import { parseRegexLiteral, runSafeRegex, type SafeRegexOperation } from "@/lib/safe-regex";
 
 function localizedCategoryLabel(category: string, t: (key: string) => string) {
   const labels: Record<string, string> = {
@@ -257,6 +258,39 @@ function regexParts(value: string) {
   const patternLine = lines[0] || "";
   const text = lines.slice(1).join("\n") || "Email us at hello@example.com or support@codetools.dev.";
   return { regex: regexFromLine(patternLine), patternLine, text };
+}
+
+async function runProtectedRegexTool(tool: DirectoryTool, value: string) {
+  const name = tool.name.toLowerCase();
+  const nonExecutingTools = ["generator", "explainer", "validator", "cheat sheet", "regex escape", "regex unescape", "email regex", "url regex", "phone regex", "password regex"];
+  if (tool.category !== "Regex" || nonExecutingTools.some((part) => name.includes(part))) return null;
+
+  const lines = value.split(/\r?\n/);
+  const { pattern, flags } = parseRegexLiteral(lines[0] || "");
+  let operation: SafeRegexOperation = "match";
+  let replacement = "";
+  let text = lines.slice(1).join("\n") || "Email us at hello@example.com or support@codetools.dev.";
+
+  if (name.includes("replace")) {
+    operation = "replace";
+    replacement = lines[1] ?? "";
+    text = lines.slice(2).join("\n");
+  } else if (name.includes("split")) operation = "split";
+  else if (name.includes("groups")) operation = "groups";
+
+  const { result, regex } = await runSafeRegex({ pattern, flags, text, operation, replacement });
+  if (operation === "replace") return result as string;
+  if (operation === "split") return (result as string[]).join("\n");
+  if (operation === "groups") {
+    const matches = result as string[][];
+    return matches.length
+      ? matches.map((match, index) => `Match ${index + 1}: ${match[0]}\nGroups: ${match.slice(1).join(", ") || "none"}`).join("\n\n")
+      : "No matches found.";
+  }
+  const matches = result as string[];
+  return matches.length
+    ? `Pattern: ${regex}\nMatches: ${matches.length}\n\n${matches.map((match, index) => `${index + 1}. ${match}`).join("\n")}`
+    : "No matches found.";
 }
 
 function explainRegex(patternLine: string) {
@@ -1582,7 +1616,9 @@ export function DirectoryToolWorkspace({ tool }: { tool: DirectoryTool }) {
     setError("");
     await new Promise((resolve) => setTimeout(resolve, 250));
     try {
-      setOutput(processTool(tool, tool.category === "Text" ? textToolPayload(tool, input, textOption) : input));
+      const payload = tool.category === "Text" ? textToolPayload(tool, input, textOption) : input;
+      const protectedRegexResult = await runProtectedRegexTool(tool, payload);
+      setOutput(protectedRegexResult ?? processTool(tool, payload));
     } catch (err) {
       setError(err instanceof Error ? err.message : t("online.processError"));
     } finally {

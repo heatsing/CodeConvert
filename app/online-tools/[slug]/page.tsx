@@ -2,17 +2,18 @@ import { permanentRedirect } from "next/navigation";
 import { onlineToolBySlug, onlineTools } from "@/lib/online-tools";
 
 type OnlineToolRedirectPageProps = {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 };
 
 export function generateStaticParams() {
   return onlineTools.map((tool) => ({ slug: tool.slug }));
 }
 
-export default function OnlineToolRedirectPage({ params }: OnlineToolRedirectPageProps) {
-  const slug = params.slug.toLowerCase();
+export default async function OnlineToolRedirectPage({ params }: OnlineToolRedirectPageProps) {
+  const { slug: routeSlug } = await params;
+  const slug = routeSlug.toLowerCase();
   if (onlineToolBySlug[slug]) {
     permanentRedirect(`/${slug}`);
   }

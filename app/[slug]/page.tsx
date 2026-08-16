@@ -26,9 +26,9 @@ import { getToolRoute, toolRoutes } from "@/lib/tool-route-inventory";
 import { toolBySlug, type ToolSlug } from "@/lib/tools";
 
 type RootToolPageProps = {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 };
 
 export function generateStaticParams() {
@@ -39,8 +39,9 @@ function getTool(slug: string) {
   return getToolRoute(slug)?.directoryTool;
 }
 
-export function generateMetadata({ params }: RootToolPageProps): Metadata {
-  const normalizedSlug = params.slug.toLowerCase();
+export async function generateMetadata({ params }: RootToolPageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const normalizedSlug = slug.toLowerCase();
   const coreTool = toolBySlug[normalizedSlug as ToolSlug];
   if (coreTool) {
     return buildToolMetadata(coreTool);
@@ -56,8 +57,9 @@ export function generateMetadata({ params }: RootToolPageProps): Metadata {
   return buildDirectoryToolMetadata(tool);
 }
 
-export default function RootToolPage({ params }: RootToolPageProps) {
-  const normalizedSlug = params.slug.toLowerCase();
+export default async function RootToolPage({ params }: RootToolPageProps) {
+  const { slug } = await params;
+  const normalizedSlug = slug.toLowerCase();
   const coreTool = toolBySlug[normalizedSlug as ToolSlug];
   if (coreTool) {
     const url = `${siteUrl}/${coreTool.slug}`;
