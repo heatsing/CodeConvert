@@ -16,7 +16,7 @@ CodeTools AI is a Next.js developer tools directory and tool workspace. It provi
 
 ## Tech Stack
 
-- Next.js 14
+- Next.js 16
 - React
 - TypeScript
 - Tailwind CSS
@@ -152,6 +152,32 @@ npm run lint
 npm run typecheck
 npm run build
 ```
+
+## Netlify Deployment
+
+The [codeconvenet project](https://app.netlify.com/projects/codeconvenet/) is connected to `heatsing/CodeConvert` on GitHub and deploys the `main` branch. Its default address is [codeconvenet.netlify.app](https://codeconvenet.netlify.app).
+
+`netlify.toml` sets the build command to `npm run build` and the publish directory to `.next`. `.nvmrc` selects Node.js 24 for local development and Netlify builds. Netlify automatically supplies its Next.js adapter; no manually pinned adapter is required. Keep the normal Next.js build so route handlers, legacy URL redirects, and security headers from `next.config.mjs` continue to work.
+
+Production environment variables are managed in Netlify's project settings:
+
+| Variable | Purpose |
+| --- | --- |
+| `NEXT_PUBLIC_SITE_URL` | Canonical origin used by metadata, structured data, robots.txt, and the sitemap. Keep `https://codeconvert.net` for this migration; this is also the application's default. |
+| `NEXT_PUBLIC_GA_MEASUREMENT_ID` | Optional Google Analytics measurement ID. Set it to the existing production value if it overrides the application's default. |
+
+These public values are included at build time. Trigger a new deploy after changing them. Do not replace the production canonical origin with the temporary `netlify.app` address.
+
+To finish the domain cutover, add `codeconvert.net` and any currently used aliases in Netlify's Domain management, keep `codeconvert.net` as the primary domain, and update the domain's DNS using the records shown by Netlify. Verify HTTPS, homepage and tool pages, legacy redirects, and `/sitemap.xml` on the custom domain before removing the old Vercel deployment.
+
+The existing live SEO check can validate the Netlify deployment before DNS changes while still checking the production canonical URLs. In PowerShell:
+
+```powershell
+$env:SEO_BASE_URL = "https://codeconvenet.netlify.app"
+npm run seo:live-check
+```
+
+After DNS propagation, run it again with `SEO_BASE_URL` set to `https://codeconvert.net`.
 
 ## Adding Programmatic SEO Content
 
