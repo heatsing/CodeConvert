@@ -1,3 +1,14 @@
 [build]
-  command = "npm run build"
+  command = "npm run build:verified"
   publish = ".next"
+
+# Next.js handles dynamic response headers; Netlify serves public files directly.
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "DENY"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=(), payment=(), usb=()"
+    Cross-Origin-Opener-Policy = "same-origin"
+    Strict-Transport-Security = "max-age=31536000"

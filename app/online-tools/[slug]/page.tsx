@@ -1,4 +1,4 @@
-import { permanentRedirect } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import { onlineToolBySlug, onlineTools } from "@/lib/online-tools";
 
 type OnlineToolRedirectPageProps = {
@@ -14,9 +14,9 @@ export function generateStaticParams() {
 export default async function OnlineToolRedirectPage({ params }: OnlineToolRedirectPageProps) {
   const { slug: routeSlug } = await params;
   const slug = routeSlug.toLowerCase();
-  if (onlineToolBySlug[slug]) {
+  if (Object.hasOwn(onlineToolBySlug, slug)) {
     permanentRedirect(`/${slug}`);
   }
 
-  permanentRedirect("/");
+  notFound();
 }

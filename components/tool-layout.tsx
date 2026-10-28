@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { AlertCircle, Loader2, Sparkles, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CodeEditorBox } from "@/components/code-editor-box";
@@ -25,9 +25,37 @@ export function ToolLayout({ tool }: ToolLayoutProps) {
   const [error, setError] = useState("");
   const [status, setStatus] = useState("");
   const [loading, setLoading] = useState(false);
+  const [inputVersion, setInputVersion] = useState(0);
+  const runVersion = useRef(0);
+  const running = useRef(false);
   const { t } = useI18n();
   const Icon = toolIcons[tool.iconName];
   const headerCopy = getCoreToolHeader(tool);
+  const capabilityNotice = {
+    "code-converter": "This tool prepares a migration worksheet; it does not automatically translate code.",
+    "code-generator": "Generates a starter template only. It does not implement your prompt or call an AI service.",
+    "code-explainer": "This is a local keyword-based structure summary, not a verified explanation of program behavior.",
+    "comment-remover": "Safe comment removal supports JavaScript and TypeScript. String literals and line numbers are preserved.",
+    "code-checker": "Local heuristic checks only. This is not a compiler, security audit, or proof that the code is correct.",
+    "code-to-pdf": "This workspace produces a text document (.txt), not a PDF file."
+  }[tool.slug];
+
+  useEffect(() => () => { runVersion.current += 1; }, []);
+
+  const invalidateResult = () => {
+    runVersion.current += 1;
+    running.current = false;
+    setLoading(false);
+    setOutput("");
+    setError("");
+    setStatus("");
+  };
+
+  const updateInput = (value: string) => {
+    invalidateResult();
+    setInputVersion((version) => version + 1);
+    setInput(value);
+  };
 
   const languageSummary = useMemo(() => {
     if (tool.needsSourceLanguage && tool.needsTargetLanguage) return `${sourceLanguage} to ${targetLanguage}`;
@@ -36,6 +64,7 @@ export function ToolLayout({ tool }: ToolLayoutProps) {
   }, [sourceLanguage, targetLanguage, tool.needsSourceLanguage, tool.needsTargetLanguage]);
 
   const runTool = async () => {
+    if (running.current) return;
     if (!input.trim()) {
       setError(t("tool.emptyInput"));
       setStatus("");
@@ -44,25 +73,35 @@ export function ToolLayout({ tool }: ToolLayoutProps) {
 
     setError("");
     setStatus("");
+    setOutput("");
     setLoading(true);
+    running.current = true;
+    const version = ++runVersion.current;
     try {
       const result = await runLocalTool({ tool, input, sourceLanguage, targetLanguage });
+      if (version !== runVersion.current) return;
       setOutput(result);
       setStatus(`${tool.name} ${t("tool.finished")} ${languageSummary}.`);
-    } catch {
-      setError(t("tool.mockError"));
+    } catch (error) {
+      if (version === runVersion.current) setError(error instanceof Error ? error.message : t("tool.mockError"));
     } finally {
-      setLoading(false);
+      if (version === runVersion.current) {
+        running.current = false;
+        setLoading(false);
+      }
     }
   };
 
   const copyOutput = async () => {
+    if (!output) return;
+    const version = runVersion.current;
     try {
       await navigator.clipboard.writeText(output);
+      if (version !== runVersion.current) return;
       setStatus(t("tool.copied"));
       setError("");
     } catch {
-      setError(t("tool.clipboardError"));
+      if (version === runVersion.current) setError(t("tool.clipboardError"));
     }
   };
 
@@ -72,16 +111,15 @@ export function ToolLayout({ tool }: ToolLayoutProps) {
     const anchor = document.createElement("a");
     anchor.href = url;
     anchor.download = tool.fileName;
+    document.body.append(anchor);
     anchor.click();
-    URL.revokeObjectURL(url);
+    anchor.remove();
+    window.setTimeout(() => URL.revokeObjectURL(url), 1000);
     setStatus(t("tool.downloadStarted"));
   };
 
   const clearAll = () => {
-    setInput("");
-    setOutput("");
-    setError("");
-    setStatus("");
+    updateInput("");
   };
 
   return (
@@ -100,19 +138,21 @@ export function ToolLayout({ tool }: ToolLayoutProps) {
           </div>
           <div className="grid gap-3 rounded-lg border bg-slate-50 p-4 sm:min-w-72">
             {tool.needsSourceLanguage && (
-              <LanguageSelect id="source-language" label={t("tool.inputLanguage")} value={sourceLanguage} onChange={setSourceLanguage} />
+              <LanguageSelect id="source-language" label={t("tool.inputLanguage")} value={sourceLanguage} languages={tool.slug === "comment-remover" ? ["JavaScript", "TypeScript"] : undefined} onChange={(value) => { invalidateResult(); setSourceLanguage(value); }} />
             )}
             {tool.needsTargetLanguage && (
-              <LanguageSelect id="target-language" label={t("tool.outputLanguage")} value={targetLanguage} onChange={setTargetLanguage} />
+              <LanguageSelect id="target-language" label={t("tool.outputLanguage")} value={targetLanguage} languages={tool.slug === "code-generator" ? ["JavaScript", "TypeScript", "Python", "Java", "Go", "SQL"] : undefined} onChange={(value) => { invalidateResult(); setTargetLanguage(value); }} />
             )}
           </div>
         </div>
 
+        <p className="mt-5 rounded-md border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-900">{capabilityNotice}</p>
+
         <div className="mt-6">
           <FileUpload
+            resetVersion={inputVersion}
             onLoad={(content, fileName) => {
-              setInput(content);
-              setError("");
+              updateInput(content);
               setStatus(`${fileName} ${t("tool.fileLoaded")}`);
             }}
             onError={setError}
@@ -121,6 +161,7 @@ export function ToolLayout({ tool }: ToolLayoutProps) {
 
         {(error || status) && (
           <div
+            role={error ? "alert" : "status"}
             className={`mt-5 flex items-start gap-2 rounded-md border px-4 py-3 text-sm ${
               error ? "border-red-200 bg-red-50 text-red-700" : "border-emerald-200 bg-emerald-50 text-emerald-700"
             }`}
@@ -131,7 +172,7 @@ export function ToolLayout({ tool }: ToolLayoutProps) {
         )}
 
         <div className="mt-6 grid gap-5 lg:grid-cols-2">
-          <CodeEditorBox label={tool.inputLabel} placeholder={tool.inputPlaceholder} value={input} onChange={setInput} />
+          <CodeEditorBox label={tool.inputLabel} placeholder={tool.inputPlaceholder} value={input} onChange={updateInput} />
           <OutputBox
             label={tool.outputLabel}
             placeholder={tool.outputPlaceholder}

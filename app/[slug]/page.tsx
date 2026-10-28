@@ -23,7 +23,6 @@ import { siteUrl } from "@/lib/site";
 import { getCoreToolHeader, getDirectoryToolHeader, getOnlineToolHeader } from "@/lib/tool-page-copy";
 import { getToolPageContent } from "@/lib/tool-content";
 import { getToolRoute, toolRoutes } from "@/lib/tool-route-inventory";
-import { toolBySlug, type ToolSlug } from "@/lib/tools";
 
 type RootToolPageProps = {
   params: Promise<{
@@ -42,7 +41,7 @@ function getTool(slug: string) {
 export async function generateMetadata({ params }: RootToolPageProps): Promise<Metadata> {
   const { slug } = await params;
   const normalizedSlug = slug.toLowerCase();
-  const coreTool = toolBySlug[normalizedSlug as ToolSlug];
+  const coreTool = getToolRoute(normalizedSlug)?.coreTool;
   if (coreTool) {
     return buildToolMetadata(coreTool);
   }
@@ -60,7 +59,7 @@ export async function generateMetadata({ params }: RootToolPageProps): Promise<M
 export default async function RootToolPage({ params }: RootToolPageProps) {
   const { slug } = await params;
   const normalizedSlug = slug.toLowerCase();
-  const coreTool = toolBySlug[normalizedSlug as ToolSlug];
+  const coreTool = getToolRoute(normalizedSlug)?.coreTool;
   if (coreTool) {
     const url = `${siteUrl}/${coreTool.slug}`;
     const headerCopy = getCoreToolHeader(coreTool);
@@ -83,7 +82,7 @@ export default async function RootToolPage({ params }: RootToolPageProps) {
           ])
         ])}
         <main className="mx-auto grid max-w-[1200px] gap-8 px-4 py-8 sm:py-10">
-          <ToolLayout tool={coreTool} />
+          <ToolLayout key={coreTool.slug} tool={coreTool} />
           <ToolSeoContent title={headerCopy.title} description={headerCopy.description} category="Code" content={content} />
           <OtherTools currentSlug={coreTool.slug} />
         </main>
@@ -116,7 +115,7 @@ export default async function RootToolPage({ params }: RootToolPageProps) {
             { name: onlineTool.name, url }
           ])
         ])}
-        <OnlineToolWorkspace tool={onlineTool} />
+        <OnlineToolWorkspace key={onlineTool.slug} tool={onlineTool} />
         <ToolSeoContent title={headerCopy.title} description={headerCopy.description} category={onlineTool.mode} content={content} />
       </>
     );
@@ -145,7 +144,7 @@ export default async function RootToolPage({ params }: RootToolPageProps) {
           { name: tool.name, url }
         ])
       ])}
-      <DirectoryToolWorkspace tool={tool} />
+      <DirectoryToolWorkspace key={normalizedSlug} tool={tool} />
       <ToolSeoContent title={headerCopy.title} description={headerCopy.description} category={tool.category} content={content} />
     </>
   );

@@ -1,4 +1,5 @@
 import type { ToolConfig } from "@/lib/tools";
+import { removeJavaScriptComments } from "./source-comments.ts";
 
 export type LocalToolRequest = {
   tool: ToolConfig;
@@ -7,44 +8,37 @@ export type LocalToolRequest = {
   targetLanguage: string;
 };
 
-function stripCommonComments(input: string) {
-  return input
-    .replace(/\/\*[\s\S]*?\*\//g, "")
-    .replace(/^\s*\/\/.*$/gm, "")
-    .replace(/^\s*#.*$/gm, "")
-    .replace(/^\s*--.*$/gm, "")
-    .replace(/\n{3,}/g, "\n\n")
-    .trim();
-}
-
 function identifierFromPrompt(prompt: string) {
   const words = prompt.toLowerCase().match(/[a-z0-9]+/g)?.slice(0, 5) ?? ["generated", "task"];
   const [first, ...rest] = words;
-  return `${first}${rest.map((word) => word.charAt(0).toUpperCase() + word.slice(1)).join("")}`.replace(/^\d/, "task");
+  // A prefix also avoids language keywords such as class, return, or def.
+  return `generated_${first}${rest.map((word) => word.charAt(0).toUpperCase() + word.slice(1)).join("")}`;
 }
 
 function generateStarterCode(prompt: string, language: string) {
   const name = identifierFromPrompt(prompt);
   const summary = prompt.replace(/\s+/g, " ").trim();
+  const blockCommentSummary = summary.replace(/\*\//g, "* /");
   const normalized = language.toLowerCase();
 
   if (normalized.includes("python")) {
-    return `def ${name}(value):\n    \"\"\"${summary}\"\"\"\n    if value is None:\n        raise ValueError(\"value is required\")\n    return value\n\n\nif __name__ == \"__main__\":\n    print(${name}(\"sample\"))`;
+    return `# Starter template only; the requested behavior is not implemented.\n# ${summary}\ndef ${name}(value):\n    if value is None:\n        raise ValueError(\"value is required\")\n    return value\n\n\nif __name__ == \"__main__\":\n    print(${name}(\"sample\"))`;
   }
   if (normalized.includes("typescript")) {
-    return `/** ${summary} */\nexport function ${name}<T>(value: T): T {\n  if (value === null || value === undefined) {\n    throw new Error(\"value is required\");\n  }\n  return value;\n}\n\nconsole.log(${name}(\"sample\"));`;
+    return `// Starter template only; the requested behavior is not implemented.\n/** ${blockCommentSummary} */\nexport function ${name}<T>(value: T): T {\n  if (value === null || value === undefined) {\n    throw new Error(\"value is required\");\n  }\n  return value;\n}\n\nconsole.log(${name}(\"sample\"));`;
   }
-  if (normalized.includes("java")) {
+  if (normalized === "java") {
     const className = name.charAt(0).toUpperCase() + name.slice(1);
-    return `public final class ${className} {\n  private ${className}() {}\n\n  public static String run(String value) {\n    if (value == null) {\n      throw new IllegalArgumentException(\"value is required\");\n    }\n    return value;\n  }\n\n  public static void main(String[] args) {\n    System.out.println(run(\"sample\"));\n  }\n}`;
+    return `// Starter template only; the requested behavior is not implemented.\npublic final class ${className} {\n  private ${className}() {}\n\n  public static String run(String value) {\n    if (value == null) {\n      throw new IllegalArgumentException(\"value is required\");\n    }\n    return value;\n  }\n\n  public static void main(String[] args) {\n    System.out.println(run(\"sample\"));\n  }\n}`;
   }
   if (normalized === "go") {
-    return `package main\n\nimport (\n\t\"errors\"\n\t\"fmt\"\n)\n\nfunc ${name}(value string) (string, error) {\n\tif value == \"\" {\n\t\treturn \"\", errors.New(\"value is required\")\n\t}\n\treturn value, nil\n}\n\nfunc main() {\n\tresult, err := ${name}(\"sample\")\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Println(result)\n}`;
+    return `// Starter template only; the requested behavior is not implemented.\npackage main\n\nimport (\n\t\"errors\"\n\t\"fmt\"\n)\n\nfunc ${name}(value string) (string, error) {\n\tif value == \"\" {\n\t\treturn \"\", errors.New(\"value is required\")\n\t}\n\treturn value, nil\n}\n\nfunc main() {\n\tresult, err := ${name}(\"sample\")\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Println(result)\n}`;
   }
   if (normalized === "sql") {
-    return `-- ${summary}\nSELECT\n  value,\n  CASE WHEN value IS NULL THEN 'missing' ELSE 'valid' END AS status\nFROM source_data;`;
+    return `-- Starter template only; the requested behavior is not implemented.\n-- ${summary}\nSELECT\n  value,\n  CASE WHEN value IS NULL THEN 'missing' ELSE 'valid' END AS status\nFROM source_data;`;
   }
-  return `/** ${summary} */\nfunction ${name}(value) {\n  if (value === null || value === undefined) {\n    throw new Error(\"value is required\");\n  }\n  return value;\n}\n\nconsole.log(${name}(\"sample\"));`;
+  if (normalized !== "javascript") throw new Error(`Starter templates are not available for ${language}. Choose JavaScript, TypeScript, Python, Java, Go, or SQL.`);
+  return `// Starter template only; the requested behavior is not implemented.\n/** ${blockCommentSummary} */\nfunction ${name}(value) {\n  if (value === null || value === undefined) {\n    throw new Error(\"value is required\");\n  }\n  return value;\n}\n\nconsole.log(${name}(\"sample\"));`;
 }
 
 function explainCode(input: string, language: string) {
@@ -101,7 +95,7 @@ function conversionWorksheet(input: string, sourceLanguage: string, targetLangua
 }
 
 export async function runLocalTool({ tool, input, sourceLanguage, targetLanguage }: LocalToolRequest) {
-  await new Promise((resolve) => setTimeout(resolve, 180));
+  if (input.length > 100_000) throw new Error("Input must be 100,000 characters or fewer. Split the file into smaller sections.");
   const trimmed = input.trim();
 
   switch (tool.slug) {
@@ -112,7 +106,7 @@ export async function runLocalTool({ tool, input, sourceLanguage, targetLanguage
     case "code-explainer":
       return explainCode(trimmed, sourceLanguage);
     case "comment-remover":
-      return stripCommonComments(trimmed) || "No comments or code were found in the input.";
+      return removeJavaScriptComments(input, sourceLanguage);
     case "code-checker":
       return checkCode(trimmed, sourceLanguage);
     case "code-to-pdf":

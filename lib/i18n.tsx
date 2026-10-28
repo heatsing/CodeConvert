@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { dictionaryOverrides } from "@/lib/i18n-overrides";
+import { readPreference, writePreference } from "@/lib/client-preferences";
 
 export const translationLanguages = [
   { code: "EN", label: "English", htmlLang: "en" },
@@ -101,6 +102,7 @@ const dictionaries: Record<LanguageCode, Dictionary> = {
     "online.output": "Output",
     "online.copy": "Copy",
     "online.runTool": "Run Tool",
+    "online.completed": "Output is ready.",
     "online.running": "Running...",
     "online.clear": "Clear",
     "online.textToSearch": "Text to search",
@@ -775,11 +777,11 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
     const config = translationLanguages.find((item) => item.code === nextLanguage);
     document.documentElement.lang = config?.htmlLang ?? "en";
     document.documentElement.dataset.language = nextLanguage.toLowerCase();
-    window.localStorage.setItem("codetools-language", nextLanguage);
+    writePreference("codetools-language", nextLanguage);
   };
 
   useEffect(() => {
-    const savedLanguage = window.localStorage.getItem("codetools-language");
+    const savedLanguage = readPreference("codetools-language");
     if (savedLanguage && isLanguageCode(savedLanguage)) {
       applyLanguage(savedLanguage);
     }

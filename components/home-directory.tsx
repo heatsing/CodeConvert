@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { Flame, Search } from "lucide-react";
 import { categories, directoryTools, frequentTools, getCategoryId, getCategoryLabel } from "@/lib/home-tools";
@@ -19,7 +19,7 @@ function shortDescription(description: string) {
 
 function languageToolDescription(name: string) {
   const language = name.replace(/\s+Online Tool$/i, "");
-  return `Run ${language} code`;
+  return `Open the ${language} workspace`;
 }
 
 function localizedCategoryLabel(category: string, t: (key: string) => string) {
@@ -66,7 +66,8 @@ function ToolTile({ tool, compact = false }: { tool: (typeof directoryTools)[num
 
 export function HomeDirectory() {
   const [query, setQuery] = useState("");
-  const { t } = useI18n();
+  const { t, language } = useI18n();
+  const resultsRef = useRef<HTMLParagraphElement>(null);
   const normalizedQuery = query.trim().toLowerCase();
 
   const visibleGroups = useMemo(() => {
@@ -107,6 +108,20 @@ export function HomeDirectory() {
       );
     });
   }, [normalizedQuery]);
+
+  const resultCount = visibleGroups.reduce((count, group) => count + group.tools.length, 0) + visibleOnlineTools.length + visibleLanguageTools.length;
+  const searchMessages = {
+    EN: ["tools found", "No matching tools. Try a different name or category."],
+    PT: ["ferramentas encontradas", "Nenhuma ferramenta encontrada. Tente outro nome ou categoria."],
+    ES: ["herramientas encontradas", "No hay herramientas coincidentes. Prueba otro nombre o categoría."],
+    DE: ["Tools gefunden", "Keine passenden Tools. Versuche einen anderen Namen oder eine Kategorie."],
+    RU: ["инструментов найдено", "Совпадений нет. Попробуйте другое название или категорию."],
+    FR: ["outils trouvés", "Aucun outil correspondant. Essayez un autre nom ou une catégorie."],
+    TR: ["araç bulundu", "Eşleşen araç yok. Başka bir ad veya kategori deneyin."],
+    PL: ["znalezionych narzędzi", "Brak pasujących narzędzi. Spróbuj innej nazwy lub kategorii."],
+    CN: ["个工具", "未找到匹配工具，请尝试其他名称或分类。"],
+    TW: ["個工具", "找不到符合的工具，請嘗試其他名稱或分類。"]
+  }[language];
 
   const sidebarItems = [
     { label: t("home.overview"), href: "#top" },
@@ -157,7 +172,7 @@ export function HomeDirectory() {
           <p className="mx-auto mt-2 max-w-2xl text-[13px] leading-5 text-slate-600">
             {t("home.subtitle")}
           </p>
-          <div className="mx-auto mt-4 flex max-w-2xl overflow-hidden rounded-md border bg-white shadow-sm">
+          <form role="search" onSubmit={(event) => { event.preventDefault(); resultsRef.current?.focus(); }} className="mx-auto mt-4 flex max-w-2xl overflow-hidden rounded-md border bg-white shadow-sm">
             <div className="grid w-10 place-items-center text-slate-400">
               <Search className="h-4 w-4" />
             </div>
@@ -165,14 +180,19 @@ export function HomeDirectory() {
               value={query}
               onChange={(event) => setQuery(event.target.value)}
               placeholder={t("home.search")}
+              aria-label={t("home.search")}
+              aria-controls="tool-search-results"
               className="h-10 min-w-0 flex-1 text-[13px] outline-none"
             />
-            <button className="w-16 bg-orange-600 text-white transition hover:bg-orange-700" type="button" aria-label="Search tools">
+            <button className="w-16 bg-orange-600 text-white transition hover:bg-orange-700" type="submit" aria-label={t("home.search")}>
               <Search className="mx-auto h-4 w-4" />
             </button>
-          </div>
+          </form>
+          <p id="tool-search-results" ref={resultsRef} tabIndex={-1} role="status" className={normalizedQuery ? "mt-4 text-sm" : "sr-only"}>
+            {normalizedQuery ? (resultCount ? `${resultCount} ${searchMessages[0]}` : searchMessages[1]) : ""}
+          </p>
 
-          <div id="popular" className="mt-5 text-left">
+          {!normalizedQuery && <div id="popular" className="mt-5 text-left">
             <div className="mb-2 flex items-center gap-2 text-[12px] font-black text-slate-600">
               <Flame className="h-4 w-4 text-orange-600" />
               {t("home.popular")}
@@ -182,10 +202,10 @@ export function HomeDirectory() {
                 <ToolTile key={tool.name} tool={tool} />
               ))}
             </div>
-          </div>
+          </div>}
         </section>
 
-        <section id="language-tools" className="rounded-lg border bg-white p-4 shadow-soft">
+        {visibleLanguageTools.length > 0 && <section id="language-tools" className="rounded-lg border bg-white p-4 shadow-soft">
           <h2 className="text-[15px] font-black text-slate-950">{t("home.languageTools")}</h2>
           <div className="mt-3 grid gap-3 [grid-template-columns:repeat(auto-fit,minmax(230px,1fr))]">
             {visibleLanguageTools.map((tool) => {
@@ -212,9 +232,9 @@ export function HomeDirectory() {
               );
             })}
           </div>
-        </section>
+        </section>}
 
-        <section id="online" className="rounded-lg border bg-white p-4 shadow-soft">
+        {visibleOnlineTools.length > 0 && <section id="online" className="rounded-lg border bg-white p-4 shadow-soft">
           <h2 className="text-[15px] font-black text-slate-950">{t("home.onlineTools")}</h2>
           <div className="mt-3 grid gap-3 [grid-template-columns:repeat(auto-fit,minmax(220px,1fr))]">
             {visibleOnlineTools.map((tool) => {
@@ -239,7 +259,7 @@ export function HomeDirectory() {
               );
             })}
           </div>
-        </section>
+        </section>}
 
         {visibleGroups.map((group) => (
           <section key={group.category} id={getCategoryId(group.category)} className="rounded-lg border bg-white p-4 shadow-soft">

@@ -2,6 +2,7 @@ import { directoryTools, directoryToolSlug, type DirectoryTool } from "@/lib/hom
 import { languageConverterTools } from "@/lib/language-converters";
 import { onlineTools, type OnlineTool } from "@/lib/online-tools";
 import { toolBySlug, type ToolConfig, type ToolSlug } from "@/lib/tools";
+import { ownEntry } from "@/lib/own-entry";
 
 export type ToolRouteKind = "core" | "directory" | "language" | "online";
 
@@ -78,9 +79,9 @@ export const toolRoutes = Array.from(routes.values());
 export const toolRouteBySlug = Object.fromEntries(toolRoutes.map((route) => [route.slug, route])) as Record<string, ToolRoute>;
 
 export function getToolRoute(slug: string) {
-  return toolRouteBySlug[normalizeSlug(slug)];
+  return ownEntry(toolRouteBySlug, normalizeSlug(slug));
 }
 
 export function isCoreToolSlug(slug: string): slug is ToolSlug {
-  return Boolean(toolBySlug[normalizeSlug(slug) as ToolSlug]);
+  return Object.hasOwn(toolBySlug, normalizeSlug(slug));
 }

@@ -42,11 +42,17 @@ const ghostChecks = [
   "/json-formatter-and-minifier",
   "/json-to-yaml-converter",
   "/html-formatter-minifier-and-beautifier",
-  "/url-encode-and-decode"
+  "/url-encode-and-decode",
+  "/constructor",
+  "/__proto__",
+  "/tools/constructor",
+  "/tools/__proto__",
+  "/online-tools/constructor",
+  "/online-tools/__proto__"
 ];
 for (const pathname of ghostChecks) {
   const response = await fetch(`${baseUrl}${pathname}`, { redirect: "manual" });
-  if (response.status !== 404) failures.push(`${pathname}: retired ghost URL should return 404, received ${response.status}`);
+  if (response.status !== 404) failures.push(`${pathname}: unknown or retired URL should return 404, received ${response.status}`);
 }
 
 const codelf = await fetch(`${baseUrl}/codelf`, { redirect: "manual" });

@@ -203,7 +203,9 @@ function howHeading(title: string) {
   if (lowerTitle.includes("xml to json")) return "How to Convert XML to JSON?";
   if (lowerTitle.includes("html to markdown")) return "How to Convert HTML to Markdown?";
   if (lowerTitle.includes("json formatter")) return "How to Format JSON?";
-  if (lowerTitle.includes("base64")) return "How to Encode Text to Base64?";
+  if (lowerTitle.includes("base64 to json")) return "How to Decode Base64 to JSON?";
+  if (lowerTitle.includes("base64 decode") || lowerTitle.includes("base64 to text")) return "How to Decode Base64 Text?";
+  if (lowerTitle.includes("base64")) return copySafeHowHeading(title);
   if (lowerTitle.includes("remove line breaks")) return "How to Remove Line Breaks?";
   return copySafeHowHeading(title);
 }
@@ -218,7 +220,9 @@ function exampleIntro(title: string, conversionPair: ConversionPair | null) {
   if (lowerTitle.includes("xml to json")) return "The examples below show how nested XML tags can be converted into JSON objects and arrays for API testing, scripts, and data cleanup.";
   if (lowerTitle.includes("html to markdown")) return "The examples below show how headings, paragraphs, and lists can be converted from HTML into readable Markdown for documentation workflows.";
   if (lowerTitle.includes("json formatter")) return "The examples below show compact JSON becoming readable formatted JSON with predictable indentation and preserved values.";
-  if (lowerTitle.includes("base64")) return "The examples below show plain text being encoded into a Base64 string that can be copied into tests, docs, or developer payloads.";
+  if (lowerTitle.includes("base64 to json")) return "Start with Base64-encoded UTF-8 JSON. The tool decodes the text, checks its JSON syntax, and formats the result while preserving numeric tokens.";
+  if (lowerTitle.includes("base64 decode") || lowerTitle.includes("base64 to text")) return "Start with a Base64 string containing UTF-8 text. Decoding returns the original text; invalid Base64 or binary data is reported as an error.";
+  if (lowerTitle.includes("base64")) return "Use input that matches this tool's conversion direction. Base64 is an encoding, not encryption; keep the original input available to check the result.";
   if (lowerTitle.includes("remove line breaks")) return "The examples below show broken copied text becoming a single clean paragraph while preserving the original words.";
 
   return conversionPair

@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, Copy, Download, Loader2, Play, Share2, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -9,6 +9,7 @@ import { useI18n } from "@/lib/i18n";
 import { getDirectoryToolHeader } from "@/lib/tool-page-copy";
 import { toolIcons } from "@/lib/tool-icons";
 import { parseRegexLiteral, runSafeRegex, type SafeRegexOperation } from "@/lib/safe-regex";
+import { assertToolInput, assertToolOutput, maxToolInputLength, binaryToText, textToBinary, textToHex, hexToText, unicodeEncode, unicodeDecode, reverseText, removeCharacters, csvRows, csvToJson, jsonToCsv, csvCell, baseConvert, runLengthCodec, digestText, generatePassword, decodeJwt, parseXml, xpathLookup, jsonToXml, xmlToJson, unavailableToolReason, formatSource, minifyJavaScript, compressText, jsonToClass, parseJsonSafely, formatJson, minifyJson, decodeBase64Text, replaceLiteralText, urlBatch } from "@/lib/tool-processors";
 
 function localizedCategoryLabel(category: string, t: (key: string) => string) {
   const labels: Record<string, string> = {
@@ -78,7 +79,7 @@ function hasTextOption(tool: DirectoryTool) {
 function textToolPayload(tool: DirectoryTool, input: string, option: string) {
   const name = tool.name.toLowerCase();
   if (hasTextOption(tool)) {
-    return `${option.trim()}\n${input}`;
+    return `${option}\n${input}`;
   }
   return input;
 }
@@ -102,6 +103,11 @@ function defaultTextInput(tool: DirectoryTool) {
 
 function sampleFor(tool: DirectoryTool) {
   const name = tool.name.toLowerCase();
+  if (name.includes("base64 to json")) return "eyJuYW1lIjoiQ29kZVRvb2xzIiwiaXRlbXMiOlsxLDIsM119";
+  if (name.includes("base64 to xml")) return "PHJvb3Q+SGVsbG88L3Jvb3Q+";
+  if (name.includes("base64 to yaml")) return "bmFtZTogQ29kZVRvb2xz";
+  if (name.includes("base64 decode") || name.includes("base64 to text")) return "SGVsbG8gV29ybGQ=";
+  if (name.includes("base64 encode") || name.includes("text to base64")) return "Hello World";
   if (name.includes("base32 decode")) return "JBSWY3DPEBLW64TMMQ";
   if (name.includes("base58 decode")) return "2NEpo7TZRRrLZSi2U";
   if (name.includes("base32 encode") || name.includes("base58 encode")) return "Hello World";
@@ -228,36 +234,9 @@ function sampleFor(tool: DirectoryTool) {
   return `Paste input for ${tool.name}`;
 }
 
-function regexFromLine(line: string) {
-  const trimmed = line.trim();
-  if (!trimmed) return /(?:)/g;
-  const literal = trimmed.match(/^\/(.+)\/([dgimsuvy]*)$/);
-  if (literal) return new RegExp(literal[1], literal[2].includes("g") ? literal[2] : `${literal[2]}g`);
-  return new RegExp(trimmed, "g");
-}
-
 function looksLikeBinaryCode(value: string) {
   const compact = value.replace(/\s+/g, "");
   return compact.length > 0 && compact.length % 8 === 0 && /^[01]+$/.test(compact);
-}
-
-function binaryToText(value: string) {
-  const compact = value.replace(/[^01]/g, "");
-  return compact.match(/.{1,8}/g)?.map((part) => {
-    const code = Number.parseInt(part, 2);
-    return Number.isFinite(code) ? String.fromCharCode(code) : "";
-  }).join("") ?? "";
-}
-
-function textToBinary(value: string) {
-  return Array.from(value).map((char) => char.charCodeAt(0).toString(2).padStart(8, "0")).join(" ");
-}
-
-function regexParts(value: string) {
-  const lines = value.split(/\r?\n/);
-  const patternLine = lines[0] || "";
-  const text = lines.slice(1).join("\n") || "Email us at hello@example.com or support@codetools.dev.";
-  return { regex: regexFromLine(patternLine), patternLine, text };
 }
 
 async function runProtectedRegexTool(tool: DirectoryTool, value: string) {
@@ -269,7 +248,7 @@ async function runProtectedRegexTool(tool: DirectoryTool, value: string) {
   const { pattern, flags } = parseRegexLiteral(lines[0] || "");
   let operation: SafeRegexOperation = "match";
   let replacement = "";
-  let text = lines.slice(1).join("\n") || "Email us at hello@example.com or support@codetools.dev.";
+  let text = lines.slice(1).join("\n");
 
   if (name.includes("replace")) {
     operation = "replace";
@@ -587,14 +566,6 @@ function htmlDecode(value: string) {
     .replace(/&amp;/g, "&");
 }
 
-function unicodeEncode(value: string) {
-  return Array.from(value).map((char) => `\\u${char.charCodeAt(0).toString(16).padStart(4, "0")}`).join("");
-}
-
-function unicodeDecode(value: string) {
-  return value.replace(/\\u([0-9a-f]{4})/gi, (_, code: string) => String.fromCharCode(Number.parseInt(code, 16)));
-}
-
 function jsEncode(value: string) {
   return JSON.stringify(value).slice(1, -1);
 }
@@ -627,6 +598,10 @@ function base32Decode(value: string) {
 }
 
 function base58Encode(value: string) {
+  if (value.length > 4096) throw new Error("Base58 input must be 4,096 characters or fewer.");
+  if (!value) return "";
+  const leadingZeroes = value.match(/^\x00*/)?.[0].length ?? 0;
+  if (leadingZeroes === value.length) return "1".repeat(leadingZeroes);
   let digits = [0];
   for (const byte of Array.from(new TextEncoder().encode(value))) {
     let carry = byte;
@@ -640,10 +615,15 @@ function base58Encode(value: string) {
       carry = Math.floor(carry / 58);
     }
   }
-  return digits.reverse().map((digit) => base58Alphabet[digit]).join("");
+  return "1".repeat(leadingZeroes) + digits.reverse().map((digit) => base58Alphabet[digit]).join("");
 }
 
 function base58Decode(value: string) {
+  if (value.length > 4096) throw new Error("Base58 input must be 4,096 characters or fewer.");
+  const text = value.trim();
+  if (!text) return "";
+  const leadingZeroes = text.match(/^1*/)?.[0].length ?? 0;
+  if (leadingZeroes === text.length) return "\0".repeat(leadingZeroes);
   let bytes = [0];
   for (const char of value.trim()) {
     const index = base58Alphabet.indexOf(char);
@@ -659,7 +639,7 @@ function base58Decode(value: string) {
       carry >>= 8;
     }
   }
-  return new TextDecoder().decode(new Uint8Array(bytes.reverse()));
+  return "\0".repeat(leadingZeroes) + new TextDecoder("utf-8", { fatal: true }).decode(new Uint8Array(bytes.reverse()));
 }
 
 function morseEncode(value: string) {
@@ -669,31 +649,6 @@ function morseEncode(value: string) {
 function morseDecode(value: string) {
   const reverse = Object.fromEntries(Object.entries(morseWords).map(([letter, code]) => [code, letter]));
   return value.split(/\s+/).map((part) => (part === "/" ? " " : reverse[part] ?? part)).join("");
-}
-
-function csvRows(value: string) {
-  return value.trim().split(/\r?\n/).map((line) => line.split(",").map((cell) => cell.trim()));
-}
-
-function csvToJson(value: string) {
-  const [headers = [], ...rows] = csvRows(value);
-  return JSON.stringify(rows.map((row) => Object.fromEntries(headers.map((header, index) => [header, row[index] ?? ""]))), null, 2);
-}
-
-function jsonToCsv(value: string) {
-  const data = JSON.parse(value);
-  const rows = Array.isArray(data) ? data : [data];
-  const headers = Array.from(new Set(rows.flatMap((row) => Object.keys(row))));
-  return [headers.join(","), ...rows.map((row) => headers.map((header) => JSON.stringify(row[header] ?? "")).join(","))].join("\n");
-}
-
-function simpleHash(value: string) {
-  let hash = 2166136261;
-  for (let index = 0; index < value.length; index += 1) {
-    hash ^= value.charCodeAt(index);
-    hash = Math.imul(hash, 16777619);
-  }
-  return (hash >>> 0).toString(16).padStart(8, "0");
 }
 
 function slugify(value: string) {
@@ -730,33 +685,6 @@ function rot13(value: string) {
   return caesarCipher(value, 13);
 }
 
-function utf8Encode(value: string) {
-  return Array.from(new TextEncoder().encode(value)).map((byte) => byte.toString(16).padStart(2, "0")).join(" ");
-}
-
-function utf8Decode(value: string) {
-  const bytes = value.trim().split(/[\s,]+/).filter(Boolean).map((part) => Number.parseInt(part.replace(/^0x/i, ""), 16));
-  if (!bytes.length || bytes.some((byte) => !Number.isFinite(byte))) return utf8Encode(value);
-  return new TextDecoder().decode(new Uint8Array(bytes));
-}
-
-function formatBracedText(value: string) {
-  let indent = 0;
-  return value
-    .replace(/\s+/g, " ")
-    .replace(/([{}[\]();,])/g, "$1\n")
-    .split(/\n+/)
-    .map((line) => line.trim())
-    .filter(Boolean)
-    .map((line) => {
-      if (/^[}\])]/.test(line)) indent = Math.max(0, indent - 1);
-      const output = `${"  ".repeat(indent)}${line}`;
-      if (/[{[(]$/.test(line)) indent += 1;
-      return output;
-    })
-    .join("\n");
-}
-
 function markdownTable(value: string) {
   const rows = csvRows(value);
   const [header = ["Column"], ...body] = rows;
@@ -788,7 +716,7 @@ function wordToMarkdown(value: string) {
 
 function jsonEscape(value: string) {
   try {
-    return JSON.stringify(JSON.stringify(JSON.parse(value)));
+    return JSON.stringify(JSON.stringify(parseJsonSafely(value)));
   } catch {
     return JSON.stringify(value);
   }
@@ -797,7 +725,8 @@ function jsonEscape(value: string) {
 function jsonUrlParameters(value: string) {
   if (value.trim().startsWith("{")) {
     try {
-      const data = JSON.parse(value);
+      const data = parseJsonSafely(value);
+      if (!data || typeof data !== "object" || Array.isArray(data)) throw new Error("Enter a JSON object.");
       return new URLSearchParams(Object.entries(data).map(([key, item]) => [key, String(item)])).toString();
     } catch {
       return "Invalid JSON input.";
@@ -807,96 +736,15 @@ function jsonUrlParameters(value: string) {
   return JSON.stringify(Object.fromEntries(new URLSearchParams(query)), null, 2);
 }
 
-function jsonToModel(value: string) {
-  let data: Record<string, unknown>;
-  try {
-    const parsed = JSON.parse(value);
-    data = Array.isArray(parsed) ? parsed[0] ?? {} : parsed;
-  } catch {
-    return "Invalid JSON input.";
-  }
-  const typeFor = (item: unknown) => {
-    if (Array.isArray(item)) return "unknown[]";
-    if (item === null) return "null";
-    const type = typeof item;
-    return type === "object" ? "Record<string, unknown>" : type;
-  };
-  return `interface GeneratedModel {\n${Object.entries(data).map(([key, item]) => `  ${key}: ${typeFor(item)};`).join("\n")}\n}`;
-}
-
-function jsonToClass(value: string, language: string) {
-  let data: Record<string, unknown>;
-  try {
-    const parsed = JSON.parse(value);
-    data = Array.isArray(parsed) ? parsed[0] ?? {} : parsed;
-  } catch {
-    return "Invalid JSON input.";
-  }
-
-  const entries = Object.entries(data);
-  const typeFor = (item: unknown) => {
-    if (Array.isArray(item)) return language === "python" ? "list" : "unknown[]";
-    if (item === null) return language === "java" || language === "csharp" ? "Object" : "null";
-    if (typeof item === "number") return language === "java" || language === "csharp" ? "double" : "number";
-    if (typeof item === "boolean") return language === "java" ? "boolean" : language === "csharp" ? "bool" : "boolean";
-    if (typeof item === "object") return language === "python" ? "dict" : "Record<string, unknown>";
-    return language === "java" || language === "csharp" ? "String" : "string";
-  };
-
-  if (language === "typescript") {
-    return `interface GeneratedModel {\n${entries.map(([key, item]) => `  ${key}: ${typeFor(item)};`).join("\n")}\n}`;
-  }
-  if (language === "java") {
-    return `public class GeneratedModel {\n${entries.map(([key, item]) => `  private ${typeFor(item)} ${key};`).join("\n")}\n}`;
-  }
-  if (language === "csharp") {
-    return `public class GeneratedModel\n{\n${entries.map(([key, item]) => `    public ${typeFor(item)} ${key.charAt(0).toUpperCase() + key.slice(1)} { get; set; }`).join("\n")}\n}`;
-  }
-  return `from dataclasses import dataclass\nfrom typing import Any\n\n@dataclass\nclass GeneratedModel:\n${entries.map(([key, item]) => `    ${key}: ${typeFor(item)}`).join("\n") || "    pass"}`;
-}
-
-function parseJson5Like(value: string) {
-  const normalized = value
-    .replace(/\/\/.*$/gm, "")
-    .replace(/(['"])?([A-Za-z_$][\w$]*)\1\s*:/g, "\"$2\":")
-    .replace(/'/g, "\"")
-    .replace(/,\s*([}\]])/g, "$1");
-  return JSON.parse(normalized);
-}
-
-function tsvToJson(value: string) {
-  const rows = value.trim().split(/\r?\n/).map((line) => line.split("\t").map((cell) => cell.trim()));
-  const [headers = [], ...body] = rows;
-  return JSON.stringify(body.map((row) => Object.fromEntries(headers.map((header, index) => [header, row[index] ?? ""]))), null, 2);
-}
-
-function jsonToTsv(value: string) {
-  const data = JSON.parse(value);
-  const rows = Array.isArray(data) ? data : [data];
-  const headers = Array.from(new Set(rows.flatMap((row) => Object.keys(row))));
-  return [headers.join("\t"), ...rows.map((row) => headers.map((header) => String(row[header] ?? "")).join("\t"))].join("\n");
-}
-
 function jsonPathLookup(value: string) {
   const [pathLine = "$", ...jsonLines] = value.split(/\r?\n/);
-  const data = JSON.parse(jsonLines.join("\n") || "{}");
+  const data = parseJsonSafely(jsonLines.join("\n") || "{}");
   const path = pathLine.trim().replace(/^\$\.?/, "").split(/[.[\]]+/).filter(Boolean);
   const result = path.reduce<unknown>((current, key) => {
-    if (current && typeof current === "object") return (current as Record<string, unknown>)[key];
+    if (current && typeof current === "object" && Object.hasOwn(current, key)) return (current as Record<string, unknown>)[key];
     return undefined;
   }, data);
   return JSON.stringify(result ?? null, null, 2);
-}
-
-function xpathLookup(value: string) {
-  const [pathLine = "/", ...xmlLines] = value.split(/\r?\n/);
-  const tags = pathLine.split("/").filter(Boolean);
-  let xml = xmlLines.join("\n");
-  tags.forEach((tag) => {
-    const match = xml.match(new RegExp(`<${tag}[^>]*>([\\s\\S]*?)<\\/${tag}>`, "i"));
-    xml = match?.[1] ?? "";
-  });
-  return xml.trim() || "No matching node found.";
 }
 
 function diffBlocks(value: string) {
@@ -910,52 +758,11 @@ function diffBlocks(value: string) {
   }).join("\n");
 }
 
-function cssPreprocessorPreview(toolName: string, value: string) {
-  const target = toolName.split(" to ").pop()?.toUpperCase() ?? "CSS";
-  const cleaned = value.replace(/^\s*[$@][\w-]+:\s*[^;]+;?\s*$/gm, "").trim();
-  return `/* ${target} preview */\n${cleaned || value}`;
-}
-
-function xmlTagValidation(value: string) {
-  const tags = Array.from(value.matchAll(/<\/?([A-Za-z][\w:-]*)[^>]*>/g)).map((match) => match[0]);
-  const stack: string[] = [];
-  for (const tag of tags) {
-    if (/\/>$/.test(tag) || /^<!|^<\?/.test(tag)) continue;
-    const name = tag.replace(/^<\/?/, "").replace(/\s.*|\/?>$/g, "");
-    if (tag.startsWith("</")) {
-      const open = stack.pop();
-      if (open !== name) return `Invalid markup: expected </${open ?? "none"}> but found </${name}>.`;
-    } else {
-      stack.push(name);
-    }
-  }
-  return stack.length ? `Invalid markup: unclosed <${stack[stack.length - 1]}>.` : "Markup tags look balanced.";
-}
-
 function curlToPhp(value: string) {
   const url = value.match(/https?:\/\/[^\s'"]+/)?.[0] ?? "https://api.example.com";
   const method = value.match(/-X\s+([A-Z]+)/i)?.[1] ?? "GET";
   const data = value.match(/-d\s+['"]([^'"]+)['"]/)?.[1];
   return `<?php\n$ch = curl_init(${JSON.stringify(url)});\ncurl_setopt($ch, CURLOPT_CUSTOMREQUEST, ${JSON.stringify(method)});\ncurl_setopt($ch, CURLOPT_RETURNTRANSFER, true);${data ? `\ncurl_setopt($ch, CURLOPT_POSTFIELDS, ${JSON.stringify(data)});` : ""}\n$response = curl_exec($ch);\ncurl_close($ch);\necho $response;\n?>`;
-}
-
-function queryParameterFormat(value: string) {
-  const query = value.includes("?") ? value.split("?").slice(1).join("?") : value;
-  return Array.from(new URLSearchParams(query).entries()).map(([key, item]) => `${key}: ${item}`).join("\n");
-}
-
-function urlBatch(value: string) {
-  const [base = "https://example.com", ...lines] = value.split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
-  const pairs = lines.map((line) => {
-    const [key, raw = ""] = line.split("=");
-    return { key, values: raw.split(",").map((item) => item.trim()).filter(Boolean) };
-  });
-  const max = Math.max(1, ...pairs.map((pair) => pair.values.length));
-  return Array.from({ length: max }, (_, index) => {
-    const url = new URL(base.startsWith("http") ? base : `https://${base}`);
-    pairs.forEach((pair) => url.searchParams.set(pair.key, pair.values[index % pair.values.length] ?? ""));
-    return url.toString();
-  }).join("\n");
 }
 
 function characterCodes(value: string) {
@@ -982,44 +789,6 @@ function punycodePreview(value: string) {
       : `ASCII/Punycode: ${ascii}`;
   } catch {
     return "Enter a valid domain name.";
-  }
-}
-
-function baseN(value: string, alphabet: string) {
-  if (alphabet.includes(value.trim()[0]) && /^[A-Za-z0-9!#$%&()*+,./:;<=>?@[\]^_`{|}~-]+$/.test(value.trim()) && value.trim().length > 8) {
-    return `Decoded preview is not deterministic for this compact base.\nInput length: ${value.trim().length}`;
-  }
-  const bytes = Array.from(new TextEncoder().encode(value));
-  let number = BigInt(0);
-  bytes.forEach((byte) => {
-    number = (number << BigInt(8)) + BigInt(byte);
-  });
-  if (number === BigInt(0)) return alphabet[0];
-  const base = BigInt(alphabet.length);
-  let output = "";
-  while (number > BigInt(0)) {
-    output = alphabet[Number(number % base)] + output;
-    number /= base;
-  }
-  return output;
-}
-
-function runLengthCodec(value: string) {
-  if (/(\d+:.)/.test(value)) {
-    return value.replace(/(\d+):([\s\S])/g, (_, count: string, char: string) => char.repeat(Number(count)));
-  }
-  return Array.from(value.matchAll(/([\s\S])\1*/g)).map((match) => `${match[0].length}:${match[1]}`).join("");
-}
-
-function baseConvert(value: string) {
-  const [fromLine = "10", toLine = "16", numberLine = "255"] = value.split(/\r?\n/);
-  const from = Number.parseInt(fromLine, 10) || 10;
-  const to = Number.parseInt(toLine, 10) || 16;
-  try {
-    const parsed = BigInt(Number.parseInt(numberLine.trim(), from));
-    return parsed.toString(to).toUpperCase();
-  } catch {
-    return "Enter from-base, to-base, and integer on separate lines.";
   }
 }
 
@@ -1088,9 +857,27 @@ function rgbToHex(value: string) {
   return `#${parts.map((part) => Math.max(0, Math.min(255, part)).toString(16).padStart(2, "0")).join("")}`;
 }
 
-function processTool(tool: DirectoryTool, input: string) {
-  const value = input.trim() || sampleFor(tool);
+async function processTool(tool: DirectoryTool, input: string) {
+  assertToolInput(input);
+  const value = input;
   const name = tool.name.toLowerCase();
+  const unavailable = unavailableToolReason(name);
+  if (unavailable) throw new Error(unavailable);
+  if (/json formatter|json beautifier/.test(name)) return formatJson(value);
+  if (/json viewer|json editor|json parser|json validator/.test(name)) return `${await formatJson(value)}\nValid JSON.`;
+
+  if (name.includes("regex generator")) throw new Error("Automatic regex generation is not available. Use Regex Tester to test an expression you provide.");
+  if (/javascript minifier|minify js|code minifier/.test(name)) return minifyJavaScript(value);
+  if (/formatter|beautifier/.test(name) && !/json|xml|wsdl|soap|text|url parameter/.test(name)) {
+    const language = /typescript/.test(name) ? "typescript"
+      : /javascript|js beautifier|react|babel|lwc|flow|^code /.test(name) ? "javascript"
+      : /graphql/.test(name) ? "graphql" : /scss/.test(name) ? "scss"
+      : /less/.test(name) ? "less" : /css/.test(name) ? "css"
+      : /yaml/.test(name) ? "yaml" : /markdown/.test(name) ? "markdown"
+      : /vue/.test(name) ? "vue" : /angular/.test(name) ? "angular"
+      : /html/.test(name) ? "html" : "unsupported";
+    return formatSource(value, language);
+  }
 
   if (tool.category === "Font Styles") return fontStyleText(name, value);
   if (tool.category === "Encoding") return encodingReference(name);
@@ -1107,38 +894,21 @@ function processTool(tool: DirectoryTool, input: string) {
   if (name.includes("json to java")) return jsonToClass(value, "java");
   if (name.includes("json to python")) return jsonToClass(value, "python");
   if (name.includes("json to c#")) return jsonToClass(value, "csharp");
-  if (name.includes("json viewer") || name.includes("json editor") || name.includes("json parser") || name.includes("json validator")) {
-    try {
-      return `${JSON.stringify(JSON.parse(value), null, 2)}\n\nValid JSON.`;
-    } catch {
-      return "Invalid JSON input.";
-    }
-  }
-  if (name.includes("json5 formatter") || name.includes("json5 validator")) {
-    try {
-      return `${JSON.stringify(parseJson5Like(value), null, 2)}\n\nValid JSON5-like input.`;
-    } catch {
-      return "Invalid JSON5 input.";
-    }
-  }
-  if (name.includes("json beautifier")) {
-    try {
-      return JSON.stringify(JSON.parse(value), null, 2);
-    } catch {
-      return "Invalid JSON input.";
-    }
-  }
-  if (name.includes("xml validator") || name.includes("html validator")) return xmlTagValidation(value);
+
+  if (name.includes("xml validator")) { parseXml(value); return "Valid XML."; }
+  if (name.includes("html validator")) throw new Error("HTML validation is not available. Formatting is not a validation result.");
   if (name.includes("xml viewer") || name.includes("xml parser") || name.includes("html viewer")) return value.replace(/></g, ">\n<");
-  if (name.includes("yaml viewer") || name.includes("yaml validator")) return value.replace(/\r\n/g, "\n").trim() || "YAML input is empty.";
-  if (name.includes("css validator")) return /\{[\s\S]*\}/.test(value) ? "CSS block structure detected." : "CSS may be missing a declaration block.";
-  if (name.includes("javascript validator")) return /[;{}()]|=>|function|const|let|var/.test(value) ? "JavaScript syntax shape detected." : "JavaScript syntax could not be recognized.";
-  if (name.includes("javascript obfuscator")) return `eval(String.fromCharCode(${Array.from(value).map((char) => char.charCodeAt(0)).join(",")}));`;
+  if (name.includes("yaml viewer") || name.includes("yaml validator")) return `${await formatSource(value, "yaml")}\nValid YAML syntax.`;
+  if (name.includes("css validator")) { await formatSource(value, "css"); return "CSS syntax parsed successfully. This does not validate browser support or property values."; }
+  if (name.includes("javascript validator")) { await formatSource(value, "javascript"); return "Valid JavaScript syntax. The code was not executed."; }
+  if (name.includes("javascript obfuscator")) return `eval(String.fromCharCode(${value.split("").map((char) => char.charCodeAt(0)).join(",")}));`;
   if (name.includes("string to json")) return JSON.stringify({ value }, null, 2);
   if (name.includes("json serialize")) return JSON.stringify(value);
   if (name.includes("json deserialize")) {
     try {
-      return JSON.stringify(JSON.parse(JSON.parse(value)), null, 2);
+      const decoded = parseJsonSafely(value);
+      if (typeof decoded !== "string") throw new Error("Enter a serialized JSON string.");
+      return formatJson(decoded);
     } catch {
       return "Invalid serialized JSON string.";
     }
@@ -1147,25 +917,23 @@ function processTool(tool: DirectoryTool, input: string) {
   if (name.includes("curl to php")) return curlToPhp(value);
   if (name.includes("json escape")) return jsonEscape(value);
   if (name.includes("json url parameters")) return jsonUrlParameters(value);
-  if (name.includes("json to model")) return jsonToModel(value);
-  if (name.includes("url parameter formatter")) return queryParameterFormat(value);
+  if (name.includes("json to model")) return jsonToClass(value, "typescript");
+
   if (name.includes("url batch generator")) return urlBatch(value);
   if (name.includes("javascript url encoder")) return value.includes("%") ? decodeURIComponent(value) : encodeURIComponent(value);
   if (name.includes("character encoder")) return characterCodes(value);
   if (name.includes("garble")) return garbleDecode(value);
   if (name.includes("punycode")) return punycodePreview(value);
-  if (name.includes("base62")) return baseN(value, "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz");
-  if (name.includes("base85")) return baseN(value, "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!#$%&()*+-;<=>?@^_`{|}~");
-  if (name.includes("base91")) return baseN(value, "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!#$%&()*+,./:;<=>?@[]^_`{|}~\"");
+
   if (name.includes("text compression")) return runLengthCodec(value);
-  if (name.includes("file hex")) return /^[0-9a-f\s]+$/i.test(value) ? binaryToText(value.replace(/\s+/g, "").match(/.{1,2}/g)?.map((hex) => Number.parseInt(hex, 16).toString(2).padStart(8, "0")).join(" ") ?? "") : Array.from(value).map((char) => char.charCodeAt(0).toString(16).padStart(2, "0")).join(" ");
+  if (name.includes("file hex")) return /^(?:[a-f\d]{2}\s*)+$/i.test(value) ? hexToText(value) : textToHex(value);
   if (name.includes("base number") || name.includes("bigint base")) return baseConvert(value);
   if (name.includes("ieee")) return ieee754(value);
   if (name.includes("byte signed")) return byteSignedUnsigned(value);
   if (name.includes("little big endian")) return reverseBytePairs(value);
   if (name.includes("reverse binary")) return value.replace(/\s+/g, "").split("").reverse().join("");
   if (name.includes("reverse array")) return value.split(/[\n,]+/).map((item) => item.trim()).filter(Boolean).reverse().join("\n");
-  if (name.includes("gzip text compressor") || name.includes("deflate text compressor")) return runLengthCodec(value);
+  if (name.includes("gzip text compressor") || name.includes("deflate text compressor")) return compressText(value, name.includes("gzip") ? "gzip" : "deflate");
   if (name.includes("json url encode") || name.includes("xml url encode") || name.includes("yaml url encode")) return encodeURIComponent(value);
   if (name.includes("json url decode") || name.includes("xml url decode") || name.includes("yaml url decode")) {
     try {
@@ -1175,29 +943,8 @@ function processTool(tool: DirectoryTool, input: string) {
     }
   }
   if (name.includes("json to base64") || name.includes("xml to base64") || name.includes("yaml to base64") || name.includes("text to base64") || name.includes("base64 encode")) return btoa(unescape(encodeURIComponent(value)));
-  if (name.includes("base64 to json") || name.includes("base64 to xml") || name.includes("base64 to yaml") || name.includes("base64 to text") || name.includes("base64 encode and decode")) {
-    try {
-      const decoded = decodeURIComponent(escape(atob(value)));
-      if (name.includes("base64 to json")) {
-        try {
-          return JSON.stringify(JSON.parse(decoded), null, 2);
-        } catch {
-          return decoded;
-        }
-      }
-      return decoded;
-    } catch {
-      return btoa(unescape(encodeURIComponent(value)));
-    }
-  }
-  if (name.includes("base64 encode")) return btoa(unescape(encodeURIComponent(value)));
-  if (name.includes("base64 decode")) {
-    try {
-      return decodeURIComponent(escape(atob(value)));
-    } catch {
-      return "Invalid Base64 input.";
-    }
-  }
+  if (name.includes("base64 to json")) return formatJson(decodeBase64Text(value));
+  if (name.includes("base64 to xml") || name.includes("base64 to yaml") || name.includes("base64 to text") || name.includes("base64 decode")) return decodeBase64Text(value);
   if (name.includes("url encode")) return encodeURIComponent(value);
   if (name.includes("url decode")) {
     try {
@@ -1212,7 +959,7 @@ function processTool(tool: DirectoryTool, input: string) {
   if (name.includes("javascript decode")) return jsDecode(value);
   if (name.includes("unicode encode")) return unicodeEncode(value);
   if (name.includes("unicode decode")) return unicodeDecode(value);
-  if (name.includes("utf-8")) return utf8Decode(value);
+  if (name.includes("utf-8")) return /^(?:[a-f\d]{2}(?:\s+|$))+$/i.test(value.trim()) ? hexToText(value) : textToHex(value).match(/.{2}/g)?.join(" ") ?? "";
   if (name.includes("rot13")) return rot13(value);
   if (name.includes("caesar cipher")) {
     const [shiftLine = "3", ...text] = value.split(/\r?\n/);
@@ -1229,152 +976,55 @@ function processTool(tool: DirectoryTool, input: string) {
     return Array.from(value).map((char) => /[A-Za-z0-9 ]/.test(char) ? char : `=${char.charCodeAt(0).toString(16).toUpperCase().padStart(2, "0")}`).join("");
   }
   if (name.includes("quoted printable decode")) return value.replace(/=([0-9A-F]{2})/gi, (_, hex: string) => String.fromCharCode(Number.parseInt(hex, 16)));
-  if (name.includes("jwt encode")) {
-    const header = btoa(JSON.stringify({ alg: "HS256", typ: "JWT" })).replace(/=+$/g, "");
-    const payload = btoa(value.startsWith("{") ? value : JSON.stringify({ data: value })).replace(/=+$/g, "");
-    return `${header}.${payload}.sample-signature`;
-  }
-  if (name.includes("jwt decode") || name.includes("jwt verify")) {
-    const [header = "", payload = "", signature = ""] = value.split(".");
-    const decodePart = (part: string) => {
-      try {
-        return JSON.stringify(JSON.parse(atob(part.replace(/-/g, "+").replace(/_/g, "/"))), null, 2);
-      } catch {
-        return "Invalid section";
-      }
-    };
-    return `Header\n${decodePart(header)}\n\nPayload\n${decodePart(payload)}\n\nSignature\n${signature || "missing"}`;
-  }
+  if (name.includes("jwt decode")) return decodeJwt(value);
   if (name.includes("json stringify text")) return JSON.stringify(value);
   if (name.includes("json unstringifier")) {
     try {
-      return JSON.parse(value);
+      const decoded = parseJsonSafely(value);
+      if (typeof decoded !== "string") throw new Error("Enter a JSON string, not an object or number.");
+      return decoded;
     } catch {
       return value.replace(/^"|"$/g, "").replace(/\\"/g, "\"").replace(/\\n/g, "\n").replace(/\\t/g, "\t");
     }
   }
-  if (name.includes("json") && name.includes("format")) {
-    try {
-      return JSON.stringify(JSON.parse(value), null, 2);
-    } catch {
-      return "Invalid JSON input.";
-    }
-  }
-  if (name.includes("minify json")) {
-    try {
-      return JSON.stringify(JSON.parse(value));
-    } catch {
-      return "Invalid JSON input.";
-    }
-  }
   if (name.includes("minify html") || name.includes("minify xml")) return value.replace(/>\s+</g, "><").replace(/\s+/g, " ").trim();
-  if (name.includes("javascript minifier") || name.includes("minify js") || name.includes("css minifier") || name.includes("minify css")) {
-    return value.replace(/\/\*[\s\S]*?\*\/|\/\/.*$/gm, "").replace(/\s+/g, " ").replace(/\s*([{}:;,])\s*/g, "$1").trim();
-  }
+
   if (name.includes("csv to json")) return csvToJson(value);
-  if (name.includes("tsv to json")) return tsvToJson(value);
-  if (name.includes("json to csv")) {
-    try {
-      return jsonToCsv(value);
-    } catch {
-      return "Invalid JSON input.";
-    }
-  }
-  if (name.includes("json to tsv")) {
-    try {
-      return jsonToTsv(value);
-    } catch {
-      return "Invalid JSON input.";
-    }
-  }
-  if (name.includes("json to xml")) {
-    try {
-      return `<root>\n${Object.entries(JSON.parse(value)).map(([key, item]) => `  <${key}>${String(item)}</${key}>`).join("\n")}\n</root>`;
-    } catch {
-      return "Invalid JSON input.";
-    }
-  }
-  if (name.includes("xml to json")) {
-    const entries = Array.from(value.matchAll(/<([A-Za-z0-9_-]+)>([\s\S]*?)<\/\1>/g)).map((match) => [match[1], match[2]]);
-    return JSON.stringify(Object.fromEntries(entries), null, 2);
-  }
-  if (name.includes("csv to xml")) {
-    const [headers = [], ...rows] = csvRows(value);
-    return `<rows>\n${rows.map((row) => `  <row>\n${headers.map((header, index) => `    <${header}>${htmlEncode(row[index] ?? "")}</${header}>`).join("\n")}\n  </row>`).join("\n")}\n</rows>`;
-  }
-  if (name.includes("xml to csv")) {
-    const entries = Array.from(value.matchAll(/<([A-Za-z0-9_-]+)>([\s\S]*?)<\/\1>/g)).map((match) => [match[1], match[2].trim()]);
-    return entries.map(([key, item]) => `${key},${JSON.stringify(item)}`).join("\n");
-  }
-  if (name.includes("csv to yaml")) {
-    const [headers = [], ...rows] = csvRows(value);
-    return rows.map((row) => headers.map((header, index) => `${header}: ${row[index] ?? ""}`).join("\n")).join("\n---\n");
-  }
-  if (name.includes("yaml to csv")) {
-    const entries = value.split(/\r?\n/).map((line) => line.split(/:\s*/)).filter((parts) => parts.length >= 2);
-    return entries.map(([key, ...rest]) => `${key},${rest.join(":")}`).join("\n");
-  }
-  if (name.includes("xml to yaml")) {
-    const entries = Array.from(value.matchAll(/<([A-Za-z0-9_-]+)>([\s\S]*?)<\/\1>/g)).map((match) => `${match[1]}: ${match[2].trim()}`);
-    return entries.join("\n");
-  }
-  if (name.includes("yaml to xml")) {
-    const entries = value.split(/\r?\n/).map((line) => line.split(/:\s*/)).filter((parts) => parts.length >= 2);
-    return `<root>\n${entries.map(([key, ...rest]) => `  <${key}>${htmlEncode(rest.join(":"))}</${key}>`).join("\n")}\n</root>`;
-  }
-  if (name.includes("json to yaml")) {
-    try {
-      return Object.entries(JSON.parse(value)).map(([key, item]) => `${key}: ${String(item)}`).join("\n");
-    } catch {
-      return "Invalid JSON input.";
-    }
-  }
-  if (name.includes("yaml to json") || name.includes("toml to json") || name.includes("ini to json")) {
-    return JSON.stringify(Object.fromEntries(value.split(/\r?\n/).map((line) => line.split(/[:=]/)).filter((parts) => parts.length >= 2).map(([key, ...rest]) => [key.trim(), rest.join(":").trim()])), null, 2);
-  }
-  if (name.includes("json to toml") || name.includes("json to ini")) {
-    try {
-      return Object.entries(JSON.parse(value)).map(([key, item]) => `${key} = ${JSON.stringify(item)}`).join("\n");
-    } catch {
-      return "Invalid JSON input.";
-    }
-  }
+  if (name.includes("tsv to json")) return csvToJson(value, "\t");
+  if (name.includes("json to csv")) return jsonToCsv(value);
+  if (name.includes("json to tsv")) return jsonToCsv(value, "\t");
+  if (name.includes("json to xml")) return jsonToXml(value);
+  if (name.includes("xml to json")) return xmlToJson(value);
+  if (name.includes("csv to xml")) return jsonToXml(csvToJson(value));
+
   if (name.includes("markdown to html")) return value.split(/\r?\n/).map((line) => line.startsWith("# ") ? `<h1>${line.slice(2)}</h1>` : `<p>${line}</p>`).join("\n");
   if (name.includes("html to markdown")) return htmlDecode(value.replace(/<h1>(.*?)<\/h1>/gi, "# $1\n").replace(/<[^>]+>/g, ""));
   if (name.includes("word to markdown")) return wordToMarkdown(value);
   if (name.includes("html to text")) return htmlDecode(value.replace(/<[^>]+>/g, " ")).replace(/\s+/g, " ").trim();
   if (name.includes("text to html")) return value.split(/\r?\n/).map((line) => `<p>${htmlEncode(line)}</p>`).join("\n");
-  if (name.includes("text to csv")) return value.split(/\r?\n/).map((line) => JSON.stringify(line)).join("\n");
+  if (name.includes("text to csv")) return value.split(/\r?\n/).map(csvCell).join("\r\n");
   if (name.includes("csv to text")) return csvRows(value).map((row) => row.join(" ")).join("\n");
   if (name.includes("hex to rgb")) return hexToRgb(value);
   if (name.includes("rgb to hex")) return rgbToHex(value);
-  if (name.includes("decimal to hex")) return Number.parseInt(value, 10).toString(16).toUpperCase();
-  if (name.includes("hex to decimal")) return Number.parseInt(value.replace(/^0x/i, ""), 16).toString(10);
-  if (name.includes("octal to decimal")) return Number.parseInt(value, 8).toString(10);
-  if (name.includes("decimal to octal")) return Number.parseInt(value, 10).toString(8);
+  if (name.includes("decimal to hex")) return baseConvert(`10\n16\n${value}`);
+  if (name.includes("hex to decimal")) return baseConvert(`16\n10\n${value.replace(/^0x/i, "")}`);
+  if (name.includes("octal to decimal")) return baseConvert(`8\n10\n${value}`);
+  if (name.includes("decimal to octal")) return baseConvert(`10\n8\n${value}`);
   if (name.includes("unix to date")) return new Date(Number.parseInt(value, 10) * 1000).toISOString();
   if (name.includes("date to unix")) return Math.floor(new Date(value).getTime() / 1000).toString();
   if (name.includes("css to inline")) return `style="${value.replace(/\s+/g, " ").trim()}"`;
   if (name.includes("inline to css")) return value.match(/style=["']([^"']+)["']/)?.[1].split(";").filter(Boolean).map((rule) => `  ${rule.trim()};`).join("\n") ?? value;
-  if ((name.includes("css to ") || name.includes("scss to ") || name.includes("less to ") || name.includes("sass to ") || name.includes("stylus to ")) && name.includes("css") || name.includes(" to scss") || name.includes(" to less") || name.includes(" to sass") || name.includes(" to stylus")) return cssPreprocessorPreview(name, value);
-  if (name.includes("graphql formatter") || name.includes("graphql beautifier") || name.includes("nginx formatter") || name.includes("scss formatter") || name.includes("scss beautifier") || name.includes("less formatter") || name.includes("less beautifier") || name.includes("typescript formatter") || name.includes("react formatter") || name.includes("angular formatter") || name.includes("vue js formatter") || name.includes("babel formatter") || name.includes("glimmer js formatter") || name.includes("lwc formatter") || name.includes("flow formatter") || name.includes("css formatter") || name.includes("javascript formatter") || name.includes("javascript beautifier")) return formatBracedText(value);
-  if (name.includes("markdown formatter")) return value.replace(/\n{3,}/g, "\n\n").replace(/^(#+)([^\s#])/gm, "$1 $2").trim();
-  if (name.includes("yaml formatter") || name.includes("yaml beautifier")) return value.replace(/\r\n/g, "\n").replace(/^\s*-\s*/gm, "- ").trim();
+
   if (name.includes("word counter")) return `Words: ${value.split(/\s+/).filter(Boolean).length}`;
-  if (name.includes("character counter")) return `Characters: ${value.length}`;
+  if (name.includes("character counter")) return `Characters: ${Array.from(value).length}`;
   if (name.includes("line counter")) return `Lines: ${value.split(/\r?\n/).length}`;
   if (name.includes("binary code translator")) return looksLikeBinaryCode(value) ? binaryToText(value) : textToBinary(value);
   if (name.includes("text to binary")) return textToBinary(value);
   if (name.includes("binary to text")) {
     return binaryToText(value);
   }
-  if (name.includes("text to hex")) return Array.from(value).map((char) => char.charCodeAt(0).toString(16).padStart(2, "0")).join("");
-  if (name.includes("hex to text")) {
-    return value.replace(/\s+/g, "").match(/.{1,2}/g)?.map((part) => {
-      const code = Number.parseInt(part, 16);
-      return Number.isFinite(code) ? String.fromCharCode(code) : "";
-    }).join("") ?? "";
-  }
+  if (name.includes("text to hex")) return textToHex(value);
+  if (name.includes("hex to text")) return hexToText(value);
   if (name.includes("camelcase converter")) return toCamelCaseValue(value);
   if (name.includes("pascalcase converter")) return toPascalCaseValue(value);
   if (name.includes("snake_case converter")) return wordsForCase(value).join("_");
@@ -1384,7 +1034,7 @@ function processTool(tool: DirectoryTool, input: string) {
   if (name.includes("remove duplicates")) return Array.from(new Set(value.split(/\r?\n/))).join("\n");
   if (name.includes("sort lines")) return value.split(/\r?\n/).sort((a, b) => a.localeCompare(b)).join("\n");
   if (name.includes("number sorter")) return value.match(/-?\d+(\.\d+)?/g)?.map(Number).sort((a, b) => a - b).join("\n") ?? "";
-  if (name.includes("text reverser")) return value.split("").reverse().join("");
+  if (name.includes("text reverser")) return reverseText(value);
   if (name.includes("remove line breaks")) return value.split(/\r?\n/).map((line) => line.trim()).filter(Boolean).join(" ");
   if (name.includes("duplicate line remover")) return Array.from(new Set(value.split(/\r?\n/).filter(Boolean))).join("\n");
   if (name.includes("remove text formatting") || name.includes("plain text converter")) return value.replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim();
@@ -1392,7 +1042,7 @@ function processTool(tool: DirectoryTool, input: string) {
   if (name.includes("whitespace remover")) return value.replace(/\s+/g, " ").trim();
   if (name.includes("em dash remover")) return value.replace(/\u2014/g, "-").replace(/\u2013/g, "-");
   if (name.includes("small text generator")) return toSmallText(value);
-  if (name.includes("reverse text generator")) return value.split("").reverse().join("");
+  if (name.includes("reverse text generator")) return reverseText(value);
   if (name.includes("sentence case converter")) return toSentenceCase(value);
   if (name.includes("title case converter")) return toTitleCase(value);
   if (name.includes("sort words alphabetically")) return value.split(/\s+/).filter(Boolean).sort((a, b) => a.localeCompare(b)).join(" ");
@@ -1406,24 +1056,25 @@ function processTool(tool: DirectoryTool, input: string) {
   }
   if (name.includes("find and replace text")) {
     const [find = "", replace = "", ...text] = value.split(/\r?\n/);
-    return text.join("\n").split(find).join(replace);
+    return replaceLiteralText(text.join("\n"), find, replace);
   }
   if (name.includes("character remover")) {
     const [chars = "", ...text] = value.split(/\r?\n/);
     if (!chars) return text.join("\n");
-    const escaped = chars.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    return text.join("\n").replace(new RegExp(`[${escaped}]`, "g"), "");
+    return removeCharacters(text.join("\n"), chars);
   }
   if (name.includes("repeat text generator")) {
     const [countLine = "3", ...text] = value.split(/\r?\n/);
     const count = Math.max(1, Math.min(100, Number.parseInt(countLine, 10) || 3));
-    return Array.from({ length: count }, () => text.join("\n") || countLine).join("\n");
+    const source = text.join("\n");
+    if ((source.length + 1) * count > 500_000) throw new Error("Repeated output is too large. Reduce the count or input.");
+    return Array.from({ length: count }, () => source).join("\n");
   }
   if (name.includes("invisible text generator")) return "\u200B".repeat(Math.max(1, Math.min(200, Number.parseInt(value, 10) || 24)));
   if (name.includes("text splitter")) return value.split(/\s+/).filter(Boolean).join("\n");
   if (name.includes("text joiner")) return value.split(/\r?\n/).map((line) => line.trim()).filter(Boolean).join(" ");
   if (name.includes("text escape")) return JSON.stringify(value);
-  if (name.includes("text beautifier")) return value.split(/\r?\n/).map((line) => line.trim().replace(/\s+/g, " ")).filter(Boolean).join("\n");
+
   if (name.includes("text line length filter")) {
     const [limitLine = "20", ...lines] = value.split(/\r?\n/);
     const limit = Number.parseInt(limitLine, 10) || 20;
@@ -1433,8 +1084,7 @@ function processTool(tool: DirectoryTool, input: string) {
   if (name.includes("punctuation")) return value.replace(/,/g, "\uff0c").replace(/\./g, "\u3002").replace(/!/g, "\uff01").replace(/\?/g, "\uff1f").replace(/"/g, "\u201d");
   if (name.includes("key value to code")) return keyValueToCode(value);
   if (name.includes("directory tree")) return directoryTree(value);
-  if (name.includes("pinyin")) return "zhong wen gong ju";
-  if (name.includes("simplified traditional")) return `${value}\nTraditional preview: \u6f22\u8a9e\u8f49\u63db`;
+
   if (name.includes("markdown table generator")) return markdownTable(value);
   if (name.includes("nato phonetic alphabet translator") || name.includes("phonetic spelling tool")) {
     return value.toLowerCase().split("").map((char) => natoWords[char] ?? char).join(" ");
@@ -1442,13 +1092,13 @@ function processTool(tool: DirectoryTool, input: string) {
   if (name.includes("pig latin translator")) return value.split(/\s+/).map(pigLatinWord).join(" ");
   if (name.includes("roman numeral dates")) return value.match(/\d{1,4}/g)?.map((number) => `${number}: ${toRoman(Number(number))}`).join("\n") ?? "Enter a year or number.";
   if (name.includes("wingdings translator")) return Array.from(value).map((char) => `&#${10000 + char.charCodeAt(0)};`).join(" ");
-  if (name.includes("apa citation generator")) return `${value.replace(/\.$/, "")}. (2026). CodeTools AI. https://example.com`;
+
   if (name.includes("online notepad")) return value;
   if (name.includes("text compare") || name.includes("text diff")) {
     const [left = "", right = ""] = value.split(/\n---\n/);
     return left === right ? "The two text blocks match." : `Different text blocks\n\nLeft length: ${left.length}\nRight length: ${right.length}`;
   }
-  if (name.includes("password generator")) return `${crypto.randomUUID().replace(/-/g, "").slice(0, 12)}A1!`;
+  if (name.includes("password generator")) return generatePassword();
   if (name.includes("slug generator")) return slugify(value);
   if (name.includes("slugify url generator")) return slugify(value);
   if (name.includes("utm generator")) return utmUrl(value);
@@ -1458,20 +1108,12 @@ function processTool(tool: DirectoryTool, input: string) {
     const [minute = "*", hour = "*", day = "*", month = "*", weekday = "*"] = value.split(/\s+/);
     return `Minute: ${minute}\nHour: ${hour}\nDay of month: ${day}\nMonth: ${month}\nWeekday: ${weekday}`;
   }
-  if (name.includes("barcode generator") || name.includes("qr code generator")) return `Payload\n${value}\n\nASCII preview\n[ ${value.slice(0, 36)} ]`;
+
   if (name.includes("htaccess generator")) return `RewriteEngine On\nRewriteCond %{HTTPS} !=on\nRewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]\n\n# ${value}`;
   if (name.includes("lorem ipsum") || name.includes("lorem faker")) {
     return "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer vitae velit at massa luctus tincidunt.";
   }
-  if (name.includes("code formatter") || name.includes("code beautifier")) {
-    return value
-      .replace(/\{/g, "{\n  ")
-      .replace(/;/g, ";\n  ")
-      .replace(/\}/g, "\n}")
-      .replace(/\n\s+\n/g, "\n")
-      .trim();
-  }
-  if (name.includes("code minifier")) return value.replace(/\/\*[\s\S]*?\*\/|\/\/.*$/gm, "").replace(/\s+/g, " ").trim();
+
   if (name.includes("code diff")) {
     const [left = "", right = ""] = value.split(/\n---\n/);
     const leftLines = left.split(/\r?\n/);
@@ -1482,35 +1124,24 @@ function processTool(tool: DirectoryTool, input: string) {
       return `- ${leftLines[index] ?? ""}\n+ ${rightLines[index] ?? ""}`;
     }).join("\n");
   }
-  if (name.includes("code snippet generator")) {
-    return `function handleInput(value) {\n  if (!value) return null;\n  return value.trim();\n}\n\nexport { handleInput };`;
-  }
-  if (name.includes("code commenter")) return value.split(/\r?\n/).map((line) => line.trim() ? `${line} // explain this step` : line).join("\n");
-  if (name.includes("code refactor")) return `// Refactor suggestion\n// 1. Extract repeated logic into small functions.\n// 2. Name intermediate values clearly.\n// 3. Keep side effects near the edge.\n\n${value}`;
-  if (name.includes("code optimizer")) return `Optimization notes\n- Remove repeated work inside loops.\n- Prefer early returns for guard clauses.\n- Cache derived values when reused.\n\n${value}`;
-  if (name.includes("code summarizer")) return `Summary\nThis code appears to define a small routine, process input, and return or print a result.\n\nKey input\n${value.slice(0, 240)}`;
-  if (name.includes("code documentation")) return `# Code Documentation\n\n## Purpose\nDescribe what this code does and when to use it.\n\n## Inputs\nList parameters, types, and expected values.\n\n## Output\nDescribe the returned value or side effect.\n\n## Source\n\`\`\`\n${value}\n\`\`\``;
-  if (name.includes("unit test")) return `import { describe, expect, it } from "vitest";\n\nimport { add } from "./module";\n\ndescribe("add", () => {\n  it("adds two numbers", () => {\n    expect(add(2, 3)).toBe(5);\n  });\n});`;
-  if (name.includes("api code")) return `export async function GET() {\n  return Response.json({ data: [], ok: true });\n}\n\nexport async function POST(request: Request) {\n  const body = await request.json();\n  return Response.json({ data: body, ok: true }, { status: 201 });\n}`;
-  if (name.includes("sql query")) return `SELECT id, email, created_at\nFROM users\nWHERE created_at >= NOW() - INTERVAL '30 days'\nORDER BY created_at DESC\nLIMIT 50;`;
-  if (name.includes("shell script")) return `#!/usr/bin/env bash\nset -euo pipefail\n\nsrc="./project"\ndest="./backup-$(date +%Y%m%d).tar.gz"\ntar -czf "$dest" "$src"\necho "Created $dest"`;
-  if (name.includes("dockerfile")) return `FROM node:20-alpine AS deps\nWORKDIR /app\nCOPY package*.json ./\nRUN npm ci\n\nFROM deps AS build\nCOPY . .\nRUN npm run build\n\nEXPOSE 3000\nCMD ["npm", "start"]`;
+
+  if (name.includes("code documentation")) return `# Documentation template\n\nThis is a generic template, not an analysis of your code. Fill in and verify each section.\n\n## Purpose\nDescribe what this code does and when to use it.\n\n## Inputs\nList parameters, types, and expected values.\n\n## Output\nDescribe the returned value or side effect.\n\n## Source\n\`\`\`\n${value}\n\`\`\``;
+
   if (name.includes("readme")) return `# Project Name\n\nShort description of the tool or application.\n\n## Getting Started\n\n\`\`\`bash\nnpm install\nnpm run dev\n\`\`\`\n\n## Features\n\n- Fast developer workflow\n- Clean UI\n- Extensible architecture`;
-  if (name.includes("sql formatter")) return value.replace(/\b(select|from|where|order by|group by|limit)\b/gi, "\n$1").trim().toUpperCase();
+
   if (name.includes("xml formatter") || name.includes("html formatter") || name.includes("wsdl formatter") || name.includes("soap formatter") || name.includes("xml beautifier") || name.includes("html beautifier")) {
     return value.replace(/></g, ">\n<");
   }
-  if (name.includes("css formatter") || name.includes("css beautifier")) return value.replace(/\{/g, " {\n  ").replace(/;/g, ";\n  ").replace(/\}/g, "\n}");
-  if (name.includes("javascript formatter") || name.includes("js beautifier") || name.includes("javascript beautifier") || name.includes("python formatter") || name.includes("python beautifier") || name.includes("php formatter") || name.includes("php beautifier") || name.includes("java formatter") || name.includes("java beautifier") || name.includes("c# formatter") || name.includes("c# beautifier") || name.includes("c/c++ formatter") || name.includes("c beautifier") || name.includes("c++ beautifier") || name.includes("go formatter") || name.includes("perl beautifier") || name.includes("ruby beautifier") || name.includes("lua beautifier")) {
-    return value.replace(/\{/g, "{\n  ").replace(/;/g, ";\n  ").replace(/\}/g, "\n}").trim();
-  }
+
   if (name.includes("add line numbers")) return value.split(/\r?\n/).map((line, index) => `${String(index + 1).padStart(3, " ")}  ${line}`).join("\n");
   if (name.includes("text wrap")) return value.match(/.{1,80}(\s|$)/g)?.map((line) => line.trim()).join("\n") ?? value;
-  if (name.includes("hash generator") || name.includes("md5 generator") || name.includes("sha1 generator") || name.includes("sha256 generator") || name.includes("sha512 generator") || name.includes("hmac generator")) {
-    return `${tool.name}\n${simpleHash(value)}${simpleHash(`${tool.name}:${value}`)}`;
+  if (name.includes("hash generator") || name.includes("sha1 generator") || name.includes("sha256 generator") || name.includes("sha512 generator")) {
+    return digestText(value, name.includes("sha1") ? "SHA-1" : name.includes("sha512") ? "SHA-512" : "SHA-256");
   }
   if (name.includes("hash identifier")) {
-    const length = value.replace(/\s+/g, "").length;
+    const hash = value.trim();
+    if (!/^[a-f\d]+$/i.test(hash)) throw new Error("Enter a hexadecimal hash value.");
+    const length = hash.length;
     if (length === 32) return "Likely MD5";
     if (length === 40) return "Likely SHA1";
     if (length === 64) return "Likely SHA256";
@@ -1519,25 +1150,15 @@ function processTool(tool: DirectoryTool, input: string) {
   }
   if (name.includes("password strength")) {
     const score = [value.length >= 12, /[A-Z]/.test(value), /[a-z]/.test(value), /\d/.test(value), /[^A-Za-z0-9]/.test(value)].filter(Boolean).length;
-    return `Score: ${score}/5\nStrength: ${score >= 4 ? "Strong" : score >= 3 ? "Medium" : "Weak"}`;
+    return `Character checks passed: ${score}/5\nThis only checks length and character variety. It does not measure resistance to guessing or detect compromised passwords.`;
   }
-  if (name.includes("md5 decrypt") || name.includes("hash cracker")) return `No local reverse match found for ${value}.\nTip: real cracking requires a server-side dictionary or lookup API.`;
-  if (name.includes("ssl checker")) return `SSL check preview\nHost: ${value}\nStatus: valid\nProtocol: TLS 1.3\nExpires: future date`;
-  if (name.includes("whois lookup")) return `WHOIS lookup preview\nDomain: ${value}\nRegistrar: Example Registrar\nStatus: active`;
-  if (name.includes("dns lookup") || name.includes("dns record viewer") || name.includes("dns propagation")) return `DNS records for ${value}\nA     203.0.113.10\nAAAA  2001:db8::10\nMX    mail.${value.replace(/^https?:\/\//, "")}`;
-  if (name.includes("ip lookup") || name.includes("ip information")) return `IP information\nInput: ${value}\nType: ${value.includes(":") ? "IPv6" : "IPv4"}\nNetwork: documentation range`;
+
   if (name.includes("user agent parser")) return `Browser: ${value.includes("Chrome") ? "Chrome-like" : "Unknown"}\nOS: ${value.includes("Windows") ? "Windows" : "Unknown"}\nRaw: ${value}`;
-  if (name.includes("url scanner")) return `URL scan\nURL: ${value}\nScheme: ${value.startsWith("https") ? "HTTPS" : "Other"}\nRisk: ${value.includes(" ") ? "Check input" : "Low preview risk"}`;
-  if (name.includes("security headers")) return "Recommended headers\nContent-Security-Policy\nStrict-Transport-Security\nX-Content-Type-Options: nosniff\nReferrer-Policy";
-  if (name.includes("http headers")) return `GET / HTTP/1.1\nHost: ${value}\nUser-Agent: CodeTools AI\nAccept: */*`;
+
   if (name.includes("url extractor")) return value.match(/https?:\/\/[^\s]+/g)?.join("\n") ?? "No URLs found.";
-  if (name.includes("ping test")) return `PING ${value}\n64 bytes from ${value}: time=23ms\n64 bytes from ${value}: time=21ms\nPackets: sent=2 received=2 lost=0`;
-  if (name.includes("traceroute")) return `Traceroute to ${value}\n1  local.gateway  1 ms\n2  isp.example     8 ms\n3  ${value}        24 ms`;
+
   if (name.includes("domain checker")) return `${value}\nStatus: available check requires registrar API\nSyntax: ${/^[a-z0-9.-]+\.[a-z]{2,}$/i.test(value) ? "valid" : "check domain format"}`;
-  if (name.includes("port scanner")) return value.split(/[,\s]+/).filter(Boolean).map((port) => `${port}: ${Number(port) % 2 === 0 ? "open" : "filtered"} (preview)`).join("\n");
-  if (name.includes("subdomain finder")) return [`www.${value}`, `api.${value}`, `cdn.${value}`, `status.${value}`].join("\n");
-  if (name.includes("http status checker")) return `${value}\nStatus: 200 OK (preview)`;
-  if (name.includes("redirect checker")) return `${value}\n301 -> https://${value.replace(/^https?:\/\//, "")}\n200 -> final URL`;
+
   if (name.includes("url parser")) {
     const url = new URL(value.startsWith("http") ? value : `https://${value}`);
     return `Protocol: ${url.protocol}\nHost: ${url.host}\nPath: ${url.pathname}\nQuery: ${url.search}`;
@@ -1546,9 +1167,13 @@ function processTool(tool: DirectoryTool, input: string) {
     const query = value.includes("?") ? value.split("?")[1] : value;
     return Array.from(new URLSearchParams(query).entries()).map(([key, item]) => `${key}: ${item}`).join("\n") || "No query params found.";
   }
-  if (name.includes("cidr calculator")) return `${value}\nNetwork: sample network range\nUsable hosts: depends on prefix length`;
-  if (name.includes("ipv4 converter")) return value.split(".").map((part) => Number(part).toString(16).padStart(2, "0")).join("");
-  if (name.includes("mac address lookup")) return `MAC prefix: ${value.slice(0, 8)}\nVendor: Example Networks (preview)`;
+
+  if (name.includes("ipv4 converter")) {
+    const parts = value.trim().split(".");
+    if (parts.length !== 4 || parts.some((part) => !/^\d{1,3}$/.test(part) || Number(part) > 255)) throw new Error("Enter four IPv4 octets between 0 and 255.");
+    return parts.map((part) => Number(part).toString(16).padStart(2, "0")).join("");
+  }
+
   if (name.includes("base64 to image") || name.includes("image to base64")) return `Data URL preview\ndata:image/png;base64,${name.includes("image to") ? btoa(value) : value.slice(0, 120)}`;
   if (name.includes("regex cheat sheet")) {
     return "\\d digit\n\\w word character\n\\s whitespace\n. any character\n+ one or more\n* zero or more\n? optional\n^ start\n$ end\n[] character set\n() capture group\n| either/or";
@@ -1559,99 +1184,129 @@ function processTool(tool: DirectoryTool, input: string) {
   if (name.includes("password regex")) return "/^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,}$/";
   if (name.includes("regex escape")) return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   if (name.includes("regex unescape")) return value.replace(/\\([.*+?^${}()|[\]\\])/g, "$1");
-  if (name.includes("regex replace")) {
-    const lines = value.split(/\r?\n/);
-    const regex = regexFromLine(lines[0] || "");
-    const replacement = lines[1] ?? "";
-    const text = lines.slice(2).join("\n");
-    return text.replace(regex, replacement);
-  }
-  if (name.includes("regex split")) {
-    const { regex, text } = regexParts(value);
-    return text.split(regex).filter(Boolean).join("\n");
-  }
   if (name.includes("regex validator")) {
-    const { regex } = regexParts(value);
-    return `Valid regex\nPattern: ${regex.toString()}`;
+    const { pattern, flags } = parseRegexLiteral(value.split(/\r?\n/)[0]);
+    if (pattern.length > 500) throw new Error("Regular expressions must be 500 characters or fewer.");
+    return `Valid regex\nPattern: ${new RegExp(pattern, flags).toString()}`;
   }
-  if (name.includes("regex explainer")) {
-    const { patternLine } = regexParts(value);
-    return explainRegex(patternLine);
-  }
-  if (name.includes("regex groups")) {
-    const { regex, text } = regexParts(value);
-    const matches = Array.from(text.matchAll(regex));
-    return matches.length
-      ? matches.map((match, index) => `Match ${index + 1}: ${match[0]}\nGroups: ${match.slice(1).join(", ") || "none"}`).join("\n\n")
-      : "No matches found.";
-  }
-  if (name.includes("regex")) {
-    const { regex, text } = regexParts(value);
-    const matches = Array.from(text.matchAll(regex)).map((match) => match[0]);
-    return matches.length
-      ? `Matches: ${matches.length}\n\n${matches.map((match, index) => `${index + 1}. ${match}`).join("\n")}`
-      : "No matches found.";
-  }
-  if (name.includes(" to ") && name.includes("converter")) {
-    return `// ${tool.name} preview\n// Review and adapt the result for your project.\n\n${value}`;
-  }
-
-  return `${tool.name} result\n\nInput\n${value}\n\nReview this preview before using it in a production workflow.`;
+  if (name.includes("regex explainer")) return explainRegex(value.split(/\r?\n/)[0]);
+  if (name.includes("regex")) throw new Error("Run expressions with the protected regex worker.");
+  throw new Error("This operation is not implemented yet. Your input has been kept unchanged; no result has been generated.");
 }
 
 export function DirectoryToolWorkspace({ tool }: { tool: DirectoryTool }) {
   const [input, setInput] = useState(tool.category === "Text" ? defaultTextInput(tool) : sampleFor(tool));
   const [output, setOutput] = useState("");
   const [error, setError] = useState("");
+  const [status, setStatus] = useState("");
   const [loading, setLoading] = useState(false);
   const [textOption, setTextOption] = useState(defaultTextOption(tool));
   const { t } = useI18n();
   const Icon = toolIcons[tool.iconName];
   const headerCopy = getDirectoryToolHeader(tool);
   const pageDescription = headerCopy.description;
+  const availabilityNote = unavailableToolReason(tool.name);
   const eyebrow = headerCopy.eyebrow === getCategoryLabel(tool.category) ? localizedCategoryLabel(tool.category, t) : headerCopy.eyebrow;
+  const inputId = useId();
+  const outputId = useId();
+  const requestId = useRef(0);
+  const running = useRef(false);
+
+  useEffect(() => () => { requestId.current += 1; }, []);
+
+  useEffect(() => {
+    requestId.current += 1;
+    running.current = false;
+    setInput(tool.category === "Text" ? defaultTextInput(tool) : sampleFor(tool));
+    setTextOption(defaultTextOption(tool));
+    setOutput("");
+    setError("");
+    setStatus("");
+    setLoading(false);
+  }, [tool]);
+
+  const invalidate = () => {
+    requestId.current += 1;
+    running.current = false;
+    setLoading(false);
+    setOutput("");
+    setError("");
+    setStatus("");
+  };
+
+  const updateInput = (value: string) => {
+    invalidate();
+    setInput(value);
+    if (value.length > maxToolInputLength) setError("Input must be 100,000 characters or fewer. Your input has been retained.");
+  };
+
+  const updateOption = (value: string) => {
+    invalidate();
+    setTextOption(value);
+  };
 
   const run = async () => {
+    if (running.current) return;
+    running.current = true;
+    const currentRequest = ++requestId.current;
     setLoading(true);
+    setOutput("");
     setError("");
-    await new Promise((resolve) => setTimeout(resolve, 250));
+    setStatus("");
     try {
       const payload = tool.category === "Text" ? textToolPayload(tool, input, textOption) : input;
+      assertToolInput(payload);
       const protectedRegexResult = await runProtectedRegexTool(tool, payload);
-      setOutput(protectedRegexResult ?? processTool(tool, payload));
+      const result = assertToolOutput(protectedRegexResult ?? await processTool(tool, payload));
+      if (currentRequest !== requestId.current) return;
+      setOutput(result);
+      setStatus("Processing complete.");
     } catch (err) {
-      setError(err instanceof Error ? err.message : t("online.processError"));
+      if (currentRequest === requestId.current) setError(err instanceof Error ? err.message : t("online.processError"));
     } finally {
-      setLoading(false);
+      if (currentRequest === requestId.current) {
+        setLoading(false);
+        running.current = false;
+      }
     }
   };
 
   const copy = async () => {
-    await navigator.clipboard.writeText(output);
+    try {
+      await navigator.clipboard.writeText(output);
+      setStatus("Copied to clipboard.");
+    } catch {
+      setError("Clipboard access was denied. Select the output and copy it manually.");
+    }
   };
 
   const download = () => {
-    const blob = new Blob([output], { type: "text/plain;charset=utf-8" });
+    const isCsv = tool.name.toLowerCase().includes("to csv");
+    const blob = new Blob([output], { type: `${isCsv ? "text/csv" : "text/plain"};charset=utf-8` });
     const url = URL.createObjectURL(blob);
     const anchor = document.createElement("a");
     anchor.href = url;
-    anchor.download = `${tool.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "tool-output"}.txt`;
+    anchor.download = `${tool.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "tool-output"}.${isCsv ? "csv" : "txt"}`;
     anchor.click();
-    URL.revokeObjectURL(url);
+    window.setTimeout(() => URL.revokeObjectURL(url), 1000);
   };
 
   const share = async () => {
-    if (navigator.share) {
-      await navigator.share({ title: tool.name, text: output || input });
-      return;
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: tool.name, url: `${window.location.origin}${window.location.pathname}` });
+      } else {
+        await navigator.clipboard.writeText(`${window.location.origin}${window.location.pathname}`);
+        setStatus("Tool link copied. Your input and output were not shared.");
+      }
+    } catch (err) {
+      if (!(err instanceof DOMException && err.name === "AbortError")) setError("Sharing is unavailable. Copy the tool's address from the browser.");
     }
-    await navigator.clipboard.writeText(window.location.href);
   };
 
   const clearAll = () => {
+    invalidate();
     setInput("");
-    setOutput("");
-    setError("");
   };
 
   if (tool.category === "Text") {
@@ -1673,13 +1328,18 @@ export function DirectoryToolWorkspace({ tool }: { tool: DirectoryTool }) {
               </p>
               <h1 className="mt-3 text-2xl font-black tracking-tight text-slate-950 sm:text-3xl">{headerCopy.title}</h1>
               <p className="mt-3 max-w-5xl text-base leading-7 text-slate-700 sm:text-lg">{pageDescription}</p>
+              {availabilityNote && <p className="mt-3 rounded border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">{availabilityNote}</p>}
+              <p role="status" aria-live="polite" className="mt-2 text-sm text-slate-600">{loading ? t("online.running") : status}</p>
+              {tool.name.toLowerCase().includes("to csv") && <p className="mt-2 text-sm text-slate-600">Spreadsheet formula-like text is prefixed with an apostrophe for safe export.</p>}
             </div>
 
             <div className="mt-6 grid gap-5 lg:grid-cols-2">
               <div className="overflow-hidden rounded border border-slate-300 bg-white shadow-sm">
                 <textarea
+                  id={inputId}
+                  aria-label={t("online.input")}
                   value={input}
-                  onChange={(event) => setInput(event.target.value)}
+                  onChange={(event) => updateInput(event.target.value)}
                   placeholder={`Type or paste text to ${tool.name.toLowerCase()}...`}
                   className="min-h-[420px] w-full resize-y bg-white p-4 text-base leading-7 text-slate-900 outline-none placeholder:text-slate-500"
                   spellCheck={false}
@@ -1691,24 +1351,26 @@ export function DirectoryToolWorkspace({ tool }: { tool: DirectoryTool }) {
 
               <div className="overflow-hidden rounded border border-slate-300 bg-white shadow-sm">
                 <textarea
+                  id={outputId}
+                  aria-label={t("online.output")}
                   value={output}
-                  onChange={(event) => setOutput(event.target.value)}
+                  readOnly
                   placeholder={`Type or paste text to ${tool.name.toLowerCase()}...`}
                   className="min-h-[420px] w-full resize-y bg-white p-4 text-base leading-7 text-slate-900 outline-none placeholder:text-slate-500"
                   spellCheck={false}
                 />
                 <div className="flex flex-wrap items-center justify-between gap-3 border-t-8 border-slate-300 bg-white px-4 py-3">
                   <div className="flex gap-2">
-                    <button type="button" onClick={copy} disabled={!output} title={t("online.copy")} className="grid h-9 w-9 place-items-center rounded bg-slate-100 text-slate-900 transition hover:bg-blue-50 disabled:cursor-not-allowed disabled:text-slate-400">
+                    <button type="button" onClick={copy} disabled={!output} aria-label={t("online.copy")} title={t("online.copy")} className="grid h-9 w-9 place-items-center rounded bg-slate-100 text-slate-900 transition hover:bg-blue-50 disabled:cursor-not-allowed disabled:text-slate-400">
                       <Copy className="h-5 w-5" />
                     </button>
-                    <button type="button" onClick={share} title="Share" className="grid h-9 w-9 place-items-center rounded bg-slate-100 text-slate-900 transition hover:bg-blue-50">
+                    <button type="button" onClick={share} aria-label="Share tool link" title="Share tool link" className="grid h-9 w-9 place-items-center rounded bg-slate-100 text-slate-900 transition hover:bg-blue-50">
                       <Share2 className="h-5 w-5" />
                     </button>
-                    <button type="button" onClick={download} disabled={!output} title={t("tool.download")} className="grid h-9 w-9 place-items-center rounded bg-slate-100 text-slate-900 transition hover:bg-blue-50 disabled:cursor-not-allowed disabled:text-slate-400">
+                    <button type="button" onClick={download} disabled={!output} aria-label={t("tool.download")} title={t("tool.download")} className="grid h-9 w-9 place-items-center rounded bg-slate-100 text-slate-900 transition hover:bg-blue-50 disabled:cursor-not-allowed disabled:text-slate-400">
                       <Download className="h-5 w-5" />
                     </button>
-                    <button type="button" onClick={clearAll} title={t("online.clear")} className="grid h-9 w-9 place-items-center rounded bg-slate-100 text-slate-900 transition hover:bg-blue-50">
+                    <button type="button" onClick={clearAll} aria-label={t("online.clear")} title={t("online.clear")} className="grid h-9 w-9 place-items-center rounded bg-slate-100 text-slate-900 transition hover:bg-blue-50">
                       <Trash2 className="h-5 w-5" />
                     </button>
                   </div>
@@ -1727,13 +1389,13 @@ export function DirectoryToolWorkspace({ tool }: { tool: DirectoryTool }) {
                     {textOption.includes("\n") || tool.name.toLowerCase().includes("find and replace") ? (
                       <textarea
                         value={textOption}
-                        onChange={(event) => setTextOption(event.target.value)}
+                        onChange={(event) => updateOption(event.target.value)}
                         className="min-h-20 rounded border border-slate-300 px-3 py-2 text-sm font-normal outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
                       />
                     ) : (
                       <input
                         value={textOption}
-                        onChange={(event) => setTextOption(event.target.value)}
+                        onChange={(event) => updateOption(event.target.value)}
                         className="h-10 rounded border border-slate-300 px-3 text-sm font-normal outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
                       />
                     )}
@@ -1741,7 +1403,7 @@ export function DirectoryToolWorkspace({ tool }: { tool: DirectoryTool }) {
                 )}
                 <p className="text-sm leading-6 text-slate-600">{textOptionHelp(tool)}</p>
                 <div className="flex flex-wrap gap-3">
-                  <Button type="button" variant="gradient" onClick={run} disabled={loading}>
+                  <Button type="button" variant="gradient" onClick={run} disabled={loading || Boolean(availabilityNote)}>
                     {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Play className="h-4 w-4" />}
                     {loading ? t("online.running") : t("online.runTool")}
                   </Button>
@@ -1751,7 +1413,7 @@ export function DirectoryToolWorkspace({ tool }: { tool: DirectoryTool }) {
                   </Button>
                 </div>
               </div>
-              {error && <p className="mt-4 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm font-semibold text-red-700">{error}</p>}
+              {error && <p role="alert" className="mt-4 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm font-semibold text-red-700">{error}</p>}
             </section>
           </section>
         </main>
@@ -1774,15 +1436,20 @@ export function DirectoryToolWorkspace({ tool }: { tool: DirectoryTool }) {
             <p className="text-sm font-black uppercase tracking-[0.18em] text-blue-700">{eyebrow}</p>
             <h1 className="mt-2 text-3xl font-black text-slate-950">{headerCopy.title}</h1>
             <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">{pageDescription}</p>
+              {availabilityNote && <p className="mt-3 rounded border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">{availabilityNote}</p>}
+              <p role="status" aria-live="polite" className="mt-2 text-sm text-slate-600">{loading ? t("online.running") : status}</p>
+              {tool.name.toLowerCase().includes("to csv") && <p className="mt-2 text-sm text-slate-600">Spreadsheet formula-like text is prefixed with an apostrophe for safe export.</p>}
           </div>
         </div>
 
         <div className="mt-6 grid gap-5 lg:grid-cols-2">
           <div className="grid gap-3">
-            <label className="text-sm font-black text-slate-900">{t("online.input")}</label>
+            <label htmlFor={inputId} className="text-sm font-black text-slate-900">{t("online.input")}</label>
             <textarea
-              value={input}
-              onChange={(event) => setInput(event.target.value)}
+              id={inputId}
+                  aria-label={t("online.input")}
+                  value={input}
+              onChange={(event) => updateInput(event.target.value)}
               className="code-scrollbar min-h-[320px] resize-y rounded-md border bg-slate-50 p-4 font-mono text-sm leading-6 outline-none focus:border-blue-300 focus:bg-white focus:ring-2 focus:ring-blue-100"
               spellCheck={false}
             />
@@ -1790,7 +1457,7 @@ export function DirectoryToolWorkspace({ tool }: { tool: DirectoryTool }) {
 
           <div className="grid gap-3">
             <div className="flex flex-wrap items-center justify-between gap-3">
-              <label className="text-sm font-black text-slate-900">{t("online.output")}</label>
+              <span id={outputId} className="text-sm font-black text-slate-900">{t("online.output")}</span>
               <div className="flex flex-wrap gap-2">
                 <Button type="button" variant="outline" size="sm" disabled={!output} onClick={copy}>
                   <Copy className="h-4 w-4" />
@@ -1802,15 +1469,15 @@ export function DirectoryToolWorkspace({ tool }: { tool: DirectoryTool }) {
                 </Button>
               </div>
             </div>
-            <pre className="code-scrollbar min-h-[320px] overflow-auto whitespace-pre-wrap rounded-md border bg-slate-950 p-4 font-mono text-sm leading-6 text-slate-100">
+            <pre aria-labelledby={outputId} tabIndex={0} className="code-scrollbar min-h-[320px] overflow-auto whitespace-pre-wrap rounded-md border bg-slate-950 p-4 font-mono text-sm leading-6 text-slate-100">
               {output || <span className="text-slate-400">{t("online.outputPlaceholder")}</span>}
             </pre>
-            {error && <p className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm font-semibold text-red-700">{error}</p>}
+            {error && <p role="alert" className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm font-semibold text-red-700">{error}</p>}
           </div>
         </div>
 
         <div className="mt-6 flex flex-wrap gap-3">
-          <Button type="button" variant="gradient" onClick={run} disabled={loading}>
+          <Button type="button" variant="gradient" onClick={run} disabled={loading || Boolean(availabilityNote)}>
             {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Play className="h-4 w-4" />}
             {loading ? t("online.running") : t("online.runTool")}
           </Button>

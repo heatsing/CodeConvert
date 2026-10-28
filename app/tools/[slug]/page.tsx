@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound, permanentRedirect } from "next/navigation";
-import { TOOLS, toolBySlug, type ToolSlug } from "@/lib/tools";
+import { TOOLS } from "@/lib/tools";
+import { getToolRoute } from "@/lib/tool-route-inventory";
 import { buildToolMetadata } from "@/lib/seo";
 
 type ToolPageProps = {
@@ -15,7 +16,7 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: ToolPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const tool = toolBySlug[slug as ToolSlug];
+  const tool = getToolRoute(slug)?.coreTool;
   if (!tool) return {};
 
   return buildToolMetadata(tool);
@@ -23,7 +24,7 @@ export async function generateMetadata({ params }: ToolPageProps): Promise<Metad
 
 export default async function ToolPage({ params }: ToolPageProps) {
   const { slug } = await params;
-  const tool = toolBySlug[slug as ToolSlug];
+  const tool = getToolRoute(slug)?.coreTool;
   if (!tool) notFound();
 
   permanentRedirect(`/${tool.slug}`);

@@ -1,6 +1,8 @@
 "use client";
 
 import { useI18n, type LanguageCode } from "@/lib/i18n";
+import { privacyCopy } from "@/lib/privacy-policy";
+import { AnalyticsSettings } from "@/components/analytics-settings";
 
 type LegalSection = {
   heading: string;
@@ -14,119 +16,6 @@ type LegalCopy = {
 };
 
 type LegalPageKind = "privacy" | "terms";
-
-const privacyCopy: Record<LanguageCode, LegalCopy> = {
-  EN: {
-    title: "Privacy Policy",
-    updated: "Last Updated: July 2026",
-    sections: [
-      { heading: "Overview", body: "CodeConvert.net provides browser-based tools for code conversion, formatting, encoding, decoding, text processing, and developer workflows." },
-      { heading: "Tool Input", body: "Most tools process the text you enter in the browser interface. Do not paste passwords, private keys, production secrets, confidential source code, or other sensitive information." },
-      { heading: "Analytics and Cookies", body: "We may use analytics services and cookies to understand page usage, improve navigation, remember basic preferences, and identify technical issues." },
-      { heading: "Third-Party Services", body: "Hosting, analytics, security, or performance providers may process limited data according to their own policies and only as needed to operate the site." },
-      { heading: "Changes and Contact", body: "We may update this policy as the site changes. For privacy questions, contact the site owner through the contact method provided on CodeConvert.net." }
-    ]
-  },
-  PT: {
-    title: "Política de Privacidade",
-    updated: "Atualizado: julho de 2026",
-    sections: [
-      { heading: "Visão geral", body: "CodeConvert.net oferece ferramentas no navegador para conversão de código, formatação, codificação, decodificação, texto e fluxos de desenvolvimento." },
-      { heading: "Entrada nas ferramentas", body: "A maioria das ferramentas processa o texto inserido na interface do navegador. Não cole senhas, chaves privadas, segredos de produção ou código confidencial." },
-      { heading: "Analytics e cookies", body: "Podemos usar analytics e cookies para entender o uso das páginas, melhorar a navegação, lembrar preferências básicas e encontrar problemas técnicos." },
-      { heading: "Serviços terceiros", body: "Provedores de hospedagem, analytics, segurança ou desempenho podem processar dados limitados conforme suas próprias políticas." },
-      { heading: "Alterações e contato", body: "Podemos atualizar esta política quando o site mudar. Para dúvidas de privacidade, entre em contato pelo método indicado no CodeConvert.net." }
-    ]
-  },
-  ES: {
-    title: "Política de Privacidad",
-    updated: "Actualizado: julio de 2026",
-    sections: [
-      { heading: "Resumen", body: "CodeConvert.net ofrece herramientas en el navegador para conversión de código, formato, codificación, decodificación, texto y flujos de desarrollo." },
-      { heading: "Entrada de herramientas", body: "La mayoría de las herramientas procesa el texto que escribes en el navegador. No pegues contraseñas, claves privadas, secretos de producción ni código confidencial." },
-      { heading: "Analítica y cookies", body: "Podemos usar analítica y cookies para entender el uso de páginas, mejorar la navegación, recordar preferencias básicas y detectar problemas técnicos." },
-      { heading: "Servicios de terceros", body: "Proveedores de hosting, analítica, seguridad o rendimiento pueden procesar datos limitados según sus propias políticas." },
-      { heading: "Cambios y contacto", body: "Podemos actualizar esta política cuando el sitio cambie. Para preguntas de privacidad, usa el método de contacto indicado en CodeConvert.net." }
-    ]
-  },
-  DE: {
-    title: "Datenschutzerklärung",
-    updated: "Aktualisiert: Juli 2026",
-    sections: [
-      { heading: "Überblick", body: "CodeConvert.net bietet browserbasierte Tools für Code-Konvertierung, Formatierung, Kodierung, Dekodierung, Textverarbeitung und Entwicklerabläufe." },
-      { heading: "Tool-Eingaben", body: "Die meisten Tools verarbeiten Text im Browser. Füge keine Passwörter, privaten Schlüssel, Produktionsgeheimnisse oder vertraulichen Quellcode ein." },
-      { heading: "Analyse und Cookies", body: "Wir können Analyse-Dienste und Cookies nutzen, um Seitennutzung zu verstehen, Navigation zu verbessern und technische Probleme zu finden." },
-      { heading: "Drittanbieter", body: "Anbieter für Hosting, Analyse, Sicherheit oder Leistung können begrenzte Daten gemäß ihren eigenen Richtlinien verarbeiten." },
-      { heading: "Änderungen und Kontakt", body: "Diese Richtlinie kann aktualisiert werden. Bei Datenschutzfragen nutze die auf CodeConvert.net angegebene Kontaktmöglichkeit." }
-    ]
-  },
-  RU: {
-    title: "Политика конфиденциальности",
-    updated: "Обновлено: июль 2026",
-    sections: [
-      { heading: "Обзор", body: "CodeConvert.net предоставляет браузерные инструменты для конвертации кода, форматирования, кодирования, декодирования, обработки текста и задач разработки." },
-      { heading: "Ввод данных", body: "Большинство инструментов обрабатывает введенный текст в браузере. Не вставляйте пароли, приватные ключи, секреты или конфиденциальный код." },
-      { heading: "Аналитика и cookies", body: "Мы можем использовать аналитику и cookies для понимания использования страниц, улучшения навигации и поиска технических проблем." },
-      { heading: "Сторонние сервисы", body: "Провайдеры хостинга, аналитики, безопасности или производительности могут обрабатывать ограниченные данные по своим правилам." },
-      { heading: "Изменения и контакт", body: "Мы можем обновлять эту политику. По вопросам конфиденциальности используйте контактный способ на CodeConvert.net." }
-    ]
-  },
-  FR: {
-    title: "Politique de Confidentialité",
-    updated: "Mis à jour : juillet 2026",
-    sections: [
-      { heading: "Aperçu", body: "CodeConvert.net fournit des outils dans le navigateur pour convertir, formater, encoder, décoder et traiter du texte de développement." },
-      { heading: "Entrées des outils", body: "La plupart des outils traitent le texte saisi dans le navigateur. Ne collez pas de mots de passe, clés privées, secrets de production ou code confidentiel." },
-      { heading: "Analytics et cookies", body: "Nous pouvons utiliser des services d'analyse et des cookies pour comprendre l'usage, améliorer la navigation et détecter les problèmes techniques." },
-      { heading: "Services tiers", body: "Des fournisseurs d'hébergement, d'analyse, de sécurité ou de performance peuvent traiter des données limitées selon leurs propres politiques." },
-      { heading: "Changements et contact", body: "Cette politique peut être mise à jour. Pour toute question, utilisez le moyen de contact indiqué sur CodeConvert.net." }
-    ]
-  },
-  TR: {
-    title: "Gizlilik Politikası",
-    updated: "Güncellendi: Temmuz 2026",
-    sections: [
-      { heading: "Genel bakış", body: "CodeConvert.net kod dönüştürme, biçimlendirme, kodlama, çözme, metin işleme ve geliştirici iş akışları için tarayıcı tabanlı araçlar sunar." },
-      { heading: "Araç girdisi", body: "Çoğu araç tarayıcı arayüzüne girdiğiniz metni işler. Parola, özel anahtar, üretim sırrı veya gizli kaynak kodu yapıştırmayın." },
-      { heading: "Analitik ve çerezler", body: "Sayfa kullanımını anlamak, gezinmeyi geliştirmek ve teknik sorunları bulmak için analitik ve çerezler kullanabiliriz." },
-      { heading: "Üçüncü taraf hizmetleri", body: "Barındırma, analitik, güvenlik veya performans sağlayıcıları sınırlı verileri kendi politikalarına göre işleyebilir." },
-      { heading: "Değişiklikler ve iletişim", body: "Bu politikayı güncelleyebiliriz. Gizlilik soruları için CodeConvert.net üzerindeki iletişim yöntemini kullanın." }
-    ]
-  },
-  PL: {
-    title: "Polityka Prywatności",
-    updated: "Ostatnia aktualizacja: lipiec 2026",
-    sections: [
-      { heading: "Przegląd", body: "CodeConvert.net oferuje narzędzia w przeglądarce do konwersji kodu, formatowania, kodowania, dekodowania, tekstu i pracy deweloperskiej." },
-      { heading: "Dane w narzędziach", body: "Większość narzędzi przetwarza tekst wpisany w przeglądarce. Nie wklejaj haseł, kluczy prywatnych, sekretów produkcyjnych ani poufnego kodu." },
-      { heading: "Analityka i cookies", body: "Możemy używać analityki i cookies, aby rozumieć użycie stron, poprawiać nawigację i wykrywać problemy techniczne." },
-      { heading: "Usługi zewnętrzne", body: "Dostawcy hostingu, analityki, bezpieczeństwa lub wydajności mogą przetwarzać ograniczone dane zgodnie ze swoimi zasadami." },
-      { heading: "Zmiany i kontakt", body: "Możemy aktualizować tę politykę. W sprawach prywatności użyj kontaktu podanego na CodeConvert.net." }
-    ]
-  },
-  CN: {
-    title: "隐私政策",
-    updated: "最后更新：2026年7月",
-    sections: [
-      { heading: "概览", body: "CodeConvert.net 提供基于浏览器的代码转换、格式化、编码、解码、文本处理和开发者工作流工具。" },
-      { heading: "工具输入", body: "大多数工具会在浏览器界面中处理你输入的文本。请不要粘贴密码、私钥、生产密钥、机密源码或其他敏感信息。" },
-      { heading: "分析与 Cookie", body: "我们可能使用分析服务和 Cookie 来了解页面使用情况、改进导航、保存基础偏好并发现技术问题。" },
-      { heading: "第三方服务", body: "托管、分析、安全或性能服务商可能会按照其政策处理有限数据，仅用于网站运行所需。" },
-      { heading: "变更与联系", body: "网站变化时我们可能更新本政策。如有隐私问题，请通过 CodeConvert.net 提供的联系方式联系站点所有者。" }
-    ]
-  },
-  TW: {
-    title: "隱私權政策",
-    updated: "最後更新：2026年7月",
-    sections: [
-      { heading: "概覽", body: "CodeConvert.net 提供基於瀏覽器的程式碼轉換、格式化、編碼、解碼、文字處理與開發者工作流程工具。" },
-      { heading: "工具輸入", body: "多數工具會在瀏覽器介面中處理你輸入的文字。請不要貼上密碼、私鑰、正式環境祕密、機密原始碼或其他敏感資訊。" },
-      { heading: "分析與 Cookie", body: "我們可能使用分析服務和 Cookie 來了解頁面使用情況、改善導覽、保存基本偏好並發現技術問題。" },
-      { heading: "第三方服務", body: "託管、分析、安全或效能服務商可能依其政策處理有限資料，僅用於網站運作所需。" },
-      { heading: "變更與聯絡", body: "網站變更時我們可能更新本政策。如有隱私問題，請透過 CodeConvert.net 提供的方式聯絡站點所有者。" }
-    ]
-  }
-};
 
 const termsCopy: Record<LanguageCode, LegalCopy> = {
   EN: {
@@ -223,6 +112,7 @@ export function LegalPage({ kind }: { kind: LegalPageKind }) {
             </section>
           ))}
         </div>
+        {kind === "privacy" && <AnalyticsSettings />}
       </article>
     </main>
   );

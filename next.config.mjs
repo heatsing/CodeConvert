@@ -1,19 +1,21 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  poweredByHeader: false,
   async headers() {
+    const isDevelopment = process.env.NODE_ENV === "development";
     const contentSecurityPolicy = [
       "default-src 'self'",
       "base-uri 'self'",
       "form-action 'self'",
       "frame-ancestors 'none'",
       "object-src 'none'",
-      "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com",
+      `script-src 'self' 'unsafe-inline'${isDevelopment ? " 'unsafe-eval'" : ""} https://www.googletagmanager.com`,
       "style-src 'self' 'unsafe-inline'",
       "img-src 'self' data: blob: https://www.google-analytics.com",
       "font-src 'self' data:",
-      "connect-src 'self' https://www.google-analytics.com https://region1.google-analytics.com",
+      `connect-src 'self'${isDevelopment ? " ws: wss:" : ""} https://www.google-analytics.com https://region1.google-analytics.com`,
       "worker-src 'self' blob:",
-      "upgrade-insecure-requests"
+      ...(!isDevelopment ? ["upgrade-insecure-requests"] : [])
     ].join("; ");
 
     return [
@@ -25,7 +27,8 @@ const nextConfig = {
           { key: "X-Frame-Options", value: "DENY" },
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
           { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=(), payment=(), usb=()" },
-          { key: "Cross-Origin-Opener-Policy", value: "same-origin" }
+          { key: "Cross-Origin-Opener-Policy", value: "same-origin" },
+          ...(!isDevelopment ? [{ key: "Strict-Transport-Security", value: "max-age=31536000" }] : [])
         ]
       }
     ];

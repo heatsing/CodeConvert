@@ -7,6 +7,7 @@ import { Globe2, Moon, Sun } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { getCategoryId } from "@/lib/home-tools";
 import { translationLanguages, useI18n, type LanguageCode } from "@/lib/i18n";
+import { readPreference, writePreference } from "@/lib/client-preferences";
 
 type ThemeMode = "light" | "dark";
 
@@ -14,7 +15,7 @@ function ThemeToggle() {
   const [theme, setTheme] = useState<ThemeMode>("light");
 
   useEffect(() => {
-    const savedTheme = window.localStorage.getItem("codetools-theme");
+    const savedTheme = readPreference("codetools-theme");
     const initialTheme: ThemeMode = savedTheme === "dark" || savedTheme === "light" ? savedTheme : "light";
     setTheme(initialTheme);
     document.documentElement.classList.toggle("dark", initialTheme === "dark");
@@ -24,7 +25,7 @@ function ThemeToggle() {
     const nextTheme = theme === "dark" ? "light" : "dark";
     setTheme(nextTheme);
     document.documentElement.classList.toggle("dark", nextTheme === "dark");
-    window.localStorage.setItem("codetools-theme", nextTheme);
+    writePreference("codetools-theme", nextTheme);
   };
 
   const Icon = theme === "dark" ? Moon : Sun;
@@ -123,7 +124,7 @@ export function SiteHeader() {
           ))}
         </nav>
 
-        <div className="ml-auto hidden shrink-0 items-center gap-3 md:flex">
+        <div className="ml-auto flex shrink-0 items-center gap-2 sm:gap-3">
           <LanguageSwitcher />
           <ThemeToggle />
         </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, Copy, Download, Loader2, Play, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -8,81 +8,35 @@ import { useI18n } from "@/lib/i18n";
 import type { OnlineTool } from "@/lib/online-tools";
 import { getOnlineToolHeader } from "@/lib/tool-page-copy";
 import { toolIcons } from "@/lib/tool-icons";
-import { parseRegexLiteral, runSafeRegex } from "@/lib/safe-regex";
-
-async function runOnlineTool(tool: OnlineTool, input: string, sampleText: string) {
-  const source = input.trim() || tool.sample;
-
-  if (tool.mode === "json") {
-    const parsed = JSON.parse(source);
-    return JSON.stringify(parsed, null, 2);
-  }
-
-  if (tool.mode === "regex") {
-    const { pattern, flags } = parseRegexLiteral(source);
-    const { result, regex } = await runSafeRegex({ pattern, flags, text: sampleText });
-    const matches = result as string[];
-    return matches.length
-      ? `Pattern: ${regex}\nMatches (${matches.length})\n${matches.map((match, index) => `${index + 1}. ${match}`).join("\n")}`
-      : `Pattern: ${regex}\nNo matches found in the test text.`;
-  }
-
-  if (tool.mode === "api") {
-    return `HTTP/1.1 200 OK\ncontent-type: application/json\n\n${JSON.stringify(
-      {
-        ok: true,
-        tool: tool.name,
-        request: source,
-        data: [{ id: 1, name: "Sample resource" }]
-      },
-      null,
-      2
-    )}`;
-  }
-
-  if (tool.mode === "redis") {
-    return source
-      .split(/\r?\n/)
-      .filter(Boolean)
-      .map((line) => {
-        const command = line.trim().toUpperCase();
-        if (command.startsWith("SET ")) return `${line}\nOK`;
-        if (command.startsWith("GET ")) return `${line}\n"hello"`;
-        if (command === "PING") return "PING\nPONG";
-        return `${line}\nQUEUED`;
-      })
-      .join("\n\n");
-  }
-
-  if (tool.mode === "database") {
-    return `Database result preview\n\nInput\n${source}\n\nResult\n| id | name       | status |\n| 1  | demo_row   | active |\n| 2  | sample_row | draft  |`;
-  }
-
-  if (tool.mode === "ascii") {
-    const parts = source.split("->").map((part) => part.trim()).filter(Boolean);
-    return parts.length > 1 ? parts.map((part) => `[ ${part} ]`).join(" ---> ") : `[ ${source} ]`;
-  }
-
-  if (tool.mode === "visual") {
-    return `Visual structure preview\n\n${source}\n\nSteps\n1. Parse the input.\n2. Build a readable visual representation.\n3. Prepare the structure for a shareable diagram or image.`;
-  }
-
-  if (tool.mode === "docs") {
-    return `Generated draft\n\nTitle: ${tool.name} Output\n\n${source}\n\n- Summary prepared from your input.\n- Review the draft for project-specific details.\n- Copy or download the result when ready.`;
-  }
-
-  return `Execution preview for ${tool.name}\n\nInput\n${source}\n\nOutput\nProgram finished successfully.\nstdout: Hello from the sample runtime.`;
-}
+import { canRunOnlineTool, runOnlineTool } from "@/lib/online-tool-runner";
 
 export function OnlineToolWorkspace({ tool }: { tool: OnlineTool }) {
   const [input, setInput] = useState(tool.sample);
   const [sampleText, setSampleText] = useState("Alice and Bob use alice@example.com. Ticket user-123 is open.");
   const [output, setOutput] = useState("");
   const [error, setError] = useState("");
+  const [status, setStatus] = useState("");
   const [loading, setLoading] = useState(false);
+  const runVersion = useRef(0);
+  const running = useRef(false);
+  const inputId = useId();
+  const testTextId = useId();
+  const outputId = useId();
   const { t } = useI18n();
   const Icon = toolIcons[tool.iconName];
   const headerCopy = getOnlineToolHeader(tool);
+  const available = canRunOnlineTool(tool);
+
+  useEffect(() => () => { runVersion.current += 1; }, []);
+
+  const invalidateResult = () => {
+    runVersion.current += 1;
+    running.current = false;
+    setLoading(false);
+    setOutput("");
+    setError("");
+    setStatus("");
+  };
 
   const helperLabel = useMemo(() => {
     if (tool.mode === "regex") return t("online.testText");
@@ -93,21 +47,41 @@ export function OnlineToolWorkspace({ tool }: { tool: OnlineTool }) {
   }, [tool.mode, t]);
 
   const run = async () => {
+    if (running.current || !available) return;
+    const version = ++runVersion.current;
+    running.current = true;
     setLoading(true);
     setError("");
+    setStatus("");
     setOutput("");
-    await new Promise((resolve) => setTimeout(resolve, 350));
     try {
-      setOutput(await runOnlineTool(tool, input, sampleText));
+      const result = await runOnlineTool(tool, input, sampleText);
+      if (version === runVersion.current) {
+        setOutput(result);
+        setStatus(t("online.completed"));
+      }
     } catch (err) {
-      setError(err instanceof Error ? err.message : t("online.processError"));
+      if (version === runVersion.current) setError(err instanceof Error ? err.message : t("online.processError"));
     } finally {
-      setLoading(false);
+      if (version === runVersion.current) {
+        running.current = false;
+        setLoading(false);
+      }
     }
   };
 
   const copy = async () => {
-    await navigator.clipboard.writeText(output);
+    if (!output) return;
+    const version = runVersion.current;
+    try {
+      await navigator.clipboard.writeText(output);
+      if (version === runVersion.current) {
+        setError("");
+        setStatus(t("tool.copied"));
+      }
+    } catch {
+      if (version === runVersion.current) setError(t("tool.clipboardError"));
+    }
   };
 
   const download = () => {
@@ -116,14 +90,16 @@ export function OnlineToolWorkspace({ tool }: { tool: OnlineTool }) {
     const anchor = document.createElement("a");
     anchor.href = url;
     anchor.download = `${tool.slug}-output.txt`;
+    document.body.append(anchor);
     anchor.click();
-    URL.revokeObjectURL(url);
+    anchor.remove();
+    window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+    setStatus(t("tool.downloadStarted"));
   };
 
   const clear = () => {
+    invalidateResult();
     setInput("");
-    setOutput("");
-    setError("");
   };
 
   return (
@@ -145,22 +121,30 @@ export function OnlineToolWorkspace({ tool }: { tool: OnlineTool }) {
           </div>
         </div>
 
+        {!available && (
+          <p className="mt-5 rounded-md border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+            Execution is not available for this workspace. You can edit the sample, but this page does not run code, send requests, or connect to a database.
+          </p>
+        )}
+
         <div className="mt-6 grid gap-5 lg:grid-cols-2">
           <div className="grid gap-3">
-            <label className="text-sm font-black text-slate-900">{helperLabel}</label>
+            <label htmlFor={inputId} className="text-sm font-black text-slate-900">{helperLabel}</label>
             <textarea
+              id={inputId}
               value={input}
-              onChange={(event) => setInput(event.target.value)}
+              onChange={(event) => { invalidateResult(); setInput(event.target.value); }}
               placeholder={tool.placeholder}
               className="code-scrollbar min-h-[320px] resize-y rounded-md border bg-slate-50 p-4 font-mono text-sm leading-6 outline-none focus:border-blue-300 focus:bg-white focus:ring-2 focus:ring-blue-100"
               spellCheck={false}
             />
             {tool.mode === "regex" && (
               <>
-                <label className="text-sm font-black text-slate-900">{t("online.textToSearch")}</label>
+                <label htmlFor={testTextId} className="text-sm font-black text-slate-900">{t("online.textToSearch")}</label>
                 <textarea
+                  id={testTextId}
                   value={sampleText}
-                  onChange={(event) => setSampleText(event.target.value)}
+                  onChange={(event) => { invalidateResult(); setSampleText(event.target.value); }}
                   className="min-h-24 resize-y rounded-md border bg-white p-3 text-sm outline-none focus:border-blue-300 focus:ring-2 focus:ring-blue-100"
                 />
               </>
@@ -169,7 +153,7 @@ export function OnlineToolWorkspace({ tool }: { tool: OnlineTool }) {
 
           <div className="grid gap-3">
             <div className="flex flex-wrap items-center justify-between gap-3">
-              <label className="text-sm font-black text-slate-900">{t("online.output")}</label>
+              <span id={outputId} className="text-sm font-black text-slate-900">{t("online.output")}</span>
               <div className="flex flex-wrap gap-2">
                 <Button type="button" variant="outline" size="sm" disabled={!output} onClick={copy}>
                   <Copy className="h-4 w-4" />
@@ -181,15 +165,16 @@ export function OnlineToolWorkspace({ tool }: { tool: OnlineTool }) {
                 </Button>
               </div>
             </div>
-            <pre className="code-scrollbar min-h-[320px] overflow-auto whitespace-pre-wrap rounded-md border bg-slate-950 p-4 font-mono text-sm leading-6 text-slate-100">
-              {output || <span className="text-slate-400">{t("online.outputPlaceholder")}</span>}
+            <pre tabIndex={0} role="region" aria-labelledby={outputId} className="code-scrollbar min-h-[320px] overflow-auto whitespace-pre-wrap rounded-md border bg-slate-950 p-4 font-mono text-sm leading-6 text-slate-100">
+              {output || <span className="text-slate-400">{available ? t("online.outputPlaceholder") : "Execution is unavailable for this workspace."}</span>}
             </pre>
-            {error && <p className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm font-semibold text-red-700">{error}</p>}
+            {error && <p role="alert" className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm font-semibold text-red-700">{error}</p>}
+            {status && <p role="status" className="text-sm text-emerald-700">{status}</p>}
           </div>
         </div>
 
         <div className="mt-6 flex flex-wrap gap-3">
-          <Button type="button" variant="gradient" onClick={run} disabled={loading}>
+          <Button type="button" variant="gradient" onClick={run} disabled={loading || !available}>
             {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Play className="h-4 w-4" />}
             {loading ? t("online.running") : t("online.runTool")}
           </Button>
