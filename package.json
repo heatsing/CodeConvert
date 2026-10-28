@@ -30,7 +30,7 @@
     "prettier": "3.9.10",
     "react": "19.2.8",
     "react-dom": "19.2.8",
-    "tailwind-merge": "^2.6.0",
+    "tailwind-merge": "^3.7.0",
     "terser": "5.51.2"
   },
   "devDependencies": {
