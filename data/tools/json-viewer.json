@@ -20,20 +20,7 @@
     "Using JSON Viewer to compare the source and result before a migration, import, release, or review.",
     "JSON Viewer helps catch structural or meaning-changing mistakes before the output reaches another system."
   ],
-  "examples": [
-    {
-      "title": "JSON Viewer with a representative sample",
-      "description": "This JSON Viewer example uses JSON objects, arrays, keys, and values that resembles a small production fixture, so the main change can be checked line by line.",
-      "input": "{\"orders\":[{\"id\":42,\"total\":19.5},{\"id\":43,\"total\":8}]}",
-      "output": "orders\n  [0]\n    id: 42\n    total: 19.5\n  [1]\n    id: 43\n    total: 8"
-    },
-    {
-      "title": "JSON Viewer edge-case review",
-      "description": "The second JSON Viewer pass focuses on the part most likely to fail: nested values, escaping, or destination rules.",
-      "input": "{\"orders\":[{\"id\":42,\"total\":19.5},{\"id\":43,\"total\":8}]}\n\nReview case: preserve empty, repeated, or non-ASCII values where applicable.",
-      "output": "orders\n  [0]\n    id: 42\n    total: 19.5\n  [1]\n    id: 43\n    total: 8\n\nReview note: confirm this result in the destination workflow."
-    }
-  ],
+  "examples": [],
   "tips": [
     "Keep the original JSON Viewer input beside the result until the destination check passes.",
     "Use realistic JSON objects, arrays, keys, and values instead of a one-word sample when validating JSON Viewer.",
@@ -87,6 +74,6 @@
     "Using the JSON Viewer result without comparing it with the original source.",
     "Skipping validation in the editor, runtime, API, or document that receives the output."
   ],
-  "updatedAt": "2026-07-28",
+  "updatedAt": "2026-11-08",
   "seoScore": 100
 }

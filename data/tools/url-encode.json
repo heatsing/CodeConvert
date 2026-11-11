@@ -20,20 +20,7 @@
     "Using URL Encode to compare the source and result before a migration, import, release, or review.",
     "Using URL Encode to diagnose escaped, encoded, or unreadable values in requests, URLs, logs, and configuration."
   ],
-  "examples": [
-    {
-      "title": "URL Encode with a representative sample",
-      "description": "This URL Encode example uses URL components, query parameters, reserved characters, and percent encoding that resembles a small production fixture, so the main change can be checked line by line.",
-      "input": "https://example.com/search?q=red shoes&sort=new",
-      "output": "https%3A%2F%2Fexample.com%2Fsearch%3Fq%3Dred%20shoes%26sort%3Dnew"
-    },
-    {
-      "title": "URL Encode edge-case review",
-      "description": "The second URL Encode pass focuses on the part most likely to fail: nested values, escaping, or destination rules.",
-      "input": "https://example.com/search?q=red shoes&sort=new\n\nReview case: preserve empty, repeated, or non-ASCII values where applicable.",
-      "output": "https%3A%2F%2Fexample.com%2Fsearch%3Fq%3Dred%20shoes%26sort%3Dnew\n\nReview note: confirm this result in the destination workflow."
-    }
-  ],
+  "examples": [],
   "tips": [
     "Keep the original URL Encode input beside the result until the destination check passes.",
     "Use realistic URL components, query parameters, reserved characters, and percent encoding instead of a one-word sample when validating URL Encode.",
@@ -87,6 +74,6 @@
     "Using the URL Encode result without comparing it with the original source.",
     "Skipping validation in the editor, runtime, API, or document that receives the output."
   ],
-  "updatedAt": "2026-07-28",
+  "updatedAt": "2026-11-08",
   "seoScore": 100
 }

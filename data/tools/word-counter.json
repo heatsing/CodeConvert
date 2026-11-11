@@ -20,20 +20,7 @@
     "Using Word Counter to compare the source and result before a migration, import, release, or review.",
     "Word Counter helps catch structural or meaning-changing mistakes before the output reaches another system."
   ],
-  "examples": [
-    {
-      "title": "Word Counter with a representative sample",
-      "description": "This Word Counter example uses working text copied from documents, forms, spreadsheets, email, or a CMS that resembles a small production fixture, so the main change can be checked line by line.",
-      "input": "Clear release notes help teams understand what changed.",
-      "output": "Words: 9\nCharacters: 55\nLines: 1"
-    },
-    {
-      "title": "Word Counter edge-case review",
-      "description": "The second Word Counter pass focuses on the part most likely to fail: intentional spacing and punctuation.",
-      "input": "Clear release notes help teams understand what changed.\n\nReview case: preserve empty, repeated, or non-ASCII values where applicable.",
-      "output": "Words: 9\nCharacters: 55\nLines: 1\n\nReview note: confirm this result in the destination workflow."
-    }
-  ],
+  "examples": [],
   "tips": [
     "Keep the original Word Counter input beside the result until the destination check passes.",
     "Use realistic working text copied from documents, forms, spreadsheets, email, or a CMS instead of a one-word sample when validating Word Counter.",
@@ -87,6 +74,6 @@
     "Using the Word Counter result without comparing it with the original source.",
     "Skipping validation in the editor, runtime, API, or document that receives the output."
   ],
-  "updatedAt": "2026-07-28",
+  "updatedAt": "2026-11-08",
   "seoScore": 100
 }

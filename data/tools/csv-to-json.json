@@ -20,20 +20,7 @@
     "Using CSV To JSON to compare the source and result before a migration, import, release, or review.",
     "CSV To JSON helps catch structural or meaning-changing mistakes before the output reaches another system."
   ],
-  "examples": [
-    {
-      "title": "CSV To JSON with a representative sample",
-      "description": "This CSV To JSON example uses JSON objects, arrays, keys, and values that resembles a small production fixture, so the main change can be checked line by line.",
-      "input": "sku,qty\nA-1,2\nB-7,5",
-      "output": "[\n  {\"sku\":\"A-1\",\"qty\":\"2\"},\n  {\"sku\":\"B-7\",\"qty\":\"5\"}\n]"
-    },
-    {
-      "title": "CSV To JSON edge-case review",
-      "description": "The second CSV To JSON pass focuses on the part most likely to fail: nested values, escaping, or destination rules.",
-      "input": "sku,qty\nA-1,2\nB-7,5\n\nReview case: preserve empty, repeated, or non-ASCII values where applicable.",
-      "output": "[\n  {\"sku\":\"A-1\",\"qty\":\"2\"},\n  {\"sku\":\"B-7\",\"qty\":\"5\"}\n]\n\nReview note: confirm this result in the destination workflow."
-    }
-  ],
+  "examples": [],
   "tips": [
     "Keep the original CSV To JSON input beside the result until the destination check passes.",
     "Use realistic JSON objects, arrays, keys, and values instead of a one-word sample when validating CSV To JSON.",
@@ -87,6 +74,6 @@
     "Using the CSV To JSON result without comparing it with the original source.",
     "Skipping validation in the editor, runtime, API, or document that receives the output."
   ],
-  "updatedAt": "2026-07-28",
+  "updatedAt": "2026-11-08",
   "seoScore": 100
 }

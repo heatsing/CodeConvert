@@ -20,20 +20,7 @@
     "Using CSS Formatter to compare the source and result before a migration, import, release, or review.",
     "CSS Formatter helps catch structural or meaning-changing mistakes before the output reaches another system."
   ],
-  "examples": [
-    {
-      "title": "CSS Formatter with a representative sample",
-      "description": "This CSS Formatter example uses CSS selectors, declarations, media rules, and custom properties that resembles a small production fixture, so the main change can be checked line by line.",
-      "input": "@media(min-width:768px){.layout{grid-template-columns:240px 1fr;gap:24px}}",
-      "output": "@media (min-width: 768px) {\n  .layout {\n    grid-template-columns: 240px 1fr;\n    gap: 24px;\n  }\n}"
-    },
-    {
-      "title": "CSS Formatter edge-case review",
-      "description": "The second CSS Formatter pass focuses on the part most likely to fail: nested values, escaping, or destination rules.",
-      "input": "@media(min-width:768px){.layout{grid-template-columns:240px 1fr;gap:24px}}\n\nReview case: preserve empty, repeated, or non-ASCII values where applicable.",
-      "output": "@media (min-width: 768px) {\n  .layout {\n    grid-template-columns: 240px 1fr;\n    gap: 24px;\n  }\n}\n\nReview note: confirm this result in the destination workflow."
-    }
-  ],
+  "examples": [],
   "tips": [
     "Keep the original CSS Formatter input beside the result until the destination check passes.",
     "Use realistic CSS selectors, declarations, media rules, and custom properties instead of a one-word sample when validating CSS Formatter.",
@@ -86,6 +73,6 @@
     "Using the CSS Formatter result without comparing it with the original source.",
     "Skipping validation in the editor, runtime, API, or document that receives the output."
   ],
-  "updatedAt": "2026-07-28",
+  "updatedAt": "2026-11-08",
   "seoScore": 100
 }

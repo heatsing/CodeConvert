@@ -20,20 +20,7 @@
     "Using Regex Explainer against failures and edge cases before adding the pattern to application code.",
     "Regex Explainer helps catch structural or meaning-changing mistakes before the output reaches another system."
   ],
-  "examples": [
-    {
-      "title": "Regex Explainer with a representative sample",
-      "description": "This Regex Explainer example uses regular-expression patterns, flags, groups, and representative test text that resembles a small production fixture, so the main change can be checked line by line.",
-      "input": "/^(?<scheme>https?):\\/\\/(?<host>[^/]+)$/i",
-      "output": "Start to end: capture http/https as scheme, then capture the host after //; case-insensitive."
-    },
-    {
-      "title": "Regex Explainer edge-case review",
-      "description": "The second Regex Explainer pass focuses on the part most likely to fail: boundaries and non-matches.",
-      "input": "/^(?<scheme>https?):\\/\\/(?<host>[^/]+)$/i\n\nReview case: preserve empty, repeated, or non-ASCII values where applicable.",
-      "output": "Start to end: capture http/https as scheme, then capture the host after //; case-insensitive.\n\nReview note: confirm this result in the destination workflow."
-    }
-  ],
+  "examples": [],
   "tips": [
     "Keep the original Regex Explainer input beside the result until the destination check passes.",
     "Use realistic regular-expression patterns, flags, groups, and representative test text instead of a one-word sample when validating Regex Explainer.",
@@ -85,6 +72,6 @@
     "Using the Regex Explainer result without comparing it with the original source.",
     "Skipping validation in the editor, runtime, API, or document that receives the output."
   ],
-  "updatedAt": "2026-07-28",
+  "updatedAt": "2026-11-08",
   "seoScore": 100
 }

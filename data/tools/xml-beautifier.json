@@ -20,20 +20,7 @@
     "Using XML Beautifier to compare the source and result before a migration, import, release, or review.",
     "XML Beautifier helps catch structural or meaning-changing mistakes before the output reaches another system."
   ],
-  "examples": [
-    {
-      "title": "XML Beautifier with a representative sample",
-      "description": "This XML Beautifier example uses XML elements, attributes, namespaces, and nesting that resembles a small production fixture, so the main change can be checked line by line.",
-      "input": "<response status=\"ok\"><item><id>42</id></item></response>",
-      "output": "<response status=\"ok\">\n  <item>\n    <id>42</id>\n  </item>\n</response>"
-    },
-    {
-      "title": "XML Beautifier edge-case review",
-      "description": "The second XML Beautifier pass focuses on the part most likely to fail: nested values, escaping, or destination rules.",
-      "input": "<response status=\"ok\"><item><id>42</id></item></response>\n\nReview case: preserve empty, repeated, or non-ASCII values where applicable.",
-      "output": "<response status=\"ok\">\n  <item>\n    <id>42</id>\n  </item>\n</response>\n\nReview note: confirm this result in the destination workflow."
-    }
-  ],
+  "examples": [],
   "tips": [
     "Keep the original XML Beautifier input beside the result until the destination check passes.",
     "Use realistic XML elements, attributes, namespaces, and nesting instead of a one-word sample when validating XML Beautifier.",
@@ -87,6 +74,6 @@
     "Using the XML Beautifier result without comparing it with the original source.",
     "Skipping validation in the editor, runtime, API, or document that receives the output."
   ],
-  "updatedAt": "2026-07-28",
+  "updatedAt": "2026-11-08",
   "seoScore": 100
 }

@@ -20,20 +20,7 @@
     "Using HTML Encode to compare the source and result before a migration, import, release, or review.",
     "HTML Encode helps catch structural or meaning-changing mistakes before the output reaches another system."
   ],
-  "examples": [
-    {
-      "title": "HTML Encode with a representative sample",
-      "description": "This HTML Encode example uses HTML elements, links, lists, and document structure that resembles a small production fixture, so the main change can be checked line by line.",
-      "input": "<strong>Ready & tested</strong>",
-      "output": "&lt;strong&gt;Ready &amp; tested&lt;/strong&gt;"
-    },
-    {
-      "title": "HTML Encode edge-case review",
-      "description": "The second HTML Encode pass focuses on the part most likely to fail: nested values, escaping, or destination rules.",
-      "input": "<strong>Ready & tested</strong>\n\nReview case: preserve empty, repeated, or non-ASCII values where applicable.",
-      "output": "&lt;strong&gt;Ready &amp; tested&lt;/strong&gt;\n\nReview note: confirm this result in the destination workflow."
-    }
-  ],
+  "examples": [],
   "tips": [
     "Keep the original HTML Encode input beside the result until the destination check passes.",
     "Use realistic HTML elements, links, lists, and document structure instead of a one-word sample when validating HTML Encode.",
@@ -87,6 +74,6 @@
     "Using the HTML Encode result without comparing it with the original source.",
     "Skipping validation in the editor, runtime, API, or document that receives the output."
   ],
-  "updatedAt": "2026-07-28",
+  "updatedAt": "2026-11-08",
   "seoScore": 100
 }

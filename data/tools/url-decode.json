@@ -20,20 +20,7 @@
     "Using URL Decode to compare the source and result before a migration, import, release, or review.",
     "Using URL Decode to diagnose escaped, encoded, or unreadable values in requests, URLs, logs, and configuration."
   ],
-  "examples": [
-    {
-      "title": "URL Decode with a representative sample",
-      "description": "This URL Decode example uses URL components, query parameters, reserved characters, and percent encoding that resembles a small production fixture, so the main change can be checked line by line.",
-      "input": "q=red%20shoes%26sort%3Dnew",
-      "output": "q=red shoes&sort=new"
-    },
-    {
-      "title": "URL Decode edge-case review",
-      "description": "The second URL Decode pass focuses on the part most likely to fail: nested values, escaping, or destination rules.",
-      "input": "q=red%20shoes%26sort%3Dnew\n\nReview case: preserve empty, repeated, or non-ASCII values where applicable.",
-      "output": "q=red shoes&sort=new\n\nReview note: confirm this result in the destination workflow."
-    }
-  ],
+  "examples": [],
   "tips": [
     "Keep the original URL Decode input beside the result until the destination check passes.",
     "Use realistic URL components, query parameters, reserved characters, and percent encoding instead of a one-word sample when validating URL Decode.",
@@ -87,6 +74,6 @@
     "Using the URL Decode result without comparing it with the original source.",
     "Skipping validation in the editor, runtime, API, or document that receives the output."
   ],
-  "updatedAt": "2026-07-28",
+  "updatedAt": "2026-11-08",
   "seoScore": 100
 }

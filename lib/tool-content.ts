@@ -4,6 +4,9 @@ import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { getToolUserIntent } from "@/lib/tool-user-intent";
 import type { ToolPageContent } from "@/lib/tool-content-types";
+import type { ToolContentExample } from "@/lib/tool-content-types";
+import verifiedExamples from "@/data/verified-tool-examples.json";
+import { getToolCapability } from "@/lib/tool-capabilities";
 
 const contentDirectory = join(process.cwd(), "data", "tools");
 
@@ -28,20 +31,7 @@ function fallbackContent(slug: string, title: string, description: string, categ
       `Treating the first result as final without checking ${intent.review.toLowerCase()}`,
       "Copying output into a destination system without running its normal validation."
     ],
-    examples: [
-      {
-        title: "Representative input",
-        description: "Start with a small sample that contains the structure or text condition you need to verify.",
-        input: "Paste a representative input from the real task.",
-        output: "The processed result appears here."
-      },
-      {
-        title: "Edge-case check",
-        description: "Run a second sample with different values or edge cases before relying on the result.",
-        input: "Add an edge case from the destination workflow.",
-        output: "Compare this result with the expected destination behavior."
-      }
-    ],
+    examples: [],
     tips: [
       intent.review,
       "Keep the original input available for a side-by-side comparison.",
@@ -72,7 +62,6 @@ function isToolPageContent(value: unknown): value is ToolPageContent {
     Array.isArray(content.commonMistakes) &&
     content.commonMistakes.length === 3 &&
     Array.isArray(content.examples) &&
-    content.examples.length === 2 &&
     Array.isArray(content.tips) &&
     content.tips.length === 4 &&
     Array.isArray(content.faq) &&
@@ -90,12 +79,14 @@ export function getToolPageContent(
   category: string
 ): ToolPageContent {
   const path = join(contentDirectory, `${slug}.json`);
-  if (!existsSync(path)) return fallbackContent(slug, title, description, category);
+  const examples = Object.hasOwn(verifiedExamples, slug) && getToolCapability(slug).status === "verified"
+    ? (verifiedExamples as Record<string, ToolContentExample[]>)[slug] : [];
+  if (!existsSync(path)) return { ...fallbackContent(slug, title, description, category), examples };
 
   const parsed: unknown = JSON.parse(readFileSync(path, "utf8"));
   if (!isToolPageContent(parsed)) {
     throw new Error(`Invalid tool content file: data/tools/${slug}.json`);
   }
 
-  return parsed;
+  return { ...parsed, examples };
 }

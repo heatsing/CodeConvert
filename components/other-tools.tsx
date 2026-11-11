@@ -4,12 +4,14 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { toolIcons } from "@/lib/tool-icons";
-import { languageLinkTools, TOOLS, type ToolSlug } from "@/lib/tools";
+import { TOOLS, type ToolSlug } from "@/lib/tools";
+import { isDiscoverableTool } from "@/lib/tool-capabilities";
 
 export function OtherTools({ currentSlug }: { currentSlug: ToolSlug }) {
-  const tools = TOOLS.filter((tool) => tool.slug !== currentSlug);
+  const tools = TOOLS.filter(isDiscoverableTool).filter((tool) => tool.slug !== currentSlug);
   const { t } = useI18n();
 
+  if (!tools.length) return null;
   return (
     <div className="grid gap-6">
       <section className="rounded-lg border bg-white p-6 shadow-soft">
@@ -34,20 +36,6 @@ export function OtherTools({ currentSlug }: { currentSlug: ToolSlug }) {
         </div>
       </section>
 
-      <section className="rounded-lg border bg-white p-6 shadow-soft">
-        <h2 className="text-xl font-bold text-slate-950">{t("tool.readyLinks")}</h2>
-        <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          {languageLinkTools.map((item) => (
-            <Link
-              key={item.label}
-              href={item.href}
-              className="rounded-md border bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-700 transition hover:border-blue-300 hover:bg-white"
-            >
-              {item.label}
-            </Link>
-          ))}
-        </div>
-      </section>
     </div>
   );
 }

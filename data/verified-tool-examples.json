@@ -1,0 +1,496 @@
+{
+  "json-formatter": [
+    {
+      "title": "Nested values",
+      "description": "Objects, arrays, booleans and null remain JSON values after formatting.",
+      "input": "{\"user\":{\"name\":\"李\"},\"items\":[1,true,null]}",
+      "output": "{ \"user\": { \"name\": \"李\" }, \"items\": [1, true, null] }\n"
+    },
+    {
+      "title": "Large identifier",
+      "description": "Formatting preserves this numeric token beyond the JavaScript safe integer range.",
+      "input": "{\"id\":9007199254740993,\"message\":\"Hello 😀\"}",
+      "output": "{ \"id\": 9007199254740993, \"message\": \"Hello 😀\" }\n"
+    }
+  ],
+  "json-beautifier": [
+    {
+      "title": "Nested values",
+      "description": "Objects, arrays, booleans and null remain JSON values after formatting.",
+      "input": "{\"user\":{\"name\":\"李\"},\"items\":[1,true,null]}",
+      "output": "{ \"user\": { \"name\": \"李\" }, \"items\": [1, true, null] }\n"
+    },
+    {
+      "title": "Large identifier",
+      "description": "Formatting preserves this numeric token beyond the JavaScript safe integer range.",
+      "input": "{\"id\":9007199254740993,\"message\":\"Hello 😀\"}",
+      "output": "{ \"id\": 9007199254740993, \"message\": \"Hello 😀\" }\n"
+    }
+  ],
+  "json-validator": [
+    {
+      "title": "Nested values",
+      "description": "Objects, arrays, booleans and null remain JSON values after formatting.",
+      "input": "{\"user\":{\"name\":\"李\"},\"items\":[1,true,null]}",
+      "output": "{ \"user\": { \"name\": \"李\" }, \"items\": [1, true, null] }\n"
+    },
+    {
+      "title": "Large identifier",
+      "description": "Formatting preserves this numeric token beyond the JavaScript safe integer range.",
+      "input": "{\"id\":9007199254740993,\"message\":\"Hello 😀\"}",
+      "output": "{ \"id\": 9007199254740993, \"message\": \"Hello 😀\" }\n"
+    }
+  ],
+  "json-viewer": [
+    {
+      "title": "Nested values",
+      "description": "Objects, arrays, booleans and null remain JSON values after formatting.",
+      "input": "{\"user\":{\"name\":\"李\"},\"items\":[1,true,null]}",
+      "output": "{ \"user\": { \"name\": \"李\" }, \"items\": [1, true, null] }\n"
+    },
+    {
+      "title": "Large identifier",
+      "description": "Formatting preserves this numeric token beyond the JavaScript safe integer range.",
+      "input": "{\"id\":9007199254740993,\"message\":\"Hello 😀\"}",
+      "output": "{ \"id\": 9007199254740993, \"message\": \"Hello 😀\" }\n"
+    }
+  ],
+  "javascript-formatter": [
+    {
+      "title": "URL and comment-like string",
+      "description": "The URL and comment-like characters inside the string remain literal text.",
+      "input": "const data={url:\"https://example.com/a//b\",text:\"/* literal */\"};",
+      "output": "const data = { url: \"https://example.com/a//b\", text: \"/* literal */\" };\n"
+    },
+    {
+      "title": "Array and function",
+      "description": "The source is parsed and formatted without executing the function.",
+      "input": "function double(values){return values.map(value=>value*2)}",
+      "output": "function double(values) {\n  return values.map((value) => value * 2);\n}\n"
+    }
+  ],
+  "code-formatter": [
+    {
+      "title": "URL and comment-like string",
+      "description": "The URL and comment-like characters inside the string remain literal text.",
+      "input": "const data={url:\"https://example.com/a//b\",text:\"/* literal */\"};",
+      "output": "const data = { url: \"https://example.com/a//b\", text: \"/* literal */\" };\n"
+    },
+    {
+      "title": "Array and function",
+      "description": "The source is parsed and formatted without executing the function.",
+      "input": "function double(values){return values.map(value=>value*2)}",
+      "output": "function double(values) {\n  return values.map((value) => value * 2);\n}\n"
+    }
+  ],
+  "code-beautifier": [
+    {
+      "title": "URL and comment-like string",
+      "description": "The URL and comment-like characters inside the string remain literal text.",
+      "input": "const data={url:\"https://example.com/a//b\",text:\"/* literal */\"};",
+      "output": "const data = { url: \"https://example.com/a//b\", text: \"/* literal */\" };\n"
+    },
+    {
+      "title": "Array and function",
+      "description": "The source is parsed and formatted without executing the function.",
+      "input": "function double(values){return values.map(value=>value*2)}",
+      "output": "function double(values) {\n  return values.map((value) => value * 2);\n}\n"
+    }
+  ],
+  "javascript-minifier": [
+    {
+      "title": "URL and comment-like string",
+      "description": "The URL and comment-like characters inside the string remain literal text.",
+      "input": "const data={url:\"https://example.com/a//b\",text:\"/* literal */\"};",
+      "output": "const data={url:\"https://example.com/a//b\",text:\"/* literal */\"};"
+    },
+    {
+      "title": "Array and function",
+      "description": "The source is parsed and formatted without executing the function.",
+      "input": "function double(values){return values.map(value=>value*2)}",
+      "output": "function double(n){return n.map(n=>2*n)}"
+    }
+  ],
+  "typescript-formatter": [
+    {
+      "title": "Typed record",
+      "description": "Type annotations are retained while spacing is normalized.",
+      "input": "type User={name:string;active:boolean};",
+      "output": "type User = { name: string; active: boolean };\n"
+    },
+    {
+      "title": "Typed function",
+      "description": "Formatting does not execute or type-check this function.",
+      "input": "function greet(name:string):string{return `Hello ${name}`}",
+      "output": "function greet(name: string): string {\n  return `Hello ${name}`;\n}\n"
+    }
+  ],
+  "css-formatter": [
+    {
+      "title": "CSS declarations",
+      "description": "The selector and declarations are parsed as CSS.",
+      "input": "p{color:red;margin:0 1rem}",
+      "output": "p {\n  color: red;\n  margin: 0 1rem;\n}\n"
+    },
+    {
+      "title": "String content",
+      "description": "Semicolons and braces within a quoted content value remain literal.",
+      "input": "a::before{content:\"a;{b}\"}",
+      "output": "a::before {\n  content: \"a;{b}\";\n}\n"
+    }
+  ],
+  "css-beautifier": [
+    {
+      "title": "CSS declarations",
+      "description": "The selector and declarations are parsed as CSS.",
+      "input": "p{color:red;margin:0 1rem}",
+      "output": "p {\n  color: red;\n  margin: 0 1rem;\n}\n"
+    },
+    {
+      "title": "String content",
+      "description": "Semicolons and braces within a quoted content value remain literal.",
+      "input": "a::before{content:\"a;{b}\"}",
+      "output": "a::before {\n  content: \"a;{b}\";\n}\n"
+    }
+  ],
+  "html-formatter": [
+    {
+      "title": "Nested tags",
+      "description": "Markup is formatted without rendering or executing it.",
+      "input": "<section><h1>Hello</h1><p>你好 😀</p></section>",
+      "output": "<section>\n  <h1>Hello</h1>\n  <p>你好 😀</p>\n</section>\n"
+    },
+    {
+      "title": "Attribute value",
+      "description": "An ampersand entity in an attribute remains part of the markup.",
+      "input": "<a href=\"/?a=1&amp;b=2\">Open</a>",
+      "output": "<a href=\"/?a=1&amp;b=2\">Open</a>\n"
+    }
+  ],
+  "yaml-formatter": [
+    {
+      "title": "Nested YAML",
+      "description": "Nested list indentation is preserved by the YAML parser.",
+      "input": "root:\n  items:\n  - one\n  - two\n",
+      "output": "root:\n  items:\n    - one\n    - two\n"
+    },
+    {
+      "title": "Quoted value",
+      "description": "Quoted punctuation is treated as string content.",
+      "input": "message: \"a: b # text\"\nenabled: true\n",
+      "output": "message: \"a: b # text\"\nenabled: true\n"
+    }
+  ],
+  "markdown-formatter": [
+    {
+      "title": "List formatting",
+      "description": "Markdown list indentation is normalized.",
+      "input": "# Title\n\n* one\n* two\n",
+      "output": "# Title\n\n- one\n- two\n"
+    },
+    {
+      "title": "Code fence",
+      "description": "Code fences remain part of the Markdown document.",
+      "input": "Text with **bold**.\n\n```text\nhello 😀\n```\n",
+      "output": "Text with **bold**.\n\n```text\nhello 😀\n```\n"
+    }
+  ],
+  "graphql-formatter": [
+    {
+      "title": "Query fields",
+      "description": "The query is formatted without sending it to a GraphQL server.",
+      "input": "{user(id:1){name email}}",
+      "output": "{\n  user(id: 1) {\n    name\n    email\n  }\n}\n"
+    },
+    {
+      "title": "Named operation",
+      "description": "Variables and a named operation are preserved.",
+      "input": "query GetUser($id:ID!){user(id:$id){name}}",
+      "output": "query GetUser($id: ID!) {\n  user(id: $id) {\n    name\n  }\n}\n"
+    }
+  ],
+  "base64-encode": [
+    {
+      "title": "UTF-8 text",
+      "description": "Chinese characters and an emoji are encoded as UTF-8 bytes.",
+      "input": "你好 😀",
+      "output": "5L2g5aW9IPCfmIA="
+    },
+    {
+      "title": "Whitespace",
+      "description": "Leading spaces and line breaks are meaningful input and remain in a round trip.",
+      "input": "  first\nsecond\n",
+      "output": "ICBmaXJzdApzZWNvbmQK"
+    }
+  ],
+  "base64-decode": [
+    {
+      "title": "UTF-8 text",
+      "description": "Chinese characters and an emoji are encoded as UTF-8 bytes.",
+      "input": "5L2g5aW9IPCfmIA=",
+      "output": "你好 😀"
+    },
+    {
+      "title": "Whitespace",
+      "description": "Leading spaces and line breaks are meaningful input and remain in a round trip.",
+      "input": "ICBmaXJzdApzZWNvbmQK",
+      "output": "  first\nsecond\n"
+    }
+  ],
+  "base64-encode-and-decode": [
+    {
+      "title": "Encode UTF-8",
+      "description": "Choose Encode to turn this text into Base64.",
+      "input": "你好 😀",
+      "mode": "encode",
+      "output": "5L2g5aW9IPCfmIA="
+    },
+    {
+      "title": "Decode UTF-8",
+      "description": "Choose Decode to recover the original Unicode text.",
+      "input": "5L2g5aW9IPCfmIA=",
+      "mode": "decode",
+      "output": "你好 😀"
+    }
+  ],
+  "base64-to-json": [
+    {
+      "title": "Nested values",
+      "description": "Objects, arrays, booleans and null remain JSON values after formatting.",
+      "input": "eyJ1c2VyIjp7Im5hbWUiOiLmnY4ifSwiaXRlbXMiOlsxLHRydWUsbnVsbF19",
+      "output": "{ \"user\": { \"name\": \"李\" }, \"items\": [1, true, null] }\n"
+    },
+    {
+      "title": "Large identifier",
+      "description": "Formatting preserves this numeric token beyond the JavaScript safe integer range.",
+      "input": "eyJpZCI6OTAwNzE5OTI1NDc0MDk5MywibWVzc2FnZSI6IkhlbGxvIPCfmIAifQ==",
+      "output": "{ \"id\": 9007199254740993, \"message\": \"Hello 😀\" }\n"
+    }
+  ],
+  "url-encode": [
+    {
+      "title": "Query value",
+      "description": "Encode a parameter value before placing it in a URL.",
+      "input": "hello world & 你好 😀",
+      "output": "hello%20world%20%26%20%E4%BD%A0%E5%A5%BD%20%F0%9F%98%80"
+    },
+    {
+      "title": "Reserved characters",
+      "description": "Reserved URL characters are percent-encoded.",
+      "input": "a=b?x#fragment",
+      "output": "a%3Db%3Fx%23fragment"
+    }
+  ],
+  "url-decode": [
+    {
+      "title": "Unicode value",
+      "description": "Percent-encoded UTF-8 becomes readable text.",
+      "input": "hello%20world%20%26%20%E4%BD%A0%E5%A5%BD%20%F0%9F%98%80",
+      "output": "hello world & 你好 😀"
+    },
+    {
+      "title": "Reserved characters",
+      "description": "This decodes a single layer of percent encoding.",
+      "input": "a%3Db%3Fx%23fragment",
+      "output": "a=b?x#fragment"
+    }
+  ],
+  "html-decode": [
+    {
+      "title": "Named and numeric entities",
+      "description": "Named entities and decimal or hexadecimal character references are decoded.",
+      "input": "&copy; &#20013;&#25991; &#x1F600; &amp;",
+      "output": "© 中文 😀 &"
+    },
+    {
+      "title": "Decode once",
+      "description": "A doubly escaped ampersand is decoded once; markup remains text output.",
+      "input": "&amp;copy; &lt;script&gt; &NotEqualTilde;",
+      "output": "&copy; <script> ≂̸"
+    }
+  ],
+  "json-to-csv": [
+    {
+      "title": "Quoted values",
+      "description": "Commas, quotes and newlines are quoted correctly in CSV cells.",
+      "input": "[{\"name\":\"Smith, Alice\",\"note\":\"She said \\\"hi\\\"\\nagain\"}]",
+      "output": "\"name\",\"note\"\r\n\"Smith, Alice\",\"She said \"\"hi\"\"\nagain\""
+    },
+    {
+      "title": "Spreadsheet formula protection",
+      "description": "Formula-like text is prefixed with an apostrophe for spreadsheet safety.",
+      "input": "[{\"name\":\"=1+1\",\"count\":2},{\"name\":\"李😀\",\"count\":3}]",
+      "output": "\"name\",\"count\"\r\n\"'=1+1\",\"2\"\r\n\"李😀\",\"3\""
+    }
+  ],
+  "csv-to-json": [
+    {
+      "title": "Quoted multiline cells",
+      "description": "Quoted commas, doubled quotes and line breaks stay within their original fields.",
+      "input": "name,note\r\n\"Smith, Alice\",\"She said \"\"hi\"\"\nagain\"",
+      "output": "[\n  {\n    \"name\": \"Smith, Alice\",\n    \"note\": \"She said \\\"hi\\\"\\nagain\"\n  }\n]"
+    },
+    {
+      "title": "Empty field and Unicode",
+      "description": "Empty cells remain empty strings; values are not silently coerced into numbers.",
+      "input": "name,id,note\n李😀,001,",
+      "output": "[\n  {\n    \"name\": \"李😀\",\n    \"id\": \"001\",\n    \"note\": \"\"\n  }\n]"
+    }
+  ],
+  "json-to-xml": [
+    {
+      "title": "Nested values",
+      "description": "Arrays become item elements under the containing key.",
+      "input": "{\"user\":{\"name\":\"李\"},\"roles\":[\"editor\",\"reader\"]}",
+      "output": "<root><user><name>李</name></user><roles><item>editor</item><item>reader</item></roles></root>"
+    },
+    {
+      "title": "Escaped text",
+      "description": "Markup punctuation in string values is escaped as XML text.",
+      "input": "{\"message\":\"<b> & hello\"}",
+      "output": "<root><message>&lt;b&gt; &amp; hello</message></root>"
+    }
+  ],
+  "json-to-typescript": [
+    {
+      "title": "Model fields",
+      "description": "Types are inferred from this sample only; the result is not a schema guarantee.",
+      "input": "{\"name\":\"Alice\",\"count\":2,\"active\":true}",
+      "output": "interface GeneratedModel {\n  \"name\": string;\n  \"count\": number;\n  \"active\": boolean;\n}"
+    },
+    {
+      "title": "Containers and null",
+      "description": "Unknown container values and null receive general types.",
+      "input": "{\"items\":[],\"meta\":{},\"optional\":null}",
+      "output": "interface GeneratedModel {\n  \"items\": unknown[];\n  \"meta\": Record<string, unknown>;\n  \"optional\": null;\n}"
+    }
+  ],
+  "json-to-java": [
+    {
+      "title": "Model fields",
+      "description": "Types are inferred from this sample only; the result is not a schema guarantee.",
+      "input": "{\"name\":\"Alice\",\"count\":2,\"active\":true}",
+      "output": "import java.util.List;\nimport java.util.Map;\n\npublic class GeneratedModel {\n  public String name;\n  public double count;\n  public boolean active;\n}"
+    },
+    {
+      "title": "Containers and null",
+      "description": "Unknown container values and null receive general types.",
+      "input": "{\"items\":[],\"meta\":{},\"optional\":null}",
+      "output": "import java.util.List;\nimport java.util.Map;\n\npublic class GeneratedModel {\n  public List<Object> items;\n  public Map<String, Object> meta;\n  public Object optional;\n}"
+    }
+  ],
+  "json-to-python": [
+    {
+      "title": "Model fields",
+      "description": "Types are inferred from this sample only; the result is not a schema guarantee.",
+      "input": "{\"name\":\"Alice\",\"count\":2,\"active\":true}",
+      "output": "from dataclasses import dataclass\nfrom typing import Any\n\n@dataclass\nclass GeneratedModel:\n    name: str\n    count: int\n    active: bool"
+    },
+    {
+      "title": "Containers and null",
+      "description": "Unknown container values and null receive general types.",
+      "input": "{\"items\":[],\"meta\":{},\"optional\":null}",
+      "output": "from dataclasses import dataclass\nfrom typing import Any\n\n@dataclass\nclass GeneratedModel:\n    items: list[Any]\n    meta: dict[str, Any]\n    optional: Any"
+    }
+  ],
+  "binary-code-translator": [
+    {
+      "title": "UTF-8 to bytes",
+      "description": "Each group is one UTF-8 byte, including the emoji's four bytes.",
+      "input": "Hi 😀",
+      "output": "01001000 01101001 00100000 11110000 10011111 10011000 10000000"
+    },
+    {
+      "title": "Bytes to Unicode",
+      "description": "Complete binary bytes are decoded as UTF-8.",
+      "input": "11100100 10111000 10101101 11100110 10010110 10000111 11110000 10011111 10011000 10000000",
+      "output": "中文😀"
+    }
+  ],
+  "sha1-generator": [
+    {
+      "title": "Standard abc vector",
+      "description": "Compare this digest with the standard abc test vector.",
+      "input": "abc",
+      "output": "a9993e364706816aba3e25717850c26c9cd0d89d"
+    },
+    {
+      "title": "Unicode bytes",
+      "description": "The digest is calculated over the UTF-8 bytes of the exact input.",
+      "input": "你好 😀",
+      "output": "022bfd30112b2deb8f2460439320f50f15e615dc"
+    }
+  ],
+  "sha256-generator": [
+    {
+      "title": "Standard abc vector",
+      "description": "Compare this digest with the standard abc test vector.",
+      "input": "abc",
+      "output": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"
+    },
+    {
+      "title": "Unicode bytes",
+      "description": "The digest is calculated over the UTF-8 bytes of the exact input.",
+      "input": "你好 😀",
+      "output": "11d38af3bdabe6b2cbeddca50ba2837db42ab16679896ed9cc0dfce30cfc1fa7"
+    }
+  ],
+  "sha512-generator": [
+    {
+      "title": "Standard abc vector",
+      "description": "Compare this digest with the standard abc test vector.",
+      "input": "abc",
+      "output": "ddaf35a193617abacc417349ae20413112e6fa4e89a97ea20a9eeee64b55d39a2192992a274fc1a836ba3c23a3feebbd454d4423643ce80e2a9ac94fa54ca49f"
+    },
+    {
+      "title": "Unicode bytes",
+      "description": "The digest is calculated over the UTF-8 bytes of the exact input.",
+      "input": "你好 😀",
+      "output": "ccfbb3aca30bdaa495e2ff2e26e8628aed64b592a031de62e9fd88d0a1ee29e9d6d77c898c8fcaba1cd17201355c11859421cce21748b53dd9a2f1dab137b804"
+    }
+  ],
+  "comment-remover": [
+    {
+      "title": "JavaScript literals",
+      "description": "Select JavaScript. Comment characters inside the URL and string are preserved; removed comments leave spaces.",
+      "input": "const url = \"https://example.com/*literal*/\"; // comment\nconsole.log(url);",
+      "mode": "JavaScript",
+      "output": "const url = \"https://example.com/*literal*/\";           \nconsole.log(url);"
+    },
+    {
+      "title": "TypeScript annotation",
+      "description": "Select TypeScript. The type annotation and line structure are retained.",
+      "input": "const value: string = \"/* literal */\"; /* remove */\nexport { value };",
+      "mode": "TypeScript",
+      "output": "const value: string = \"/* literal */\";             \nexport { value };"
+    }
+  ],
+  "unix-to-date": [
+    {
+      "title": "Unix epoch",
+      "description": "Integer seconds are converted to an ISO date in UTC.",
+      "input": "0",
+      "output": "1970-01-01T00:00:00.000Z"
+    },
+    {
+      "title": "Before the epoch",
+      "description": "Negative seconds represent instants before 1970-01-01.",
+      "input": "-1",
+      "output": "1969-12-31T23:59:59.000Z"
+    }
+  ],
+  "date-to-unix": [
+    {
+      "title": "Explicit UTC",
+      "description": "Use an ISO date with an explicit timezone for an unambiguous instant.",
+      "input": "2026-11-08T00:00:00Z",
+      "output": "1794096000"
+    },
+    {
+      "title": "Timezone offset",
+      "description": "Equivalent timezone offsets map to the same Unix instant.",
+      "input": "2026-11-08T08:00:00+08:00",
+      "output": "1794096000"
+    }
+  ]
+}

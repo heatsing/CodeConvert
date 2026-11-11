@@ -20,20 +20,7 @@
     "Using HTML Formatter, Minifier and Beautifier to compare the source and result before a migration, import, release, or review.",
     "HTML Formatter, Minifier and Beautifier helps catch structural or meaning-changing mistakes before the output reaches another system."
   ],
-  "examples": [
-    {
-      "title": "HTML Formatter, Minifier and Beautifier with a representative sample",
-      "description": "This HTML Formatter, Minifier and Beautifier example uses HTML elements, links, lists, and document structure that resembles a small production fixture, so the main change can be checked line by line.",
-      "input": "<nav>\n  <a href=\"/docs\">Docs</a>\n  <a href=\"/api\">API</a>\n</nav>",
-      "output": "<nav><a href=\"/docs\">Docs</a><a href=\"/api\">API</a></nav>"
-    },
-    {
-      "title": "HTML Formatter, Minifier and Beautifier edge-case review",
-      "description": "The second HTML Formatter, Minifier and Beautifier pass focuses on the part most likely to fail: nested values, escaping, or destination rules.",
-      "input": "<nav>\n  <a href=\"/docs\">Docs</a>\n  <a href=\"/api\">API</a>\n</nav>\n\nReview case: preserve empty, repeated, or non-ASCII values where applicable.",
-      "output": "<nav><a href=\"/docs\">Docs</a><a href=\"/api\">API</a></nav>\n\nReview note: confirm this result in the destination workflow."
-    }
-  ],
+  "examples": [],
   "tips": [
     "Keep the original HTML Formatter, Minifier and Beautifier input beside the result until the destination check passes.",
     "Use realistic HTML elements, links, lists, and document structure instead of a one-word sample when validating HTML Formatter, Minifier and Beautifier.",
@@ -87,6 +74,6 @@
     "Using the HTML Formatter, Minifier and Beautifier result without comparing it with the original source.",
     "Skipping validation in the editor, runtime, API, or document that receives the output."
   ],
-  "updatedAt": "2026-07-28",
+  "updatedAt": "2026-11-08",
   "seoScore": 100
 }

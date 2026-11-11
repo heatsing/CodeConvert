@@ -20,20 +20,7 @@
     "Using SQL Formatter to compare the source and result before a migration, import, release, or review.",
     "SQL Formatter helps catch structural or meaning-changing mistakes before the output reaches another system."
   ],
-  "examples": [
-    {
-      "title": "SQL Formatter with a representative sample",
-      "description": "This SQL Formatter example uses SQL clauses, joins, expressions, and dialect-specific syntax that resembles a small production fixture, so the main change can be checked line by line.",
-      "input": "select customer_id,count(*) as orders from purchases where created_at>=current_date-30 group by customer_id having count(*)>2;",
-      "output": "SELECT customer_id,\n       COUNT(*) AS orders\nFROM purchases\nWHERE created_at >= CURRENT_DATE - 30\nGROUP BY customer_id\nHAVING COUNT(*) > 2;"
-    },
-    {
-      "title": "SQL Formatter edge-case review",
-      "description": "The second SQL Formatter pass focuses on the part most likely to fail: nested values, escaping, or destination rules.",
-      "input": "select customer_id,count(*) as orders from purchases where created_at>=current_date-30 group by customer_id having count(*)>2;\n\nReview case: preserve empty, repeated, or non-ASCII values where applicable.",
-      "output": "SELECT customer_id,\n       COUNT(*) AS orders\nFROM purchases\nWHERE created_at >= CURRENT_DATE - 30\nGROUP BY customer_id\nHAVING COUNT(*) > 2;\n\nReview note: confirm this result in the destination workflow."
-    }
-  ],
+  "examples": [],
   "tips": [
     "Keep the original SQL Formatter input beside the result until the destination check passes.",
     "Use realistic SQL clauses, joins, expressions, and dialect-specific syntax instead of a one-word sample when validating SQL Formatter.",
@@ -87,6 +74,6 @@
     "Using the SQL Formatter result without comparing it with the original source.",
     "Skipping validation in the editor, runtime, API, or document that receives the output."
   ],
-  "updatedAt": "2026-07-28",
+  "updatedAt": "2026-11-08",
   "seoScore": 100
 }

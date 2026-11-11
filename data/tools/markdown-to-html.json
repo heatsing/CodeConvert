@@ -20,20 +20,7 @@
     "Using Markdown To HTML to compare the source and result before a migration, import, release, or review.",
     "Markdown To HTML helps catch structural or meaning-changing mistakes before the output reaches another system."
   ],
-  "examples": [
-    {
-      "title": "Markdown To HTML with a representative sample",
-      "description": "This Markdown To HTML example uses HTML elements, links, lists, and document structure that resembles a small production fixture, so the main change can be checked line by line.",
-      "input": "## Setup\n\nInstall the package.\n\n- Run tests",
-      "output": "<h2>Setup</h2>\n<p>Install the package.</p>\n<ul>\n  <li>Run tests</li>\n</ul>"
-    },
-    {
-      "title": "Markdown To HTML edge-case review",
-      "description": "The second Markdown To HTML pass focuses on the part most likely to fail: nested values, escaping, or destination rules.",
-      "input": "## Setup\n\nInstall the package.\n\n- Run tests\n\nReview case: preserve empty, repeated, or non-ASCII values where applicable.",
-      "output": "<h2>Setup</h2>\n<p>Install the package.</p>\n<ul>\n  <li>Run tests</li>\n</ul>\n\nReview note: confirm this result in the destination workflow."
-    }
-  ],
+  "examples": [],
   "tips": [
     "Keep the original Markdown To HTML input beside the result until the destination check passes.",
     "Use realistic HTML elements, links, lists, and document structure instead of a one-word sample when validating Markdown To HTML.",
@@ -87,6 +74,6 @@
     "Using the Markdown To HTML result without comparing it with the original source.",
     "Skipping validation in the editor, runtime, API, or document that receives the output."
   ],
-  "updatedAt": "2026-07-28",
+  "updatedAt": "2026-11-08",
   "seoScore": 100
 }

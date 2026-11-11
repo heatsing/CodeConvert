@@ -20,20 +20,7 @@
     "Using JSON Validator to compare the source and result before a migration, import, release, or review.",
     "JSON Validator helps catch structural or meaning-changing mistakes before the output reaches another system."
   ],
-  "examples": [
-    {
-      "title": "JSON Validator with a representative sample",
-      "description": "This JSON Validator example uses JSON objects, arrays, keys, and values that resembles a small production fixture, so the main change can be checked line by line.",
-      "input": "{\"id\":42,\"items\":[\"A\",\"B\",]}",
-      "output": "Invalid JSON: trailing comma after the final array item."
-    },
-    {
-      "title": "JSON Validator edge-case review",
-      "description": "The second JSON Validator pass focuses on the part most likely to fail: nested values, escaping, or destination rules.",
-      "input": "{\"id\":42,\"items\":[\"A\",\"B\",]}\n\nReview case: preserve empty, repeated, or non-ASCII values where applicable.",
-      "output": "Invalid JSON: trailing comma after the final array item.\n\nReview note: confirm this result in the destination workflow."
-    }
-  ],
+  "examples": [],
   "tips": [
     "Keep the original JSON Validator input beside the result until the destination check passes.",
     "Use realistic JSON objects, arrays, keys, and values instead of a one-word sample when validating JSON Validator.",
@@ -87,6 +74,6 @@
     "Using the JSON Validator result without comparing it with the original source.",
     "Skipping validation in the editor, runtime, API, or document that receives the output."
   ],
-  "updatedAt": "2026-07-28",
+  "updatedAt": "2026-11-08",
   "seoScore": 100
 }

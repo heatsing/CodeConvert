@@ -20,20 +20,7 @@
     "Using Binary Code Translator to compare the source and result before a migration, import, release, or review.",
     "Using Binary Code Translator to diagnose escaped, encoded, or unreadable values in requests, URLs, logs, and configuration."
   ],
-  "examples": [
-    {
-      "title": "Binary Code Translator with a representative sample",
-      "description": "This Binary Code Translator example uses source code, structured text, and the destination workflow that resembles a small production fixture, so the main change can be checked line by line.",
-      "input": "01001000 01101001",
-      "output": "Hi"
-    },
-    {
-      "title": "Binary Code Translator edge-case review",
-      "description": "The second Binary Code Translator pass focuses on the part most likely to fail: nested values, escaping, or destination rules.",
-      "input": "01001000 01101001\n\nReview case: preserve empty, repeated, or non-ASCII values where applicable.",
-      "output": "Hi\n\nReview note: confirm this result in the destination workflow."
-    }
-  ],
+  "examples": [],
   "tips": [
     "Keep the original Binary Code Translator input beside the result until the destination check passes.",
     "Use realistic source code, structured text, and the destination workflow instead of a one-word sample when validating Binary Code Translator.",
@@ -87,6 +74,6 @@
     "Using the Binary Code Translator result without comparing it with the original source.",
     "Skipping validation in the editor, runtime, API, or document that receives the output."
   ],
-  "updatedAt": "2026-07-28",
+  "updatedAt": "2026-11-08",
   "seoScore": 100
 }

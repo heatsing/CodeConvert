@@ -20,20 +20,7 @@
     "Using Title Case Converter to compare the source and result before a migration, import, release, or review.",
     "Title Case Converter helps catch structural or meaning-changing mistakes before the output reaches another system."
   ],
-  "examples": [
-    {
-      "title": "Title Case Converter with a representative sample",
-      "description": "This Title Case Converter example uses working text copied from documents, forms, spreadsheets, email, or a CMS that resembles a small production fixture, so the main change can be checked line by line.",
-      "input": "a practical guide to json api testing",
-      "output": "A Practical Guide to JSON API Testing"
-    },
-    {
-      "title": "Title Case Converter edge-case review",
-      "description": "The second Title Case Converter pass focuses on the part most likely to fail: intentional spacing and punctuation.",
-      "input": "a practical guide to json api testing\n\nReview case: preserve empty, repeated, or non-ASCII values where applicable.",
-      "output": "A Practical Guide to JSON API Testing\n\nReview note: confirm this result in the destination workflow."
-    }
-  ],
+  "examples": [],
   "tips": [
     "Keep the original Title Case Converter input beside the result until the destination check passes.",
     "Use realistic working text copied from documents, forms, spreadsheets, email, or a CMS instead of a one-word sample when validating Title Case Converter.",
@@ -87,6 +74,6 @@
     "Using the Title Case Converter result without comparing it with the original source.",
     "Skipping validation in the editor, runtime, API, or document that receives the output."
   ],
-  "updatedAt": "2026-07-28",
+  "updatedAt": "2026-11-08",
   "seoScore": 100
 }

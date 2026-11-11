@@ -1,92 +1,88 @@
 {
   "slug": "code-converter",
-  "title": "Code Converter",
-  "description": "Code Converter helps people inspect source code, structured text, and the destination workflow and review the result before using it in another system.",
-  "intro": "Code Converter is for a concrete handoff: take source code, structured text, and the destination workflow from a real task, produce the form the next editor, API, document, or workflow expects, and keep enough context to verify what changed.",
-  "audience": "Developers, QA engineers, code reviewers, and technical writers",
-  "input": "A representative sample of source code, structured text, and the destination workflow copied from the API, file, codebase, log, document, or request involved in the task.",
-  "outcome": "A code converter result that preserves the intended meaning and is ready to test in its destination.",
-  "review": "Check source code, structured text, and the destination workflow, malformed input, escaped values, and destination-specific rules before relying on the result.",
-  "bestFor": "Small and medium source code, structured text, and the destination workflow samples used for debugging, documentation, migration preparation, review, and reproducible tests.",
+  "title": "Code Migration Worksheet",
+  "h1": "Code Migration Worksheet",
+  "description": "Prepare your source code and a checklist for a manual language migration. The worksheet does not translate or execute code.",
+  "intro": "The Code Migration Worksheet places a source snippet and the selected language pair beside a fixed migration checklist. It does not produce destination-language code. Use the text to plan a manual rewrite and record the checks that the eventual implementation must pass.",
+  "audience": "Developers planning a manual rewrite and reviewers preparing a language migration",
+  "input": "The existing source snippet, its current language, and the destination language you intend to implement yourself.",
+  "outcome": "A plain text worksheet containing the supplied source and a generic checklist for types, library calls, error handling, and comparison tests.",
+  "review": "The checklist is not tailored to the semantics of your snippet. Identify project-specific requirements and write the target implementation separately.",
+  "bestFor": "Small migration planning notes, handoff documents, and keeping a source example alongside the tests a manual rewrite will need.",
   "steps": [
-    "Paste a representative source code, structured text, and the destination workflow from the task you are working on.",
-    "Run Code Converter and compare the first meaningful change with the source.",
-    "Inspect source code, structured text, and the destination workflow plus any destination-specific constraints.",
-    "Copy or download the result, then validate it in the editor, runtime, API, form, or publishing system where it will be used."
+    "Select the current source language and your intended destination language.",
+    "Paste a focused source snippet or load a supported text file into the editor.",
+    "Choose Create Worksheet to combine the source and a fixed migration checklist.",
+    "Save the worksheet, implement the translation yourself, and compare both programs with tests."
   ],
   "useCases": [
-    "Code Converter for a real development or integration task rather than a synthetic keyword example.",
-    "Preparing Code Converter input and output for a bug report, documentation page, test fixture, or technical handoff.",
-    "Using Code Converter to compare the source and result before a migration, import, release, or review.",
-    "Code Converter helps catch structural or meaning-changing mistakes before the output reaches another system."
+    "Preparing a review note before rewriting a JavaScript utility in Python.",
+    "Keeping an original function attached to a migration ticket.",
+    "Recording type, exception, and library questions before assigning implementation work.",
+    "Starting a checklist for comparison tests between an existing program and its manual replacement."
   ],
-  "examples": [
-    {
-      "title": "Code Converter with a representative sample",
-      "description": "This Code Converter example uses source code, structured text, and the destination workflow that resembles a small production fixture, so the main change can be checked line by line.",
-      "input": "const greet = (name) => `Hello ${name}`;",
-      "output": "def greet(name):\n    return f\"Hello {name}\""
-    },
-    {
-      "title": "Code Converter edge-case review",
-      "description": "The second Code Converter pass focuses on the part most likely to fail: nested values, escaping, or destination rules.",
-      "input": "const greet = (name) => `Hello ${name}`;\n\nReview case: preserve empty, repeated, or non-ASCII values where applicable.",
-      "output": "def greet(name):\n    return f\"Hello {name}\"\n\nReview note: confirm this result in the destination workflow."
-    }
+  "commonMistakes": [
+    "Expecting the worksheet to contain translated code.",
+    "Assuming the generic checklist has analyzed the source semantics.",
+    "Treating a planning document as a tested destination implementation."
   ],
   "tips": [
-    "Keep the original Code Converter input beside the result until the destination check passes.",
-    "Use realistic source code, structured text, and the destination workflow instead of a one-word sample when validating Code Converter.",
-    "Do not assume the visual cleanup from Code Converter proves that source code, structured text, and the destination workflow is valid.",
-    "Run the normal project, API, schema, browser, or editorial validation after using Code Converter."
+    "Add any runtime-specific behavior the fixed checklist cannot infer.",
+    "Keep executable comparison tests next to the planned rewrite.",
+    "Check standard library differences against the actual destination runtime.",
+    "Use the preserved source as reference while implementing the target code manually."
   ],
   "faq": [
     {
-      "question": "Who uses Code Converter?",
-      "answer": "Developers, QA engineers, code reviewers, and technical writers use Code Converter when they need to inspect source code, structured text, and the destination workflow before continuing work in another editor, system, or document."
+      "question": "Does the worksheet convert programming languages?",
+      "answer": "No. It includes the input source and a fixed checklist. It does not generate a translated implementation."
     },
     {
-      "question": "What should I paste into Code Converter?",
-      "answer": "Paste a focused but representative sample of source code, structured text, and the destination workflow into Code Converter. Include the nesting, punctuation, characters, or edge cases that affect the real task."
+      "question": "Why can I choose two languages?",
+      "answer": "The language names label the migration direction in the worksheet. Choosing a pair does not enable a compiler or translation service."
     },
     {
-      "question": "What does Code Converter change?",
-      "answer": "Code Converter changes the representation needed for this task. Compare the output with the source to confirm that values and intended meaning remain correct."
+      "question": "Is the checklist specific to my function?",
+      "answer": "No. The same type, library, error-handling, and test checklist is used for each snippet. Add your own project-specific requirements."
     },
     {
-      "question": "What should I check after using Code Converter?",
-      "answer": "After Code Converter, review source code, structured text, and the destination workflow, escaped values, malformed input, and the rules enforced by the destination system."
+      "question": "What file is downloaded?",
+      "answer": "Migration Worksheet saves migration-worksheet.txt, a text planning document that includes the source you supplied."
     },
     {
-      "question": "Can I use the Code Converter output in production?",
-      "answer": "Use the Code Converter result as reviewed working output, then run the destination system's normal validation, tests, schema checks, or editorial review before production use."
-    },
-    {
-      "question": "Does Code Converter store my input?",
-      "answer": "Code Converter has no account or saved-history feature. Even so, remove passwords, private keys, session cookies, personal data, and production secrets before using any online tool."
+      "question": "Where is my migration input processed?",
+      "answer": "The worksheet is assembled in this browser. It is not sent to an AI model or remote execution service."
     }
   ],
-  "relatedTools": [
-    "code-generator",
-    "code-explainer",
-    "comment-remover",
-    "code-checker",
-    "code-to-pdf",
-    "code-formatter"
+  "examples": [
+    {
+      "title": "JavaScript to Python planning note",
+      "description": "Source language: JavaScript. Planned target: Python. The output retains JavaScript and adds review steps; it does not contain a Python translation.",
+      "input": "const count = 3;",
+      "output": "Migration worksheet: JavaScript to Python\n\nA reliable automatic conversion is not available for this language pair. Use the source below as a migration worksheet and verify types, standard-library calls, error handling, and runtime behavior in Python.\n\nSource\nconst count = 3;\n\nMigration checklist\n- Map data types and null behavior.\n- Replace language-specific library calls.\n- Recreate exception and asynchronous control flow.\n- Add tests that compare both implementations.",
+      "sourceLanguage": "JavaScript",
+      "targetLanguage": "Python"
+    },
+    {
+      "title": "Python source with Unicode",
+      "description": "Source language: Python. Planned target: JavaScript. The source text remains a reference inside the worksheet.",
+      "input": "message = \"Hello 中文\"\nprint(message)",
+      "output": "Migration worksheet: Python to JavaScript\n\nA reliable automatic conversion is not available for this language pair. Use the source below as a migration worksheet and verify types, standard-library calls, error handling, and runtime behavior in JavaScript.\n\nSource\nmessage = \"Hello 中文\"\nprint(message)\n\nMigration checklist\n- Map data types and null behavior.\n- Replace language-specific library calls.\n- Recreate exception and asynchronous control flow.\n- Add tests that compare both implementations.",
+      "sourceLanguage": "Python",
+      "targetLanguage": "JavaScript"
+    }
   ],
   "keywords": [
-    "code converter",
-    "code converter online",
-    "inspect source code, structured text, and the destination workflow",
-    "code tool",
-    "browser based tool"
+    "migration worksheet",
+    "manual code migration",
+    "language rewrite checklist",
+    "source migration planning"
   ],
-  "h1": "Code Converter",
-  "commonMistakes": [
-    "Running Code Converter with a sample that does not represent the real input.",
-    "Using the Code Converter result without comparing it with the original source.",
-    "Skipping validation in the editor, runtime, API, or document that receives the output."
+  "relatedTools": [
+    "json-formatter",
+    "javascript-formatter",
+    "base64-encode"
   ],
-  "updatedAt": "2026-07-28",
-  "seoScore": 100
+  "updatedAt": "2026-11-08",
+  "seoScore": 40
 }

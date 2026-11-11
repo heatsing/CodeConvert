@@ -20,20 +20,7 @@
     "Using Regex Tester against failures and edge cases before adding the pattern to application code.",
     "Regex Tester helps catch structural or meaning-changing mistakes before the output reaches another system."
   ],
-  "examples": [
-    {
-      "title": "Regex Tester with a representative sample",
-      "description": "This Regex Tester example uses regular-expression patterns, flags, groups, and representative test text that resembles a small production fixture, so the main change can be checked line by line.",
-      "input": "/\\b[A-Z]{2}-\\d{4}\\b/g\nTickets: AB-1042, invalid A-22, CD-8801",
-      "output": "Matches (2)\nAB-1042\nCD-8801"
-    },
-    {
-      "title": "Regex Tester edge-case review",
-      "description": "The second Regex Tester pass focuses on the part most likely to fail: boundaries and non-matches.",
-      "input": "/\\b[A-Z]{2}-\\d{4}\\b/g\nTickets: AB-1042, invalid A-22, CD-8801\n\nReview case: preserve empty, repeated, or non-ASCII values where applicable.",
-      "output": "Matches (2)\nAB-1042\nCD-8801\n\nReview note: confirm this result in the destination workflow."
-    }
-  ],
+  "examples": [],
   "tips": [
     "Keep the original Regex Tester input beside the result until the destination check passes.",
     "Use realistic regular-expression patterns, flags, groups, and representative test text instead of a one-word sample when validating Regex Tester.",
@@ -85,6 +72,6 @@
     "Using the Regex Tester result without comparing it with the original source.",
     "Skipping validation in the editor, runtime, API, or document that receives the output."
   ],
-  "updatedAt": "2026-07-28",
+  "updatedAt": "2026-11-08",
   "seoScore": 100
 }

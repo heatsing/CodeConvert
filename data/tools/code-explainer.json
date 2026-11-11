@@ -1,92 +1,88 @@
 {
   "slug": "code-explainer",
-  "title": "Code Explainer",
-  "description": "Code Explainer helps people inspect source code, structured text, and the destination workflow and review the result before using it in another system.",
-  "intro": "Code Explainer is for a concrete handoff: take source code, structured text, and the destination workflow from a real task, produce the form the next editor, API, document, or workflow expects, and keep enough context to verify what changed.",
-  "audience": "Developers, QA engineers, code reviewers, and technical writers",
-  "input": "A representative sample of source code, structured text, and the destination workflow copied from the API, file, codebase, log, document, or request involved in the task.",
-  "outcome": "A code explainer result that preserves the intended meaning and is ready to test in its destination.",
-  "review": "Check source code, structured text, and the destination workflow, malformed input, escaped values, and destination-specific rules before relying on the result.",
-  "bestFor": "Small and medium source code, structured text, and the destination workflow samples used for debugging, documentation, migration preparation, review, and reproducible tests.",
+  "title": "Code Keyword Summary",
+  "h1": "Code Keyword Summary",
+  "description": "Count lines and keyword-like markers in a snippet. This local summary does not determine program behavior or verify correctness.",
+  "intro": "Code Keyword Summary counts lines and text patterns that resemble declarations, imports, branches, loops, and asynchronous operations. It does not parse every language or infer behavior. Matches inside comments and strings can affect the totals, so the result is a rough inventory for manual reading.",
+  "audience": "Reviewers and learners collecting a rough inventory of a source snippet",
+  "input": "A short source snippet and its language label; counts are computed from text patterns rather than a language-specific syntax tree.",
+  "outcome": "Line totals and counts of keyword-like markers, followed by a generic reading checklist rather than a behavioral explanation.",
+  "review": "Compare counted markers with the source. Strings, comments, and unusual syntax can produce false positives or miss real declarations.",
+  "bestFor": "Getting an initial text inventory of a small snippet before reading its control flow and checking it with language-specific tooling.",
   "steps": [
-    "Paste a representative source code, structured text, and the destination workflow from the task you are working on.",
-    "Run Code Explainer and compare the first meaningful change with the source.",
-    "Inspect source code, structured text, and the destination workflow plus any destination-specific constraints.",
-    "Copy or download the result, then validate it in the editor, runtime, API, form, or publishing system where it will be used."
+    "Choose the language label for the source you are reading.",
+    "Paste a small snippet whose marker counts you can check manually.",
+    "Choose Summarize Keywords to produce line and pattern counts.",
+    "Read the original source to establish behavior; use its compiler or parser when exact structure matters."
   ],
   "useCases": [
-    "Code Explainer for a real development or integration task rather than a synthetic keyword example.",
-    "Preparing Code Explainer input and output for a bug report, documentation page, test fixture, or technical handoff.",
-    "Using Code Explainer to compare the source and result before a migration, import, release, or review.",
-    "Code Explainer helps catch structural or meaning-changing mistakes before the output reaches another system."
+    "Counting nonempty lines in a short review excerpt.",
+    "Locating branch-like or loop-like words before manual inspection.",
+    "Demonstrating why text matching differs from syntax analysis.",
+    "Preparing rough structure notes for a learning exercise."
   ],
-  "examples": [
-    {
-      "title": "Code Explainer with a representative sample",
-      "description": "This Code Explainer example uses source code, structured text, and the destination workflow that resembles a small production fixture, so the main change can be checked line by line.",
-      "input": "const visible = items.filter(item => item.active).slice(0, 5);",
-      "output": "Keep active items, then return at most the first five results."
-    },
-    {
-      "title": "Code Explainer edge-case review",
-      "description": "The second Code Explainer pass focuses on the part most likely to fail: nested values, escaping, or destination rules.",
-      "input": "const visible = items.filter(item => item.active).slice(0, 5);\n\nReview case: preserve empty, repeated, or non-ASCII values where applicable.",
-      "output": "Keep active items, then return at most the first five results.\n\nReview note: confirm this result in the destination workflow."
-    }
+  "commonMistakes": [
+    "Treating marker counts as a complete syntax tree.",
+    "Reading the generic checklist as an explanation of your actual program.",
+    "Ignoring that comments and string literals can match keyword patterns."
   ],
   "tips": [
-    "Keep the original Code Explainer input beside the result until the destination check passes.",
-    "Use realistic source code, structured text, and the destination workflow instead of a one-word sample when validating Code Explainer.",
-    "Do not assume the visual cleanup from Code Explainer proves that source code, structured text, and the destination workflow is valid.",
-    "Run the normal project, API, schema, browser, or editorial validation after using Code Explainer."
+    "Manually inspect markers inside strings and comments.",
+    "Use a parser when declarations must be counted exactly.",
+    "Trace values and side effects in the original program.",
+    "Keep behavioral claims in your own review separate from these text counts."
   ],
   "faq": [
     {
-      "question": "Who uses Code Explainer?",
-      "answer": "Developers, QA engineers, code reviewers, and technical writers use Code Explainer when they need to inspect source code, structured text, and the destination workflow before continuing work in another editor, system, or document."
+      "question": "Does this summarize what my program does?",
+      "answer": "It reports text counts and a reading checklist. It does not infer return values, side effects, or the meaning of a program."
     },
     {
-      "question": "What should I paste into Code Explainer?",
-      "answer": "Paste a focused but representative sample of source code, structured text, and the destination workflow into Code Explainer. Include the nesting, punctuation, characters, or edge cases that affect the real task."
+      "question": "Are these exact function counts?",
+      "answer": "No. The patterns only recognize some declaration shapes and can also match text inside comments or literals."
     },
     {
-      "question": "What does Code Explainer change?",
-      "answer": "Code Explainer changes the representation needed for this task. Compare the output with the source to confirm that values and intended meaning remain correct."
+      "question": "Does the language selector enable a parser?",
+      "answer": "No. The selector labels the report; the keyword summary uses a shared collection of text patterns."
     },
     {
-      "question": "What should I check after using Code Explainer?",
-      "answer": "After Code Explainer, review source code, structured text, and the destination workflow, escaped values, malformed input, and the rules enforced by the destination system."
+      "question": "Can this prove that a snippet is valid?",
+      "answer": "No. Syntax validation belongs to the language compiler, interpreter, or an appropriate parser."
     },
     {
-      "question": "Can I use the Code Explainer output in production?",
-      "answer": "Use the Code Explainer result as reviewed working output, then run the destination system's normal validation, tests, schema checks, or editorial review before production use."
-    },
-    {
-      "question": "Does Code Explainer store my input?",
-      "answer": "Code Explainer has no account or saved-history feature. Even so, remove passwords, private keys, session cookies, personal data, and production secrets before using any online tool."
+      "question": "Can I save this inventory?",
+      "answer": "Yes. Copy the displayed summary or download the text, while retaining the source for manual verification."
     }
   ],
-  "relatedTools": [
-    "code-converter",
-    "code-generator",
-    "comment-remover",
-    "code-checker",
-    "code-to-pdf",
-    "code-formatter"
+  "examples": [
+    {
+      "title": "Function marker inventory",
+      "description": "Language label: JavaScript. Counts describe recognizable text patterns, not execution.",
+      "input": "function double(value) {\n  return value * 2;\n}",
+      "output": "Code keyword summary (JavaScript)\n\nOverview\n- 3 total lines and 3 non-empty lines.\n- 1 function-like declaration and 0 type declarations.\n- 0 import or dependency statements.\n- 0 conditional branch markers and 0 loop markers.\n\nThese counts use text patterns, including matches inside strings and comments. They do not establish syntax validity or program behavior.\n\nReview notes\n- Confirm input types and empty-value behavior.\n- Trace each branch with a representative example.\n- Verify side effects and error handling in the target runtime.",
+      "sourceLanguage": "JavaScript",
+      "targetLanguage": "Python"
+    },
+    {
+      "title": "Comment markers still count",
+      "description": "Language label: JavaScript. This deliberately shows the limitation: words in a comment may match the counters.",
+      "input": "// if for await\nconst value = 1;",
+      "output": "Code keyword summary (JavaScript)\n\nOverview\n- 2 total lines and 2 non-empty lines.\n- 0 function-like declarations and 0 type declarations.\n- 0 import or dependency statements.\n- 1 conditional branch marker and 1 loop marker.\n- 1 asynchronous operation marker.\n\nThese counts use text patterns, including matches inside strings and comments. They do not establish syntax validity or program behavior.\n\nReview notes\n- Confirm input types and empty-value behavior.\n- Trace each branch with a representative example.\n- Verify side effects and error handling in the target runtime.",
+      "sourceLanguage": "JavaScript",
+      "targetLanguage": "Python"
+    }
   ],
   "keywords": [
-    "code explainer",
-    "code explainer online",
-    "inspect source code, structured text, and the destination workflow",
-    "code tool",
-    "browser based tool"
+    "code keyword count",
+    "source line inventory",
+    "heuristic source summary",
+    "code reading checklist"
   ],
-  "h1": "Code Explainer",
-  "commonMistakes": [
-    "Running Code Explainer with a sample that does not represent the real input.",
-    "Using the Code Explainer result without comparing it with the original source.",
-    "Skipping validation in the editor, runtime, API, or document that receives the output."
+  "relatedTools": [
+    "json-formatter",
+    "javascript-formatter",
+    "base64-encode"
   ],
-  "updatedAt": "2026-07-28",
-  "seoScore": 100
+  "updatedAt": "2026-11-08",
+  "seoScore": 40
 }

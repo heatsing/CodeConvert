@@ -1,92 +1,88 @@
 {
   "slug": "code-generator",
-  "title": "Code Generator",
-  "description": "Code Generator helps people generate source code, structured text, and the destination workflow and review the result before using it in another system.",
-  "intro": "Code Generator is for a concrete handoff: take source code, structured text, and the destination workflow from a real task, produce the form the next editor, API, document, or workflow expects, and keep enough context to verify what changed.",
-  "audience": "Developers, QA engineers, code reviewers, and technical writers",
-  "input": "A representative sample of source code, structured text, and the destination workflow copied from the API, file, codebase, log, document, or request involved in the task.",
-  "outcome": "A code generator result that preserves the intended meaning and is ready to test in its destination.",
-  "review": "Check source code, structured text, and the destination workflow, malformed input, escaped values, and destination-specific rules before relying on the result.",
-  "bestFor": "Small and medium source code, structured text, and the destination workflow samples used for debugging, documentation, migration preparation, review, and reproducible tests.",
+  "title": "Starter Code Template Builder",
+  "h1": "Starter Code Template Builder",
+  "description": "Create a fixed starter template in one of six supported languages. Your label names the example; requested behavior is not implemented.",
+  "intro": "Starter Code Template Builder selects a fixed template for JavaScript, TypeScript, Python, Java, Go, or SQL. A short label changes a name or comment. It does not understand a requested feature or implement it: the template remains a starting point that you must edit and test.",
+  "audience": "Developers and learners who want a small, editable language starter",
+  "input": "A short template label, such as order handler, and one of the six supported target languages shown in the selector.",
+  "outcome": "A fixed starter example with a name or comment derived from the label; application-specific behavior still needs to be implemented.",
+  "review": "Read the entire template before using it. The example does not implement the label, validate a business requirement, or include your project dependencies.",
+  "bestFor": "Beginning a small practice file or scratch example when a fixed template is sufficient and you plan to write the behavior yourself.",
   "steps": [
-    "Paste a representative source code, structured text, and the destination workflow from the task you are working on.",
-    "Run Code Generator and compare the first meaningful change with the source.",
-    "Inspect source code, structured text, and the destination workflow plus any destination-specific constraints.",
-    "Copy or download the result, then validate it in the editor, runtime, API, form, or publishing system where it will be used."
+    "Choose JavaScript, TypeScript, Python, Java, Go, or SQL.",
+    "Enter a short label used to name or annotate the template.",
+    "Choose Create Template and inspect the fixed example in the output panel.",
+    "Download the text, add your required logic, and compile or test it in your own project."
   ],
   "useCases": [
-    "Code Generator for a real development or integration task rather than a synthetic keyword example.",
-    "Preparing Code Generator input and output for a bug report, documentation page, test fixture, or technical handoff.",
-    "Using Code Generator to compare the source and result before a migration, import, release, or review.",
-    "Code Generator helps catch structural or meaning-changing mistakes before the output reaches another system."
+    "Starting a TypeScript scratch function with a label you recognize.",
+    "Creating a Python practice file to edit locally.",
+    "Comparing the shapes of small JavaScript and Go starter examples.",
+    "Preparing a SQL query skeleton before choosing real tables, fields, and conditions."
   ],
-  "examples": [
-    {
-      "title": "Code Generator with a representative sample",
-      "description": "This Code Generator example uses source code, structured text, and the destination workflow that resembles a small production fixture, so the main change can be checked line by line.",
-      "input": "Create a TypeScript function that groups orders by status.",
-      "output": "function groupByStatus(orders: Order[]) {\n  return Object.groupBy(orders, order => order.status);\n}"
-    },
-    {
-      "title": "Code Generator edge-case review",
-      "description": "The second Code Generator pass focuses on the part most likely to fail: nested values, escaping, or destination rules.",
-      "input": "Create a TypeScript function that groups orders by status.\n\nReview case: preserve empty, repeated, or non-ASCII values where applicable.",
-      "output": "function groupByStatus(orders: Order[]) {\n  return Object.groupBy(orders, order => order.status);\n}\n\nReview note: confirm this result in the destination workflow."
-    }
+  "commonMistakes": [
+    "Writing a feature request and expecting an implementation of that request.",
+    "Assuming the starter has been compiled against your project.",
+    "Copying the sample unchanged into production without adding the required behavior."
   ],
   "tips": [
-    "Keep the original Code Generator input beside the result until the destination check passes.",
-    "Use realistic source code, structured text, and the destination workflow instead of a one-word sample when validating Code Generator.",
-    "Do not assume the visual cleanup from Code Generator proves that source code, structured text, and the destination workflow is valid.",
-    "Run the normal project, API, schema, browser, or editorial validation after using Code Generator."
+    "Use a label rather than a multi-paragraph feature request.",
+    "Replace the sample pass-through behavior with your implementation.",
+    "Add imports, types, and tests required by your actual environment.",
+    "SQL templates require you to replace example table and column names."
   ],
   "faq": [
     {
-      "question": "Who uses Code Generator?",
-      "answer": "Developers, QA engineers, code reviewers, and technical writers use Code Generator when they need to generate source code, structured text, and the destination workflow before continuing work in another editor, system, or document."
+      "question": "Does a natural-language request become working code?",
+      "answer": "No. Each supported language has a fixed template. The supplied label changes only names or comments, not program logic."
     },
     {
-      "question": "What should I paste into Code Generator?",
-      "answer": "Paste a focused but representative sample of source code, structured text, and the destination workflow into Code Generator. Include the nesting, punctuation, characters, or edge cases that affect the real task."
+      "question": "Which languages have a starter?",
+      "answer": "The builder offers JavaScript, TypeScript, Python, Java, Go, and SQL templates. Other language targets are unavailable."
     },
     {
-      "question": "What does Code Generator change?",
-      "answer": "Code Generator changes the representation needed for this task. Compare the output with the source to confirm that values and intended meaning remain correct."
+      "question": "Why does the generated function return its input?",
+      "answer": "The pass-through example is intentional scaffolding. You must replace it with the desired behavior and add tests."
     },
     {
-      "question": "What should I check after using Code Generator?",
-      "answer": "After Code Generator, review source code, structured text, and the destination workflow, escaped values, malformed input, and the rules enforced by the destination system."
+      "question": "Is this connected to an AI model?",
+      "answer": "No model is connected. Template selection and label formatting happen locally in your browser."
     },
     {
-      "question": "Can I use the Code Generator output in production?",
-      "answer": "Use the Code Generator result as reviewed working output, then run the destination system's normal validation, tests, schema checks, or editorial review before production use."
-    },
-    {
-      "question": "Does Code Generator store my input?",
-      "answer": "Code Generator has no account or saved-history feature. Even so, remove passwords, private keys, session cookies, personal data, and production secrets before using any online tool."
+      "question": "Does the download have the target language extension?",
+      "answer": "The builder downloads starter-template.txt. Choose the appropriate file extension and project layout when you save it in your own development environment."
     }
   ],
-  "relatedTools": [
-    "code-converter",
-    "code-explainer",
-    "comment-remover",
-    "code-checker",
-    "code-to-pdf",
-    "code-formatter"
+  "examples": [
+    {
+      "title": "TypeScript starter with a label",
+      "description": "Target language: TypeScript. The label order handler names the generic template; the example does not handle orders.",
+      "input": "order handler",
+      "output": "// Starter template only; the requested behavior is not implemented.\n/** order handler */\nexport function generated_orderHandler<T>(value: T): T {\n  if (value === null || value === undefined) {\n    throw new Error(\"value is required\");\n  }\n  return value;\n}\n\nconsole.log(generated_orderHandler(\"sample\"));",
+      "sourceLanguage": "JavaScript",
+      "targetLanguage": "TypeScript"
+    },
+    {
+      "title": "Python starter with a different label",
+      "description": "Target language: Python. The output demonstrates the fixed pass-through template with a new function name.",
+      "input": "greeting",
+      "output": "# Starter template only; the requested behavior is not implemented.\n# greeting\ndef generated_greeting(value):\n    if value is None:\n        raise ValueError(\"value is required\")\n    return value\n\n\nif __name__ == \"__main__\":\n    print(generated_greeting(\"sample\"))",
+      "sourceLanguage": "JavaScript",
+      "targetLanguage": "Python"
+    }
   ],
   "keywords": [
-    "code generator",
-    "code generator online",
-    "generate source code, structured text, and the destination workflow",
-    "code tool",
-    "browser based tool"
+    "starter code template",
+    "fixed code scaffold",
+    "TypeScript starter",
+    "Python starter template"
   ],
-  "h1": "Code Generator",
-  "commonMistakes": [
-    "Running Code Generator with a sample that does not represent the real input.",
-    "Using the Code Generator result without comparing it with the original source.",
-    "Skipping validation in the editor, runtime, API, or document that receives the output."
+  "relatedTools": [
+    "json-formatter",
+    "javascript-formatter",
+    "base64-encode"
   ],
-  "updatedAt": "2026-07-28",
-  "seoScore": 100
+  "updatedAt": "2026-11-08",
+  "seoScore": 40
 }

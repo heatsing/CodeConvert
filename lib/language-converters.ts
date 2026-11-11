@@ -19,8 +19,8 @@ export function languageConverterSlug(fromLanguage: string, toLanguage: string) 
 export function makeLanguageConverterTool(fromLanguage: string, toLanguage: string): DirectoryTool {
   return {
     name: `${fromLanguage} to ${toLanguage} Converter`,
-    description: `Convert ${fromLanguage} code to ${toLanguage} code`,
-    headerDescription: `${fromLanguage} to ${toLanguage} Converter helps you turn source code from ${fromLanguage} into ${toLanguage} with a clean two-panel editor, language-aware sample output, copy, download, and file upload support.`,
+    description: `${fromLanguage} to ${toLanguage} conversion is not implemented`,
+    headerDescription: `Automatic ${fromLanguage} to ${toLanguage} translation is unavailable. This page does not generate destination code.`,
     category: "Code",
     href: `/${languageConverterSlug(fromLanguage, toLanguage)}`,
     iconName: "code",

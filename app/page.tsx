@@ -2,12 +2,12 @@ import type { Metadata } from "next";
 import { HomeDirectory } from "@/components/home-directory";
 import { directoryTools } from "@/lib/home-tools";
 import { buildJsonLdScripts, buildMetadata, buildOrganizationJsonLd } from "@/lib/seo";
-import { shouldIndexDirectoryTool } from "@/lib/seo-quality";
+import { isDiscoverableTool } from "@/lib/tool-capabilities";
 import { siteLogoUrl, siteUrl } from "@/lib/site";
 
 export const metadata: Metadata = buildMetadata({
-  title: "Quick Code Conversion Tools",
-  description: "Free online code tools for converting, encoding, decoding, formatting, checking, generating, and cleaning developer text from one fast workspace.",
+  title: "Browser Developer Tools",
+  description: "Encode and decode text, format code, convert JSON and CSV, and clean source comments with tested local tools.",
   path: "",
   keywords: ["online code tools", "developer tools", "code converter", "base64 encode", "json formatter"]
 });
@@ -17,7 +17,7 @@ export default function Page() {
     "@context": "https://schema.org",
     "@type": "ItemList",
     name: "Free online code tools",
-    itemListElement: directoryTools.filter(shouldIndexDirectoryTool).slice(0, 60).map((tool, index) => ({
+    itemListElement: directoryTools.filter(isDiscoverableTool).map((tool, index) => ({
       "@type": "ListItem",
       position: index + 1,
       name: tool.name,

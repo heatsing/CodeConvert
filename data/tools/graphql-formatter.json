@@ -20,20 +20,7 @@
     "Using Graphql Formatter to compare the source and result before a migration, import, release, or review.",
     "Graphql Formatter helps catch structural or meaning-changing mistakes before the output reaches another system."
   ],
-  "examples": [
-    {
-      "title": "Graphql Formatter with a representative sample",
-      "description": "This Graphql Formatter example uses GraphQL operations, variables, fragments, and selection sets that resembles a small production fixture, so the main change can be checked line by line.",
-      "input": "mutation UpdateOrder($id:ID!,$status:String!){updateOrder(id:$id,status:$status){id status updatedAt}}",
-      "output": "mutation UpdateOrder($id: ID!, $status: String!) {\n  updateOrder(id: $id, status: $status) {\n    id\n    status\n    updatedAt\n  }\n}"
-    },
-    {
-      "title": "Graphql Formatter edge-case review",
-      "description": "The second Graphql Formatter pass focuses on the part most likely to fail: nested values, escaping, or destination rules.",
-      "input": "mutation UpdateOrder($id:ID!,$status:String!){updateOrder(id:$id,status:$status){id status updatedAt}}\n\nReview case: preserve empty, repeated, or non-ASCII values where applicable.",
-      "output": "mutation UpdateOrder($id: ID!, $status: String!) {\n  updateOrder(id: $id, status: $status) {\n    id\n    status\n    updatedAt\n  }\n}\n\nReview note: confirm this result in the destination workflow."
-    }
-  ],
+  "examples": [],
   "tips": [
     "Keep the original Graphql Formatter input beside the result until the destination check passes.",
     "Use realistic GraphQL operations, variables, fragments, and selection sets instead of a one-word sample when validating Graphql Formatter.",
@@ -87,6 +74,6 @@
     "Using the Graphql Formatter result without comparing it with the original source.",
     "Skipping validation in the editor, runtime, API, or document that receives the output."
   ],
-  "updatedAt": "2026-07-28",
+  "updatedAt": "2026-11-08",
   "seoScore": 100
 }

@@ -20,20 +20,7 @@
     "Using Remove Line Breaks to compare the source and result before a migration, import, release, or review.",
     "Remove Line Breaks helps catch structural or meaning-changing mistakes before the output reaches another system."
   ],
-  "examples": [
-    {
-      "title": "Remove Line Breaks with a representative sample",
-      "description": "This Remove Line Breaks example uses working text copied from documents, forms, spreadsheets, email, or a CMS that resembles a small production fixture, so the main change can be checked line by line.",
-      "input": "A sentence copied from a PDF\nwraps before the paragraph\nis actually finished.",
-      "output": "A sentence copied from a PDF wraps before the paragraph is actually finished."
-    },
-    {
-      "title": "Remove Line Breaks edge-case review",
-      "description": "The second Remove Line Breaks pass focuses on the part most likely to fail: intentional spacing and punctuation.",
-      "input": "A sentence copied from a PDF\nwraps before the paragraph\nis actually finished.\n\nReview case: preserve empty, repeated, or non-ASCII values where applicable.",
-      "output": "A sentence copied from a PDF wraps before the paragraph is actually finished.\n\nReview note: confirm this result in the destination workflow."
-    }
-  ],
+  "examples": [],
   "tips": [
     "Keep the original Remove Line Breaks input beside the result until the destination check passes.",
     "Use realistic working text copied from documents, forms, spreadsheets, email, or a CMS instead of a one-word sample when validating Remove Line Breaks.",
@@ -87,6 +74,6 @@
     "Using the Remove Line Breaks result without comparing it with the original source.",
     "Skipping validation in the editor, runtime, API, or document that receives the output."
   ],
-  "updatedAt": "2026-07-28",
+  "updatedAt": "2026-11-08",
   "seoScore": 100
 }

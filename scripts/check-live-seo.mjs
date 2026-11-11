@@ -1,3 +1,4 @@
+import { getToolCapability } from "../lib/tool-capabilities.ts";
 const baseUrl = (process.env.SEO_BASE_URL || "http://127.0.0.1:3000").replace(/\/$/, "");
 
 function values(xml, tag) {
@@ -14,6 +15,7 @@ const descriptions = new Map();
 
 for (const canonicalUrl of urls) {
   const url = new URL(canonicalUrl);
+  if (url.pathname !== "/" && !getToolCapability(url.pathname).indexable) failures.push(`${url.pathname}: sitemap lists an unaccepted tool`);
   const response = await fetch(`${baseUrl}${url.pathname}`, { redirect: "manual" });
   const html = await response.text();
   const title = html.match(/<title>([^<]*)<\/title>/i)?.[1] ?? "";
@@ -57,6 +59,24 @@ for (const pathname of ghostChecks) {
 
 const codelf = await fetch(`${baseUrl}/codelf`, { redirect: "manual" });
 if (codelf.status !== 200) failures.push(`/codelf: expected 200, received ${codelf.status}`);
+
+const homepage = await (await fetch(baseUrl)).text();
+const homepageIds = new Set([...homepage.matchAll(/\bid="([^"]+)"/g)].map((match) => match[1]));
+for (const match of homepage.matchAll(/<a\b[^>]*href="\/?#([^"]+)"/g)) {
+  if (!homepageIds.has(match[1])) failures.push(`#${match[1]}: homepage navigation has no destination`);
+}
+const homepageLinks = [...homepage.matchAll(/<a\b[^>]*href="(\/[^"#?]+)"/g)].map((match) => match[1]);
+for (const path of homepageLinks) {
+  if (["/privacy-policy", "/terms-of-service", "/sitemap.xml"].includes(path)) continue;
+  if (!getToolCapability(path).discoverable) failures.push(`${path}: unaccepted tool appears on homepage`);
+}
+for (const path of ["/code-converter", "/code-generator", "/css-minifier", "/sql-formatter", "/regex-generator", "/css-to-inline", "/python-to-rust-converter"]) {
+  const response = await fetch(`${baseUrl}${path}`);
+  const html = await response.text();
+  if (response.status !== 200) failures.push(`${path}: existing URL must remain available`);
+  if (!/<meta name="robots" content="[^"]*noindex/.test(html)) failures.push(`${path}: limited/unavailable page must be noindex`);
+  if (urls.some((url) => new URL(url).pathname === path)) failures.push(`${path}: limited/unavailable page must not be in sitemap`);
+}
 
 if (failures.length) {
   failures.forEach((failure) => console.error(`Error: ${failure}`));

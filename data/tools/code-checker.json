@@ -1,92 +1,88 @@
 {
   "slug": "code-checker",
-  "title": "Code Checker",
-  "description": "Code Checker helps people validate source code, structured text, and the destination workflow and review the result before using it in another system.",
-  "intro": "Code Checker is for a concrete handoff: take source code, structured text, and the destination workflow from a real task, produce the form the next editor, API, document, or workflow expects, and keep enough context to verify what changed.",
-  "audience": "Developers, QA engineers, code reviewers, and technical writers",
-  "input": "A representative sample of source code, structured text, and the destination workflow copied from the API, file, codebase, log, document, or request involved in the task.",
-  "outcome": "A code checker result that preserves the intended meaning and is ready to test in its destination.",
-  "review": "Check source code, structured text, and the destination workflow, malformed input, escaped values, and destination-specific rules before relying on the result.",
-  "bestFor": "Small and medium source code, structured text, and the destination workflow samples used for debugging, documentation, migration preparation, review, and reproducible tests.",
+  "title": "Code Heuristic Check",
+  "h1": "Code Heuristic Check",
+  "description": "Flag keyword patterns, long lines, and delimiter counts for manual review. This heuristic check does not compile code or certify it as secure.",
+  "intro": "Code Heuristic Check flags a small set of text patterns: dynamic evaluation, loose equality, maintenance markers, possible credentials, long lines, and mismatched delimiter counts. It does not compile the program or inspect all security risks. Review each reported match in context and use the project tooling for correctness checks.",
+  "audience": "Developers performing a preliminary manual review of short source excerpts",
+  "input": "A focused source snippet to scan for the listed text patterns, with a language label for the resulting report.",
+  "outcome": "A text report listing matching lines and delimiter-count warnings, or stating that no built-in heuristic pattern matched.",
+  "review": "False positives and false negatives are expected from text rules. Verify findings manually and rely on compiler, linter, and security tooling for deeper checks.",
+  "bestFor": "A quick preliminary scan of a small snippet before a normal code review, without treating a clean result as a correctness or safety guarantee.",
   "steps": [
-    "Paste a representative source code, structured text, and the destination workflow from the task you are working on.",
-    "Run Code Checker and compare the first meaningful change with the source.",
-    "Inspect source code, structured text, and the destination workflow plus any destination-specific constraints.",
-    "Copy or download the result, then validate it in the editor, runtime, API, form, or publishing system where it will be used."
+    "Choose the language label and paste the source excerpt.",
+    "Choose Run Heuristic Check to apply the built-in text rules.",
+    "Inspect each flagged line in the original context.",
+    "Run the project compiler, tests, linter, and relevant security checks separately."
   ],
   "useCases": [
-    "Code Checker for a real development or integration task rather than a synthetic keyword example.",
-    "Preparing Code Checker input and output for a bug report, documentation page, test fixture, or technical handoff.",
-    "Using Code Checker to compare the source and result before a migration, import, release, or review.",
-    "Code Checker helps catch structural or meaning-changing mistakes before the output reaches another system."
+    "Spotting an eval call for closer manual review.",
+    "Finding TODO or FIXME markers in a pasted excerpt.",
+    "Noticing long lines before editing a documentation example.",
+    "Checking delimiter counts as a preliminary signal for malformed snippets."
   ],
-  "examples": [
-    {
-      "title": "Code Checker with a representative sample",
-      "description": "This Code Checker example uses source code, structured text, and the destination workflow that resembles a small production fixture, so the main change can be checked line by line.",
-      "input": "function ratio(total, count) { return total / count; }",
-      "output": "Review: handle count === 0 before dividing."
-    },
-    {
-      "title": "Code Checker edge-case review",
-      "description": "The second Code Checker pass focuses on the part most likely to fail: nested values, escaping, or destination rules.",
-      "input": "function ratio(total, count) { return total / count; }\n\nReview case: preserve empty, repeated, or non-ASCII values where applicable.",
-      "output": "Review: handle count === 0 before dividing.\n\nReview note: confirm this result in the destination workflow."
-    }
+  "commonMistakes": [
+    "Calling a no-match result proof that code is secure.",
+    "Treating delimiter counts as actual syntax validation.",
+    "Automatically changing every flagged line without reading its context."
   ],
   "tips": [
-    "Keep the original Code Checker input beside the result until the destination check passes.",
-    "Use realistic source code, structured text, and the destination workflow instead of a one-word sample when validating Code Checker.",
-    "Do not assume the visual cleanup from Code Checker proves that source code, structured text, and the destination workflow is valid.",
-    "Run the normal project, API, schema, browser, or editorial validation after using Code Checker."
+    "Text inside literals and comments may trigger a rule.",
+    "A rule match is a review lead, not a confirmed vulnerability.",
+    "Use real secrets only in approved local tooling, never in sample fixtures.",
+    "Keep test and compiler results alongside any heuristic report."
   ],
   "faq": [
     {
-      "question": "Who uses Code Checker?",
-      "answer": "Developers, QA engineers, code reviewers, and technical writers use Code Checker when they need to validate source code, structured text, and the destination workflow before continuing work in another editor, system, or document."
+      "question": "Is this a security audit?",
+      "answer": "No. It scans a limited list of text patterns and cannot establish that source code is secure."
     },
     {
-      "question": "What should I paste into Code Checker?",
-      "answer": "Paste a focused but representative sample of source code, structured text, and the destination workflow into Code Checker. Include the nesting, punctuation, characters, or edge cases that affect the real task."
+      "question": "Does a clean report mean that code compiles?",
+      "answer": "No. A no-match result only means that the built-in patterns did not produce a warning."
     },
     {
-      "question": "What does Code Checker change?",
-      "answer": "Code Checker changes the representation needed for this task. Compare the output with the source to confirm that values and intended meaning remain correct."
+      "question": "Why can a quoted string trigger a warning?",
+      "answer": "The scanner reads text patterns without building a full language-specific syntax tree. Inspect each match manually."
     },
     {
-      "question": "What should I check after using Code Checker?",
-      "answer": "After Code Checker, review source code, structured text, and the destination workflow, escaped values, malformed input, and the rules enforced by the destination system."
+      "question": "Does the checker execute my code?",
+      "answer": "No. It examines the input as text in the browser and does not call a runtime service."
     },
     {
-      "question": "Can I use the Code Checker output in production?",
-      "answer": "Use the Code Checker result as reviewed working output, then run the destination system's normal validation, tests, schema checks, or editorial review before production use."
-    },
-    {
-      "question": "Does Code Checker store my input?",
-      "answer": "Code Checker has no account or saved-history feature. Even so, remove passwords, private keys, session cookies, personal data, and production secrets before using any online tool."
+      "question": "Which checks should follow this scan?",
+      "answer": "Use the compiler or interpreter, automated tests, a language-specific linter, and the security checks appropriate to the application."
     }
   ],
-  "relatedTools": [
-    "code-converter",
-    "code-generator",
-    "code-explainer",
-    "comment-remover",
-    "code-to-pdf",
-    "code-formatter"
+  "examples": [
+    {
+      "title": "Dynamic evaluation warning",
+      "description": "Language label: JavaScript. The eval pattern is a reason for manual review; the checker does not execute this input.",
+      "input": "eval(payload);",
+      "output": "Code check report (JavaScript)\n\n1 issue found:\n- Line 1: Avoid eval() with untrusted input.\n\nChecks performed\n- Delimiter balance\n- Risky dynamic execution\n- Loose equality and declaration style\n- Hard-coded credential patterns\n- Maintenance markers and long lines\n\nThis rule-based review does not replace the compiler, tests, or a language-specific linter.",
+      "sourceLanguage": "JavaScript",
+      "targetLanguage": "Python"
+    },
+    {
+      "title": "No heuristic patterns matched",
+      "description": "Language label: JavaScript. A no-match report is not a compiler or security approval.",
+      "input": "const result = 1;",
+      "output": "Code check report (JavaScript)\n\nNo issues matched the built-in heuristic patterns.\n\nChecks performed\n- Delimiter balance\n- Risky dynamic execution\n- Loose equality and declaration style\n- Hard-coded credential patterns\n- Maintenance markers and long lines\n\nThis rule-based review does not replace the compiler, tests, or a language-specific linter.",
+      "sourceLanguage": "JavaScript",
+      "targetLanguage": "Python"
+    }
   ],
   "keywords": [
-    "code checker",
-    "code checker online",
-    "validate source code, structured text, and the destination workflow",
-    "code tool",
-    "browser based tool"
+    "code heuristic check",
+    "source pattern scan",
+    "manual code review aid",
+    "delimiter count warning"
   ],
-  "h1": "Code Checker",
-  "commonMistakes": [
-    "Running Code Checker with a sample that does not represent the real input.",
-    "Using the Code Checker result without comparing it with the original source.",
-    "Skipping validation in the editor, runtime, API, or document that receives the output."
+  "relatedTools": [
+    "json-formatter",
+    "javascript-formatter",
+    "base64-encode"
   ],
-  "updatedAt": "2026-07-28",
-  "seoScore": 100
+  "updatedAt": "2026-11-08",
+  "seoScore": 40
 }

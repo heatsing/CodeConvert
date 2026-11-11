@@ -33,12 +33,7 @@ export function getToolDescription(tool: DirectoryTool) {
 }
 
 export function getLanguageConverterDescription(tool: DirectoryTool) {
-  const pair = getConversionPair(tool.name);
-  if (pair) {
-    return `Convert ${pair.from} code to ${pair.to} code online for free. Paste your source code, run the converter, then copy or download clean ${pair.to} output from a fast browser workspace.`;
-  }
-
-  return `${tool.name} helps you turn source code from one programming language into another with a clean two-panel editor, sample output, copy, download, and file upload support.`;
+  return getDirectoryToolHeader(tool).description;
 }
 
 function withBrand(title: string) {

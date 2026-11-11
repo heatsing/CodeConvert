@@ -1,6 +1,8 @@
 import { getCategoryLabel, type DirectoryTool } from "@/lib/home-tools";
 import type { OnlineTool } from "@/lib/online-tools";
 import type { ToolConfig } from "@/lib/tools";
+import { LANGUAGES } from "@/lib/languages";
+import { getToolCapability } from "@/lib/tool-capabilities";
 
 export type ToolHeaderCopy = {
   eyebrow: string;
@@ -18,12 +20,9 @@ function getConversionPair(title: string) {
   };
 }
 
-function cleanToolName(name: string) {
-  return name.replace(/\s+/g, " ").trim();
-}
-
-function lowerFirst(value: string) {
-  return value ? `${value.charAt(0).toLowerCase()}${value.slice(1)}` : value;
+function languageConversionPair(title: string) {
+  const pair = getConversionPair(title);
+  return pair && LANGUAGES.some((language) => language === pair.from) && LANGUAGES.some((language) => language === pair.to) ? pair : null;
 }
 
 function capitalizeSentence(value: string) {
@@ -320,6 +319,18 @@ function directoryDescription(tool: DirectoryTool) {
 }
 
 export function getDirectoryToolHeader(tool: DirectoryTool): ToolHeaderCopy {
+  const pair = languageConversionPair(tool.name);
+  if (pair) return {
+    eyebrow: "Unavailable conversion",
+    title: `${pair.from} to ${pair.to}: Conversion Unavailable`,
+    description: `Automatic translation from ${pair.from} to ${pair.to} is not implemented. This page cannot produce translated code; use your own implementation and tests for a language migration.`
+  };
+  const capability = getToolCapability(tool.href);
+  if (capability.status === "unavailable") return {
+    eyebrow: "Unavailable tool",
+    title: `${tool.name}: Unavailable`,
+    description: capability.reason
+  };
   return {
     eyebrow: getCategoryLabel(tool.category),
     title: directoryTitle(tool),
@@ -363,6 +374,11 @@ function onlineDescription(tool: OnlineTool) {
 }
 
 export function getOnlineToolHeader(tool: OnlineTool): ToolHeaderCopy {
+  if (!["json", "regex", "ascii"].includes(tool.mode)) return {
+    eyebrow: "Limited workspace",
+    title: `${tool.name}: Execution Unavailable`,
+    description: "This editor has no execution service connected. It does not run code, send requests, query databases, or generate results."
+  };
   return {
     eyebrow: "Developer Tools",
     title: onlineTitle(tool),
@@ -371,45 +387,22 @@ export function getOnlineToolHeader(tool: OnlineTool): ToolHeaderCopy {
 }
 
 export function getCoreToolHeader(tool: ToolConfig): ToolHeaderCopy {
-  const titles: Record<string, string> = {
-    "code-converter": "Convert Code Between Programming Languages Online",
-    "code-generator": "Generate Useful Code from Plain English Prompts",
-    "code-explainer": "Explain Code in Clear, Practical Language",
-    "comment-remover": "Remove Comments from Code Without Changing the Logic",
-    "code-checker": "Check Code for Bugs, Readability, and Practical Issues",
-    "code-to-pdf": "Prepare Code for Clean PDF-Style Documents"
-  };
-
-  const descriptions: Record<string, string> = {
-    "code-converter": "Convert source code from one programming language to another in a clean two-panel workspace. Paste or upload your snippet, choose the source and target languages, then copy or download the generated output for review.",
-    "code-generator": "Describe what you want to build and generate starter code in your chosen language. Use the result for prototypes, examples, tests, and implementation notes before connecting the workflow to a real AI API.",
-    "code-explainer": "Paste unfamiliar code and turn it into a readable explanation of the main behavior, inputs, outputs, and likely edge cases. Use it to review snippets faster and understand logic before editing.",
-    "comment-remover": "Remove inline and block comments from code while keeping the original structure easy to review. Clean pasted snippets for examples, documentation, or compact sharing without manually editing every line.",
-    "code-checker": "Review code for practical issues, syntax concerns, readability problems, and improvement ideas. Paste or upload a snippet, run the checker, then use the output as a focused debugging checklist.",
-    "code-to-pdf": "Prepare source code as tidy document-style text that can be copied, downloaded, or used in a future PDF export workflow. Keep formatting readable for reports, handoffs, and code review notes."
-  };
-
   return {
-    eyebrow: "Free Code Tool",
-    title: titles[tool.slug] ?? tool.title,
-    description: descriptions[tool.slug] ?? `${cleanToolName(tool.name)} helps you ${lowerFirst(tool.description)}. Paste your input, run the tool, then copy or download the result from a clean browser workspace.`
+    eyebrow: "Local Code Tool",
+    title: tool.title,
+    description: tool.description
   };
 }
 
 export function getCoreToolMetaDescription(tool: ToolConfig) {
-  const descriptions: Record<string, string> = {
-    "code-converter": "Free code converter online. Convert code between programming languages, upload files, then copy or download clean output in your browser.",
-    "code-generator": "Free code generator online. Turn prompts into starter code for popular languages, then copy or download editable output. No signup required.",
-    "code-explainer": "Free code explainer online. Paste code to get a clear explanation of behavior, inputs, outputs, and edge cases in a fast browser workspace.",
-    "comment-remover": "Free comment remover online. Remove inline and block comments from code, keep structure readable, then copy or download the cleaned result.",
-    "code-checker": "Free code checker online. Inspect snippets for bugs, syntax issues, readability problems, and improvement ideas before editing or sharing.",
-    "code-to-pdf": "Free code to PDF prep tool online. Format source code as clean document-style text for reports, handoffs, downloads, and future PDF export."
-  };
-
-  return descriptions[tool.slug] ?? trimSentence(`Free ${tool.name} online. ${tool.description} Paste input, run the tool, then copy or download the result.`);
+  return trimSentence(tool.description);
 }
 
 export function getDirectoryToolMetaDescription(tool: DirectoryTool) {
+  const languagePair = languageConversionPair(tool.name);
+  if (languagePair) return `${languagePair.from} to ${languagePair.to} conversion is unavailable. Automatic code translation is not implemented on this page.`;
+  const capability = getToolCapability(tool.href);
+  if (capability.status === "unavailable") return trimSentence(`${tool.name} is unavailable. ${capability.reason}`);
   const specificDescription = specificDirectoryMetaDescription(tool);
   if (specificDescription) return trimSentence(specificDescription);
 
@@ -432,6 +425,7 @@ export function getDirectoryToolMetaDescription(tool: DirectoryTool) {
 }
 
 export function getOnlineToolMetaDescription(tool: OnlineTool) {
+  if (!["json", "regex", "ascii"].includes(tool.mode)) return trimSentence(`${tool.name} has no execution service. Code execution, live requests, database queries, and generated results are unavailable.`);
   if (tool.name.toLowerCase().includes("code to image")) {
     return "Free Code to Image tool online. Create shareable code image previews for docs, tutorials, and social posts, then copy or download the result.";
   }

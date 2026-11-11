@@ -20,20 +20,7 @@
     "Using JavaScript Formatter to compare the source and result before a migration, import, release, or review.",
     "JavaScript Formatter helps catch structural or meaning-changing mistakes before the output reaches another system."
   ],
-  "examples": [
-    {
-      "title": "JavaScript Formatter with a representative sample",
-      "description": "This JavaScript Formatter example uses JavaScript functions, expressions, modules, and strings that resembles a small production fixture, so the main change can be checked line by line.",
-      "input": "async function load(id){const response=await fetch(`/api/items/${id}`);return response.json()}",
-      "output": "async function load(id) {\n  const response = await fetch(`/api/items/${id}`);\n  return response.json();\n}"
-    },
-    {
-      "title": "JavaScript Formatter edge-case review",
-      "description": "The second JavaScript Formatter pass focuses on the part most likely to fail: nested values, escaping, or destination rules.",
-      "input": "async function load(id){const response=await fetch(`/api/items/${id}`);return response.json()}\n\nReview case: preserve empty, repeated, or non-ASCII values where applicable.",
-      "output": "async function load(id) {\n  const response = await fetch(`/api/items/${id}`);\n  return response.json();\n}\n\nReview note: confirm this result in the destination workflow."
-    }
-  ],
+  "examples": [],
   "tips": [
     "Keep the original JavaScript Formatter input beside the result until the destination check passes.",
     "Use realistic JavaScript functions, expressions, modules, and strings instead of a one-word sample when validating JavaScript Formatter.",
@@ -86,6 +73,6 @@
     "Using the JavaScript Formatter result without comparing it with the original source.",
     "Skipping validation in the editor, runtime, API, or document that receives the output."
   ],
-  "updatedAt": "2026-07-28",
+  "updatedAt": "2026-11-08",
   "seoScore": 100
 }

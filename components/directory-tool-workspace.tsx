@@ -7,8 +7,10 @@ import { Button } from "@/components/ui/button";
 import { getCategoryLabel, type DirectoryTool } from "@/lib/home-tools";
 import { useI18n } from "@/lib/i18n";
 import { getDirectoryToolHeader } from "@/lib/tool-page-copy";
+import verifiedExamples from "@/data/verified-tool-examples.json";
 import { toolIcons } from "@/lib/tool-icons";
 import { parseRegexLiteral, runSafeRegex, type SafeRegexOperation } from "@/lib/safe-regex";
+import { encodeBase64Text, decodeHtmlEntities, decodeUrlText, unixSecondsToIso, dateToUnixSeconds } from "@/lib/browser-text-codecs";
 import { assertToolInput, assertToolOutput, maxToolInputLength, binaryToText, textToBinary, textToHex, hexToText, unicodeEncode, unicodeDecode, reverseText, removeCharacters, csvRows, csvToJson, jsonToCsv, csvCell, baseConvert, runLengthCodec, digestText, generatePassword, decodeJwt, parseXml, xpathLookup, jsonToXml, xmlToJson, unavailableToolReason, formatSource, minifyJavaScript, compressText, jsonToClass, parseJsonSafely, formatJson, minifyJson, decodeBase64Text, replaceLiteralText, urlBatch } from "@/lib/tool-processors";
 
 function localizedCategoryLabel(category: string, t: (key: string) => string) {
@@ -102,6 +104,10 @@ function defaultTextInput(tool: DirectoryTool) {
 }
 
 function sampleFor(tool: DirectoryTool) {
+  const slug = tool.href.slice(1);
+  if (Object.hasOwn(verifiedExamples, slug)) {
+    return (verifiedExamples as Record<string, { input: string }[]>)[slug][0].input;
+  }
   const name = tool.name.toLowerCase();
   if (name.includes("base64 to json")) return "eyJuYW1lIjoiQ29kZVRvb2xzIiwiaXRlbXMiOlsxLDIsM119";
   if (name.includes("base64 to xml")) return "PHJvb3Q+SGVsbG88L3Jvb3Q+";
@@ -558,12 +564,7 @@ function htmlEncode(value: string) {
 }
 
 function htmlDecode(value: string) {
-  return value
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">")
-    .replace(/&quot;/g, "\"")
-    .replace(/&#39;/g, "'")
-    .replace(/&amp;/g, "&");
+  return decodeHtmlEntities(value);
 }
 
 function jsEncode(value: string) {
@@ -857,14 +858,14 @@ function rgbToHex(value: string) {
   return `#${parts.map((part) => Math.max(0, Math.min(255, part)).toString(16).padStart(2, "0")).join("")}`;
 }
 
-async function processTool(tool: DirectoryTool, input: string) {
+async function processTool(tool: DirectoryTool, input: string, base64Mode: "encode" | "decode" = "encode") {
   assertToolInput(input);
   const value = input;
   const name = tool.name.toLowerCase();
   const unavailable = unavailableToolReason(name);
   if (unavailable) throw new Error(unavailable);
   if (/json formatter|json beautifier/.test(name)) return formatJson(value);
-  if (/json viewer|json editor|json parser|json validator/.test(name)) return `${await formatJson(value)}\nValid JSON.`;
+  if (/json viewer|json editor|json parser|json validator/.test(name)) return formatJson(value);
 
   if (name.includes("regex generator")) throw new Error("Automatic regex generation is not available. Use Regex Tester to test an expression you provide.");
   if (/javascript minifier|minify js|code minifier/.test(name)) return minifyJavaScript(value);
@@ -920,7 +921,7 @@ async function processTool(tool: DirectoryTool, input: string) {
   if (name.includes("json to model")) return jsonToClass(value, "typescript");
 
   if (name.includes("url batch generator")) return urlBatch(value);
-  if (name.includes("javascript url encoder")) return value.includes("%") ? decodeURIComponent(value) : encodeURIComponent(value);
+  if (name.includes("javascript url encoder")) return value.includes("%") ? decodeUrlText(value) : encodeURIComponent(value);
   if (name.includes("character encoder")) return characterCodes(value);
   if (name.includes("garble")) return garbleDecode(value);
   if (name.includes("punycode")) return punycodePreview(value);
@@ -935,26 +936,15 @@ async function processTool(tool: DirectoryTool, input: string) {
   if (name.includes("reverse array")) return value.split(/[\n,]+/).map((item) => item.trim()).filter(Boolean).reverse().join("\n");
   if (name.includes("gzip text compressor") || name.includes("deflate text compressor")) return compressText(value, name.includes("gzip") ? "gzip" : "deflate");
   if (name.includes("json url encode") || name.includes("xml url encode") || name.includes("yaml url encode")) return encodeURIComponent(value);
-  if (name.includes("json url decode") || name.includes("xml url decode") || name.includes("yaml url decode")) {
-    try {
-      return decodeURIComponent(value);
-    } catch {
-      return "Invalid URL encoded input.";
-    }
-  }
-  if (name.includes("json to base64") || name.includes("xml to base64") || name.includes("yaml to base64") || name.includes("text to base64") || name.includes("base64 encode")) return btoa(unescape(encodeURIComponent(value)));
+  if (name.includes("json url decode") || name.includes("xml url decode") || name.includes("yaml url decode")) return decodeUrlText(value);
+  if (name.includes("base64 encode and decode")) return base64Mode === "decode" ? decodeBase64Text(value) : encodeBase64Text(value);
+  if (name.includes("json to base64") || name.includes("xml to base64") || name.includes("yaml to base64") || name.includes("text to base64") || name.includes("base64 encode")) return encodeBase64Text(value);
   if (name.includes("base64 to json")) return formatJson(decodeBase64Text(value));
   if (name.includes("base64 to xml") || name.includes("base64 to yaml") || name.includes("base64 to text") || name.includes("base64 decode")) return decodeBase64Text(value);
   if (name.includes("url encode")) return encodeURIComponent(value);
-  if (name.includes("url decode")) {
-    try {
-      return decodeURIComponent(value);
-    } catch {
-      return "Invalid URL encoded input.";
-    }
-  }
-  if (name.includes("html entity encode") || name.includes("html encode") || name.includes("escape html")) return htmlEncode(value);
+  if (name.includes("url decode")) return decodeUrlText(value);
   if (name.includes("html entity decode") || name.includes("html decode") || name.includes("unescape html")) return htmlDecode(value);
+  if (name.includes("html entity encode") || name.includes("html encode") || name.includes("escape html")) return htmlEncode(value);
   if (name.includes("javascript encode")) return jsEncode(value);
   if (name.includes("javascript decode")) return jsDecode(value);
   if (name.includes("unicode encode")) return unicodeEncode(value);
@@ -1010,9 +1000,8 @@ async function processTool(tool: DirectoryTool, input: string) {
   if (name.includes("hex to decimal")) return baseConvert(`16\n10\n${value.replace(/^0x/i, "")}`);
   if (name.includes("octal to decimal")) return baseConvert(`8\n10\n${value}`);
   if (name.includes("decimal to octal")) return baseConvert(`10\n8\n${value}`);
-  if (name.includes("unix to date")) return new Date(Number.parseInt(value, 10) * 1000).toISOString();
-  if (name.includes("date to unix")) return Math.floor(new Date(value).getTime() / 1000).toString();
-  if (name.includes("css to inline")) return `style="${value.replace(/\s+/g, " ").trim()}"`;
+  if (name.includes("unix to date")) return unixSecondsToIso(value);
+  if (name.includes("date to unix")) return dateToUnixSeconds(value);
   if (name.includes("inline to css")) return value.match(/style=["']([^"']+)["']/)?.[1].split(";").filter(Boolean).map((rule) => `  ${rule.trim()};`).join("\n") ?? value;
 
   if (name.includes("word counter")) return `Words: ${value.split(/\s+/).filter(Boolean).length}`;
@@ -1201,6 +1190,8 @@ export function DirectoryToolWorkspace({ tool }: { tool: DirectoryTool }) {
   const [status, setStatus] = useState("");
   const [loading, setLoading] = useState(false);
   const [textOption, setTextOption] = useState(defaultTextOption(tool));
+  const [base64Mode, setBase64Mode] = useState<"encode" | "decode">("encode");
+  const isBase64Codec = tool.name.toLowerCase() === "base64 encode and decode";
   const { t } = useI18n();
   const Icon = toolIcons[tool.iconName];
   const headerCopy = getDirectoryToolHeader(tool);
@@ -1208,9 +1199,17 @@ export function DirectoryToolWorkspace({ tool }: { tool: DirectoryTool }) {
   const availabilityNote = unavailableToolReason(tool.name);
   const eyebrow = headerCopy.eyebrow === getCategoryLabel(tool.category) ? localizedCategoryLabel(tool.category, t) : headerCopy.eyebrow;
   const inputId = useId();
+  const inputHelpId = useId();
   const outputId = useId();
   const requestId = useRef(0);
   const running = useRef(false);
+  const inputHelp = tool.name.toLowerCase().includes("unix to date")
+    ? "Enter a whole Unix timestamp in seconds, not milliseconds. The output uses UTC; mixed text is rejected."
+    : tool.name.toLowerCase().includes("date to unix")
+      ? "Use YYYY-MM-DD for midnight UTC, or an ISO date/time with Z or an explicit offset (for example 2024-02-29T12:30:00+08:00)."
+      : isBase64Codec
+        ? base64Mode === "encode" ? "Encode UTF-8 text as Base64." : "Decode Base64 containing UTF-8 text. Binary content is not supported."
+        : "";
 
   useEffect(() => () => { requestId.current += 1; }, []);
 
@@ -1219,6 +1218,7 @@ export function DirectoryToolWorkspace({ tool }: { tool: DirectoryTool }) {
     running.current = false;
     setInput(tool.category === "Text" ? defaultTextInput(tool) : sampleFor(tool));
     setTextOption(defaultTextOption(tool));
+    setBase64Mode("encode");
     setOutput("");
     setError("");
     setStatus("");
@@ -1257,12 +1257,16 @@ export function DirectoryToolWorkspace({ tool }: { tool: DirectoryTool }) {
       const payload = tool.category === "Text" ? textToolPayload(tool, input, textOption) : input;
       assertToolInput(payload);
       const protectedRegexResult = await runProtectedRegexTool(tool, payload);
-      const result = assertToolOutput(protectedRegexResult ?? await processTool(tool, payload));
+      const result = assertToolOutput(protectedRegexResult ?? await processTool(tool, payload, base64Mode));
       if (currentRequest !== requestId.current) return;
       setOutput(result);
       setStatus("Processing complete.");
     } catch (err) {
-      if (currentRequest === requestId.current) setError(err instanceof Error ? err.message : t("online.processError"));
+      if (currentRequest === requestId.current) {
+        setOutput("");
+        setStatus("");
+        setError(err instanceof Error ? err.message : t("online.processError"));
+      }
     } finally {
       if (currentRequest === requestId.current) {
         setLoading(false);
@@ -1442,6 +1446,19 @@ export function DirectoryToolWorkspace({ tool }: { tool: DirectoryTool }) {
           </div>
         </div>
 
+        {isBase64Codec && (
+          <fieldset className="mt-5 flex flex-wrap gap-4 rounded-md border p-3">
+            <legend className="px-1 text-sm font-bold">Base64 mode</legend>
+            {(["encode", "decode"] as const).map((mode) => (
+              <label key={mode} className="flex items-center gap-2 text-sm font-semibold">
+                <input type="radio" name={`${inputId}-mode`} value={mode} checked={base64Mode === mode} onChange={() => { invalidate(); setBase64Mode(mode); }} />
+                {mode === "encode" ? "Encode" : "Decode"}
+              </label>
+            ))}
+          </fieldset>
+        )}
+        {inputHelp && <p id={inputHelpId} className="mt-3 text-sm text-slate-600">{inputHelp}</p>}
+
         <div className="mt-6 grid gap-5 lg:grid-cols-2">
           <div className="grid gap-3">
             <label htmlFor={inputId} className="text-sm font-black text-slate-900">{t("online.input")}</label>
@@ -1449,6 +1466,7 @@ export function DirectoryToolWorkspace({ tool }: { tool: DirectoryTool }) {
               id={inputId}
                   aria-label={t("online.input")}
                   value={input}
+              aria-describedby={inputHelp ? inputHelpId : undefined}
               onChange={(event) => updateInput(event.target.value)}
               className="code-scrollbar min-h-[320px] resize-y rounded-md border bg-slate-50 p-4 font-mono text-sm leading-6 outline-none focus:border-blue-300 focus:bg-white focus:ring-2 focus:ring-blue-100"
               spellCheck={false}

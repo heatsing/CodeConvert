@@ -20,20 +20,7 @@
     "Using TypeScript Formatter to compare the source and result before a migration, import, release, or review.",
     "TypeScript Formatter helps catch structural or meaning-changing mistakes before the output reaches another system."
   ],
-  "examples": [
-    {
-      "title": "TypeScript Formatter with a representative sample",
-      "description": "This TypeScript Formatter example uses TypeScript types, interfaces, generics, and executable code that resembles a small production fixture, so the main change can be checked line by line.",
-      "input": "interface Order{id:number;status:'new'|'paid'};const paid=(order:Order)=>order.status==='paid';",
-      "output": "interface Order {\n  id: number;\n  status: 'new' | 'paid';\n}\n\nconst paid = (order: Order) => order.status === 'paid';"
-    },
-    {
-      "title": "TypeScript Formatter edge-case review",
-      "description": "The second TypeScript Formatter pass focuses on the part most likely to fail: nested values, escaping, or destination rules.",
-      "input": "interface Order{id:number;status:'new'|'paid'};const paid=(order:Order)=>order.status==='paid';\n\nReview case: preserve empty, repeated, or non-ASCII values where applicable.",
-      "output": "interface Order {\n  id: number;\n  status: 'new' | 'paid';\n}\n\nconst paid = (order: Order) => order.status === 'paid';\n\nReview note: confirm this result in the destination workflow."
-    }
-  ],
+  "examples": [],
   "tips": [
     "Keep the original TypeScript Formatter input beside the result until the destination check passes.",
     "Use realistic TypeScript types, interfaces, generics, and executable code instead of a one-word sample when validating TypeScript Formatter.",
@@ -86,6 +73,6 @@
     "Using the TypeScript Formatter result without comparing it with the original source.",
     "Skipping validation in the editor, runtime, API, or document that receives the output."
   ],
-  "updatedAt": "2026-07-28",
+  "updatedAt": "2026-11-08",
   "seoScore": 100
 }

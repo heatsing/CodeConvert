@@ -20,20 +20,7 @@
     "Using JSON To YAML Converter to compare the source and result before a migration, import, release, or review.",
     "JSON To YAML Converter helps catch structural or meaning-changing mistakes before the output reaches another system."
   ],
-  "examples": [
-    {
-      "title": "JSON To YAML Converter with a representative sample",
-      "description": "This JSON To YAML Converter example uses JSON objects, arrays, keys, and values that resembles a small production fixture, so the main change can be checked line by line.",
-      "input": "{\"service\":{\"name\":\"api\",\"replicas\":3}}",
-      "output": "service:\n  name: api\n  replicas: 3"
-    },
-    {
-      "title": "JSON To YAML Converter edge-case review",
-      "description": "The second JSON To YAML Converter pass focuses on the part most likely to fail: nested values, escaping, or destination rules.",
-      "input": "{\"service\":{\"name\":\"api\",\"replicas\":3}}\n\nReview case: preserve empty, repeated, or non-ASCII values where applicable.",
-      "output": "service:\n  name: api\n  replicas: 3\n\nReview note: confirm this result in the destination workflow."
-    }
-  ],
+  "examples": [],
   "tips": [
     "Keep the original JSON To YAML Converter input beside the result until the destination check passes.",
     "Use realistic JSON objects, arrays, keys, and values instead of a one-word sample when validating JSON To YAML Converter.",
@@ -87,6 +74,6 @@
     "Using the JSON To YAML Converter result without comparing it with the original source.",
     "Skipping validation in the editor, runtime, API, or document that receives the output."
   ],
-  "updatedAt": "2026-07-28",
+  "updatedAt": "2026-11-08",
   "seoScore": 100
 }

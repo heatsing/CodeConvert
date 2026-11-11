@@ -20,20 +20,7 @@
     "Using Code Diff to compare the source and result before a migration, import, release, or review.",
     "Code Diff helps catch structural or meaning-changing mistakes before the output reaches another system."
   ],
-  "examples": [
-    {
-      "title": "Code Diff with a representative sample",
-      "description": "This Code Diff example uses source code, structured text, and the destination workflow that resembles a small production fixture, so the main change can be checked line by line.",
-      "input": "Before: const limit = 10;\nAfter: const limit = 25;",
-      "output": "Line 1 changed: 10 -> 25"
-    },
-    {
-      "title": "Code Diff edge-case review",
-      "description": "The second Code Diff pass focuses on the part most likely to fail: nested values, escaping, or destination rules.",
-      "input": "Before: const limit = 10;\nAfter: const limit = 25;\n\nReview case: preserve empty, repeated, or non-ASCII values where applicable.",
-      "output": "Line 1 changed: 10 -> 25\n\nReview note: confirm this result in the destination workflow."
-    }
-  ],
+  "examples": [],
   "tips": [
     "Keep the original Code Diff input beside the result until the destination check passes.",
     "Use realistic source code, structured text, and the destination workflow instead of a one-word sample when validating Code Diff.",
@@ -87,6 +74,6 @@
     "Using the Code Diff result without comparing it with the original source.",
     "Skipping validation in the editor, runtime, API, or document that receives the output."
   ],
-  "updatedAt": "2026-07-28",
+  "updatedAt": "2026-11-08",
   "seoScore": 100
 }

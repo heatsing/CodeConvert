@@ -20,20 +20,7 @@
     "Using Regex Generator against failures and edge cases before adding the pattern to application code.",
     "Regex Generator helps catch structural or meaning-changing mistakes before the output reaches another system."
   ],
-  "examples": [
-    {
-      "title": "Regex Generator with a representative sample",
-      "description": "This Regex Generator example uses regular-expression patterns, flags, groups, and representative test text that resembles a small production fixture, so the main change can be checked line by line.",
-      "input": "Match invoice IDs such as INV-2026-0042",
-      "output": "\\bINV-\\d{4}-\\d{4}\\b"
-    },
-    {
-      "title": "Regex Generator edge-case review",
-      "description": "The second Regex Generator pass focuses on the part most likely to fail: boundaries and non-matches.",
-      "input": "Match invoice IDs such as INV-2026-0042\n\nReview case: preserve empty, repeated, or non-ASCII values where applicable.",
-      "output": "\\bINV-\\d{4}-\\d{4}\\b\n\nReview note: confirm this result in the destination workflow."
-    }
-  ],
+  "examples": [],
   "tips": [
     "Keep the original Regex Generator input beside the result until the destination check passes.",
     "Use realistic regular-expression patterns, flags, groups, and representative test text instead of a one-word sample when validating Regex Generator.",
@@ -85,6 +72,6 @@
     "Using the Regex Generator result without comparing it with the original source.",
     "Skipping validation in the editor, runtime, API, or document that receives the output."
   ],
-  "updatedAt": "2026-07-28",
+  "updatedAt": "2026-11-08",
   "seoScore": 100
 }

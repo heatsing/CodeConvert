@@ -3,10 +3,15 @@
 import { useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { Flame, Search } from "lucide-react";
-import { categories, directoryTools, frequentTools, getCategoryId, getCategoryLabel } from "@/lib/home-tools";
+import { categories, directoryTools, getCategoryId, getCategoryLabel } from "@/lib/home-tools";
+import { isDiscoverableTool } from "@/lib/tool-capabilities";
 import { useI18n } from "@/lib/i18n";
-import { developerOnlineTools, languageOnlineTools, onlineTools } from "@/lib/online-tools";
+import { developerOnlineTools, languageOnlineTools } from "@/lib/online-tools";
 import { toolIcons } from "@/lib/tool-icons";
+
+const acceptedTools = directoryTools.filter(isDiscoverableTool);
+const popularSlugs = ["json-formatter", "base64-encode-and-decode", "html-decode", "url-decode", "json-to-csv", "csv-to-json", "javascript-formatter", "comment-remover", "sha256-generator", "base64-to-json"];
+const frequentTools = popularSlugs.flatMap((slug) => acceptedTools.filter((tool) => tool.href === `/${slug}`));
 
 function shortDescription(description: string) {
   return description
@@ -75,8 +80,8 @@ export function HomeDirectory() {
       .filter((category) => category !== "Popular")
       .map((category) => ({
         category,
-        tools: directoryTools.filter((tool) => {
-          const matchesCategory = tool.category === category;
+        tools: acceptedTools.filter((tool) => {
+          const matchesCategory = (tool.category === "Popular" ? "Code" : tool.category) === category;
           const matchesQuery =
             !normalizedQuery ||
             tool.name.toLowerCase().includes(normalizedQuery) ||
@@ -89,7 +94,7 @@ export function HomeDirectory() {
   }, [normalizedQuery]);
 
   const visibleOnlineTools = useMemo(() => {
-    return developerOnlineTools.filter((tool) => {
+    return developerOnlineTools.filter(isDiscoverableTool).filter((tool) => {
       return (
         !normalizedQuery ||
         tool.name.toLowerCase().includes(normalizedQuery) ||
@@ -100,7 +105,7 @@ export function HomeDirectory() {
   }, [normalizedQuery]);
 
   const visibleLanguageTools = useMemo(() => {
-    return languageOnlineTools.filter((tool) => {
+    return languageOnlineTools.filter(isDiscoverableTool).filter((tool) => {
       return (
         !normalizedQuery ||
         tool.name.toLowerCase().includes(normalizedQuery) ||
@@ -126,11 +131,9 @@ export function HomeDirectory() {
   const sidebarItems = [
     { label: t("home.overview"), href: "#top" },
     { label: t("home.popular"), href: "#popular" },
-    { label: t("home.languageTools"), href: "#language-tools" },
-    { label: t("home.onlineTools"), href: "#online" },
-    ...categories
-      .filter((category) => category !== "Popular")
-      .map((category) => ({ label: localizedCategoryLabel(category, t), href: `#${getCategoryId(category)}` }))
+    ...(visibleLanguageTools.length ? [{ label: t("home.languageTools"), href: "#language-tools" }] : []),
+    ...(visibleOnlineTools.length ? [{ label: t("home.onlineTools"), href: "#online" }] : []),
+    ...visibleGroups.map(({ category }) => ({ label: localizedCategoryLabel(category, t), href: `#${getCategoryId(category)}` }))
   ];
 
   return (

@@ -156,7 +156,7 @@ Pull requests and pushes to `main` run the same verified build in GitHub Actions
 
 ## Netlify Deployment
 
-The [codeconvenet project](https://app.netlify.com/projects/codeconvenet/) is connected to `heatsing/CodeConvert` on GitHub and deploys the `main` branch. Its default address is [codeconvenet.netlify.app](https://codeconvenet.netlify.app).
+Netlify is the deployment target for this project. The [codeconvenet project](https://app.netlify.com/projects/codeconvenet/) is connected to `heatsing/CodeConvert` on GitHub and deploys the `main` branch. The production site is [codeconvert.net](https://codeconvert.net); its default Netlify address is [codeconvenet.netlify.app](https://codeconvenet.netlify.app).
 
 `netlify.toml` sets the build command to `npm run build:verified` and the publish directory to `.next`. Checks therefore run inside Netlify before publication, even when GitHub branch protection has not been enabled. `.nvmrc` selects Node.js 24 for local development and Netlify builds. Netlify automatically supplies its Next.js adapter; no manually pinned adapter is required. Keep the normal Next.js build so route handlers, legacy URL redirects, and security headers from `next.config.mjs` continue to work.
 
@@ -164,21 +164,21 @@ Production environment variables are managed in Netlify's project settings:
 
 | Variable | Purpose |
 | --- | --- |
-| `NEXT_PUBLIC_SITE_URL` | Canonical origin used by metadata, structured data, robots.txt, and the sitemap. Keep `https://codeconvert.net` for this migration; this is also the application's default. |
+| `NEXT_PUBLIC_SITE_URL` | Canonical origin used by metadata, structured data, robots.txt, and the sitemap. Use `https://codeconvert.net`, which is also the application's default. |
 | `NEXT_PUBLIC_GA_MEASUREMENT_ID` | Optional Google Analytics measurement ID. Analytics loads only after the visitor opts in through the privacy page; setting an ID does not override that choice. |
 
 These public values are included at build time. Trigger a new deploy after changing them. Do not replace the production canonical origin with the temporary `netlify.app` address.
 
-To finish the domain cutover, add `codeconvert.net` and any currently used aliases in Netlify's Domain management, keep `codeconvert.net` as the primary domain, and update the domain's DNS using the records shown by Netlify. Verify HTTPS, homepage and tool pages, legacy redirects, and `/sitemap.xml` on the custom domain before removing the old Vercel deployment.
+Keep `codeconvert.net` as the primary domain in Netlify's Domain management, with `www.codeconvert.net` redirecting to it. After a deployment, verify HTTPS, homepage and tool pages, legacy redirects, and `/sitemap.xml` on the production domain.
 
-The existing live SEO check can validate the Netlify deployment before DNS changes while still checking the production canonical URLs. In PowerShell:
+Run the live SEO check against the production site in PowerShell:
 
 ```powershell
-$env:SEO_BASE_URL = "https://codeconvenet.netlify.app"
+$env:SEO_BASE_URL = "https://codeconvert.net"
 npm run seo:live-check
 ```
 
-After DNS propagation, run it again with `SEO_BASE_URL` set to `https://codeconvert.net`.
+For troubleshooting the default Netlify address, set `SEO_BASE_URL` to `https://codeconvenet.netlify.app`; canonical URLs should still point to the production domain.
 
 See [operations and recovery](docs/operations.md) for release checks, rollback instructions, dependency review, and account settings that require separate verification.
 

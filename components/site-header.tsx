@@ -5,11 +5,15 @@ import Link from "next/link";
 import Image from "next/image";
 import { Globe2, Moon, Sun } from "lucide-react";
 import { usePathname } from "next/navigation";
-import { getCategoryId } from "@/lib/home-tools";
+import { directoryTools, getCategoryId } from "@/lib/home-tools";
+import { onlineTools } from "@/lib/online-tools";
+import { isDiscoverableTool } from "@/lib/tool-capabilities";
 import { translationLanguages, useI18n, type LanguageCode } from "@/lib/i18n";
 import { readPreference, writePreference } from "@/lib/client-preferences";
 
 type ThemeMode = "light" | "dark";
+const activeSections = new Set(directoryTools.filter(isDiscoverableTool).map((tool) => getCategoryId(tool.category === "Popular" ? "Code" : tool.category)));
+if (onlineTools.some(isDiscoverableTool)) activeSections.add("online");
 
 function ThemeToggle() {
   const [theme, setTheme] = useState<ThemeMode>("light");
@@ -88,7 +92,7 @@ export function SiteHeader() {
     { label: t("nav.network"), href: sectionHref("network") },
     { label: t("nav.regex"), href: sectionHref("regex") },
     { label: t("nav.online"), href: sectionHref("online") }
-  ];
+  ].filter((item) => item.href === "/" || activeSections.has(item.href.split("#")[1]));
 
   return (
     <header className="sticky top-0 z-40 border-b bg-white text-slate-950 shadow-sm">

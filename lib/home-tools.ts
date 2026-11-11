@@ -1,4 +1,4 @@
-import type { ToolConfig, ToolSlug } from "@/lib/tools";
+import { TOOLS, type ToolConfig, type ToolSlug } from "./tools.ts";
 
 export type DirectoryTool = {
   name: string;
@@ -430,13 +430,14 @@ const rawDirectoryTools: DirectoryTool[] = [
   { name: "Word Frequency Counter", description: "Count word usage", category: "Text", href: "/tools/code-checker", iconName: "fileText", accent: "text-emerald-700 bg-emerald-50" }
 ];
 
-export const directoryTools = rawDirectoryTools.map((tool) => ({
-  ...tool,
-  href: `/${directoryToolSlug(tool.name)}`
-}));
+export const directoryTools = rawDirectoryTools.map((tool) => {
+  const slug = directoryToolSlug(tool.name);
+  const core = TOOLS.find((entry) => entry.slug === slug);
+  return { ...tool, ...(core ? { name: core.name, description: core.description } : {}), href: `/${slug}` };
+}).filter((tool, index, tools) => tools.findIndex((entry) => entry.href === tool.href) === index);
 
 export const directoryToolBySlug = Object.fromEntries(
-  directoryTools.map((tool) => [directoryToolSlug(tool.name), tool])
+  directoryTools.map((tool) => [tool.href.slice(1), tool])
 ) as Record<string, DirectoryTool>;
 
 export const frequentTools = directoryTools.slice(0, 20);

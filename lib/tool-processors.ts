@@ -322,18 +322,7 @@ export function xmlToJson(value: string) {
   return JSON.stringify({ [document.documentElement.tagName]: convert(document.documentElement, 0) }, null, 2);
 }
 
-export function unavailableToolReason(name: string) {
-  const title = name.toLowerCase();
-  const liveChecks = ["ssl checker", "whois lookup", "dns lookup", "dns record viewer", "dns propagation", "ip lookup", "ip information", "url scanner", "security headers", "http headers", "ping test", "traceroute", "port scanner", "subdomain finder", "http status checker", "redirect checker", "mac address lookup", "cidr calculator"];
-  if (liveChecks.some((tool) => title.includes(tool))) return "This tool has no live checking service connected. No request was sent and no security or availability result can be determined.";
-  if (/md5 generator|hmac generator|jwt encode|jwt verify|md5 decrypt|hash cracker/.test(title)) return "This cryptographic operation is not implemented. No hash, signed token, or verification result has been produced.";
-  if (/sql formatter|json5|base62|base85|base91|pinyin|simplified traditional|qr code generator|barcode generator/.test(title)) return "This conversion is not implemented reliably yet. Your input has been kept unchanged; no result has been generated.";
-  if (/css minifier|minify css|yaml to json|json to yaml|toml to json|ini to json|yaml to xml|xml to yaml|yaml to csv|csv to yaml|xml to csv|json to toml|json to ini/.test(title)) return "This conversion needs a format-specific parser that is not available yet. Your input has been kept unchanged.";
-  if (/minify html|minify xml|html minifier|xml minifier|curl to php|quoted printable|wingdings translator|base64 to image|image to base64/.test(title)) return "This conversion is not implemented reliably yet. Your input has been kept unchanged; no result has been generated.";
-  if (/^(css|scss|less|sass|stylus) to (css|scss|less|sass|stylus)/.test(title)) return "This preprocessor conversion is not implemented. Use a compiler for the requested language; your source has been kept unchanged.";
-  if (/apa citation generator|unit test|code summarizer|code commenter|api code|sql query|shell script|dockerfile|code snippet|readme generator|code refactor|code optimizer/.test(title)) return "This generator is not connected to a code analysis or generation engine. No result has been generated from your input.";
-  return null;
-}
+export { unavailableToolReason } from "./tool-capabilities.ts";
 
 export async function formatSource(value: string, language: string) {
   const { format } = await import("prettier/standalone");

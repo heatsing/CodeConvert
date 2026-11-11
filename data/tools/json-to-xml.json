@@ -20,20 +20,7 @@
     "Using JSON To XML to compare the source and result before a migration, import, release, or review.",
     "JSON To XML helps catch structural or meaning-changing mistakes before the output reaches another system."
   ],
-  "examples": [
-    {
-      "title": "JSON To XML with a representative sample",
-      "description": "This JSON To XML example uses JSON objects, arrays, keys, and values that resembles a small production fixture, so the main change can be checked line by line.",
-      "input": "{\"order\":{\"id\":42,\"paid\":true}}",
-      "output": "<order>\n  <id>42</id>\n  <paid>true</paid>\n</order>"
-    },
-    {
-      "title": "JSON To XML edge-case review",
-      "description": "The second JSON To XML pass focuses on the part most likely to fail: nested values, escaping, or destination rules.",
-      "input": "{\"order\":{\"id\":42,\"paid\":true}}\n\nReview case: preserve empty, repeated, or non-ASCII values where applicable.",
-      "output": "<order>\n  <id>42</id>\n  <paid>true</paid>\n</order>\n\nReview note: confirm this result in the destination workflow."
-    }
-  ],
+  "examples": [],
   "tips": [
     "Keep the original JSON To XML input beside the result until the destination check passes.",
     "Use realistic JSON objects, arrays, keys, and values instead of a one-word sample when validating JSON To XML.",
@@ -87,6 +74,6 @@
     "Using the JSON To XML result without comparing it with the original source.",
     "Skipping validation in the editor, runtime, API, or document that receives the output."
   ],
-  "updatedAt": "2026-07-28",
+  "updatedAt": "2026-11-08",
   "seoScore": 100
 }

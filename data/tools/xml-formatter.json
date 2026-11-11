@@ -20,20 +20,7 @@
     "Using XML Formatter to compare the source and result before a migration, import, release, or review.",
     "XML Formatter helps catch structural or meaning-changing mistakes before the output reaches another system."
   ],
-  "examples": [
-    {
-      "title": "XML Formatter with a representative sample",
-      "description": "This XML Formatter example uses XML elements, attributes, namespaces, and nesting that resembles a small production fixture, so the main change can be checked line by line.",
-      "input": "<catalog><book id=\"b1\"><title>APIs</title></book></catalog>",
-      "output": "<catalog>\n  <book id=\"b1\">\n    <title>APIs</title>\n  </book>\n</catalog>"
-    },
-    {
-      "title": "XML Formatter edge-case review",
-      "description": "The second XML Formatter pass focuses on the part most likely to fail: nested values, escaping, or destination rules.",
-      "input": "<catalog><book id=\"b1\"><title>APIs</title></book></catalog>\n\nReview case: preserve empty, repeated, or non-ASCII values where applicable.",
-      "output": "<catalog>\n  <book id=\"b1\">\n    <title>APIs</title>\n  </book>\n</catalog>\n\nReview note: confirm this result in the destination workflow."
-    }
-  ],
+  "examples": [],
   "tips": [
     "Keep the original XML Formatter input beside the result until the destination check passes.",
     "Use realistic XML elements, attributes, namespaces, and nesting instead of a one-word sample when validating XML Formatter.",
@@ -87,6 +74,6 @@
     "Using the XML Formatter result without comparing it with the original source.",
     "Skipping validation in the editor, runtime, API, or document that receives the output."
   ],
-  "updatedAt": "2026-07-28",
+  "updatedAt": "2026-11-08",
   "seoScore": 100
 }

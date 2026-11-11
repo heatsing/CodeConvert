@@ -20,20 +20,7 @@
     "Using JSON Formatter and Minifier to compare the source and result before a migration, import, release, or review.",
     "JSON Formatter and Minifier helps catch structural or meaning-changing mistakes before the output reaches another system."
   ],
-  "examples": [
-    {
-      "title": "JSON Formatter and Minifier with a representative sample",
-      "description": "This JSON Formatter and Minifier example uses JSON objects, arrays, keys, and values that resembles a small production fixture, so the main change can be checked line by line.",
-      "input": "{\n  \"event\": \"order.created\",\n  \"id\": 42\n}",
-      "output": "{\"event\":\"order.created\",\"id\":42}"
-    },
-    {
-      "title": "JSON Formatter and Minifier edge-case review",
-      "description": "The second JSON Formatter and Minifier pass focuses on the part most likely to fail: nested values, escaping, or destination rules.",
-      "input": "{\n  \"event\": \"order.created\",\n  \"id\": 42\n}\n\nReview case: preserve empty, repeated, or non-ASCII values where applicable.",
-      "output": "{\"event\":\"order.created\",\"id\":42}\n\nReview note: confirm this result in the destination workflow."
-    }
-  ],
+  "examples": [],
   "tips": [
     "Keep the original JSON Formatter and Minifier input beside the result until the destination check passes.",
     "Use realistic JSON objects, arrays, keys, and values instead of a one-word sample when validating JSON Formatter and Minifier.",
@@ -87,6 +74,6 @@
     "Using the JSON Formatter and Minifier result without comparing it with the original source.",
     "Skipping validation in the editor, runtime, API, or document that receives the output."
   ],
-  "updatedAt": "2026-07-28",
+  "updatedAt": "2026-11-08",
   "seoScore": 100
 }

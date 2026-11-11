@@ -20,20 +20,7 @@
     "Using JWT Decode to compare the source and result before a migration, import, release, or review.",
     "Using JWT Decode to diagnose escaped, encoded, or unreadable values in requests, URLs, logs, and configuration."
   ],
-  "examples": [
-    {
-      "title": "JWT Decode with a representative sample",
-      "description": "This JWT Decode example uses JWT headers, payload claims, timestamps, and signatures that resembles a small production fixture, so the main change can be checked line by line.",
-      "input": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0MiIsInJvbGUiOiJlZGl0b3IifQ.signature",
-      "output": "{\n  \"sub\": \"42\",\n  \"role\": \"editor\"\n}"
-    },
-    {
-      "title": "JWT Decode edge-case review",
-      "description": "The second JWT Decode pass focuses on the part most likely to fail: nested values, escaping, or destination rules.",
-      "input": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0MiIsInJvbGUiOiJlZGl0b3IifQ.signature\n\nReview case: preserve empty, repeated, or non-ASCII values where applicable.",
-      "output": "{\n  \"sub\": \"42\",\n  \"role\": \"editor\"\n}\n\nReview note: confirm this result in the destination workflow."
-    }
-  ],
+  "examples": [],
   "tips": [
     "Keep the original JWT Decode input beside the result until the destination check passes.",
     "Use realistic JWT headers, payload claims, timestamps, and signatures instead of a one-word sample when validating JWT Decode.",
@@ -87,6 +74,6 @@
     "Using the JWT Decode result without comparing it with the original source.",
     "Skipping validation in the editor, runtime, API, or document that receives the output."
   ],
-  "updatedAt": "2026-07-28",
+  "updatedAt": "2026-11-08",
   "seoScore": 100
 }

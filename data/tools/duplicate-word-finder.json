@@ -20,20 +20,7 @@
     "Using Duplicate Word Finder to compare the source and result before a migration, import, release, or review.",
     "Duplicate Word Finder helps catch structural or meaning-changing mistakes before the output reaches another system."
   ],
-  "examples": [
-    {
-      "title": "Duplicate Word Finder with a representative sample",
-      "description": "This Duplicate Word Finder example uses working text copied from documents, forms, spreadsheets, email, or a CMS that resembles a small production fixture, so the main change can be checked line by line.",
-      "input": "The report report contains a repeated repeated phrase.",
-      "output": "report: 2\nrepeated: 2"
-    },
-    {
-      "title": "Duplicate Word Finder edge-case review",
-      "description": "The second Duplicate Word Finder pass focuses on the part most likely to fail: intentional spacing and punctuation.",
-      "input": "The report report contains a repeated repeated phrase.\n\nReview case: preserve empty, repeated, or non-ASCII values where applicable.",
-      "output": "report: 2\nrepeated: 2\n\nReview note: confirm this result in the destination workflow."
-    }
-  ],
+  "examples": [],
   "tips": [
     "Keep the original Duplicate Word Finder input beside the result until the destination check passes.",
     "Use realistic working text copied from documents, forms, spreadsheets, email, or a CMS instead of a one-word sample when validating Duplicate Word Finder.",
@@ -87,6 +74,6 @@
     "Using the Duplicate Word Finder result without comparing it with the original source.",
     "Skipping validation in the editor, runtime, API, or document that receives the output."
   ],
-  "updatedAt": "2026-07-28",
+  "updatedAt": "2026-11-08",
   "seoScore": 100
 }

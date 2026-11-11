@@ -1,92 +1,88 @@
 {
   "slug": "comment-remover",
-  "title": "Comment Remover",
-  "description": "Comment Remover helps people remove source code, structured text, and the destination workflow and review the result before using it in another system.",
-  "intro": "Comment Remover is for a concrete handoff: take source code, structured text, and the destination workflow from a real task, produce the form the next editor, API, document, or workflow expects, and keep enough context to verify what changed.",
-  "audience": "Developers, QA engineers, code reviewers, and technical writers",
-  "input": "A representative sample of source code, structured text, and the destination workflow copied from the API, file, codebase, log, document, or request involved in the task.",
-  "outcome": "A comment remover result that preserves the intended meaning and is ready to test in its destination.",
-  "review": "Check source code, structured text, and the destination workflow, malformed input, escaped values, and destination-specific rules before relying on the result.",
-  "bestFor": "Small and medium source code, structured text, and the destination workflow samples used for debugging, documentation, migration preparation, review, and reproducible tests.",
+  "title": "JavaScript and TypeScript Comment Remover",
+  "h1": "JavaScript and TypeScript Comment Remover",
+  "description": "Remove parsed comments from JavaScript or TypeScript while preserving string literals, token boundaries, and line numbers.",
+  "intro": "JavaScript and TypeScript Comment Remover parses source before locating comment ranges. It replaces comment characters with whitespace while preserving line breaks, string literals, and token separation. Unsupported languages and malformed syntax are reported as errors instead of being rewritten by a broad search-and-replace.",
+  "audience": "JavaScript and TypeScript developers preparing source excerpts for review",
+  "input": "Valid JavaScript or TypeScript source containing inline or block comments, with the matching language selected in the editor.",
+  "outcome": "Source text with parsed comment ranges replaced by whitespace, retaining line numbers, string contents, and token boundaries.",
+  "review": "Check the cleaned source in your own compiler or test suite. Preserve license notices and tool directives when they are needed outside this cleaning task.",
+  "bestFor": "Small JavaScript and TypeScript excerpts used for documentation or comparison when source comments need to be removed deliberately.",
   "steps": [
-    "Paste a representative source code, structured text, and the destination workflow from the task you are working on.",
-    "Run Comment Remover and compare the first meaningful change with the source.",
-    "Inspect source code, structured text, and the destination workflow plus any destination-specific constraints.",
-    "Copy or download the result, then validate it in the editor, runtime, API, form, or publishing system where it will be used."
+    "Select JavaScript or TypeScript to match the source syntax.",
+    "Paste a snippet or load a supported text file into the editor.",
+    "Choose Remove Comments and inspect the cleaned output beside the original.",
+    "Save a copy and run project checks before replacing source files."
   ],
   "useCases": [
-    "Comment Remover for a real development or integration task rather than a synthetic keyword example.",
-    "Preparing Comment Remover input and output for a bug report, documentation page, test fixture, or technical handoff.",
-    "Using Comment Remover to compare the source and result before a migration, import, release, or review.",
-    "Comment Remover helps catch structural or meaning-changing mistakes before the output reaches another system."
+    "Preparing a JavaScript example without explanatory comments.",
+    "Removing a TypeScript block comment while retaining type syntax.",
+    "Comparing source snippets without comment wording differences.",
+    "Keeping source line numbers stable during a documentation cleanup."
   ],
-  "examples": [
-    {
-      "title": "Comment Remover with a representative sample",
-      "description": "This Comment Remover example uses source code, structured text, and the destination workflow that resembles a small production fixture, so the main change can be checked line by line.",
-      "input": "// tax is a decimal\nconst total = subtotal * (1 + tax);",
-      "output": "const total = subtotal * (1 + tax);"
-    },
-    {
-      "title": "Comment Remover edge-case review",
-      "description": "The second Comment Remover pass focuses on the part most likely to fail: nested values, escaping, or destination rules.",
-      "input": "// tax is a decimal\nconst total = subtotal * (1 + tax);\n\nReview case: preserve empty, repeated, or non-ASCII values where applicable.",
-      "output": "const total = subtotal * (1 + tax);\n\nReview note: confirm this result in the destination workflow."
-    }
+  "commonMistakes": [
+    "Selecting JavaScript for TypeScript-only syntax.",
+    "Removing license comments or directives without reviewing their purpose.",
+    "Expecting whitespace minimization from a comment-removal operation."
   ],
   "tips": [
-    "Keep the original Comment Remover input beside the result until the destination check passes.",
-    "Use realistic source code, structured text, and the destination workflow instead of a one-word sample when validating Comment Remover.",
-    "Do not assume the visual cleanup from Comment Remover proves that source code, structured text, and the destination workflow is valid.",
-    "Run the normal project, API, schema, browser, or editorial validation after using Comment Remover."
+    "URLs and comment-like text inside string literals remain literal data.",
+    "Whitespace is retained where comments separate adjacent tokens.",
+    "Keep a copy of the original file before editing a repository.",
+    "Use a minifier separately when compact output is the actual goal."
   ],
   "faq": [
     {
-      "question": "Who uses Comment Remover?",
-      "answer": "Developers, QA engineers, code reviewers, and technical writers use Comment Remover when they need to remove source code, structured text, and the destination workflow before continuing work in another editor, system, or document."
+      "question": "Which source languages are supported?",
+      "answer": "Comment removal currently parses JavaScript and TypeScript. Other language syntax is rejected instead of being edited heuristically."
     },
     {
-      "question": "What should I paste into Comment Remover?",
-      "answer": "Paste a focused but representative sample of source code, structured text, and the destination workflow into Comment Remover. Include the nesting, punctuation, characters, or edge cases that affect the real task."
+      "question": "Are strings containing comment markers changed?",
+      "answer": "No. Parsed string literals, regular expression literals, and template text retain their original content."
     },
     {
-      "question": "What does Comment Remover change?",
-      "answer": "Comment Remover changes the representation needed for this task. Compare the output with the source to confirm that values and intended meaning remain correct."
+      "question": "Why are blank spaces left behind?",
+      "answer": "Spaces keep token boundaries and line breaks stable after comment text is removed. This tool is not a whitespace minifier."
     },
     {
-      "question": "What should I check after using Comment Remover?",
-      "answer": "After Comment Remover, review source code, structured text, and the destination workflow, escaped values, malformed input, and the rules enforced by the destination system."
+      "question": "What happens when parsing fails?",
+      "answer": "An error is displayed and the input is retained. No partially rewritten output is presented as a successful result."
     },
     {
-      "question": "Can I use the Comment Remover output in production?",
-      "answer": "Use the Comment Remover result as reviewed working output, then run the destination system's normal validation, tests, schema checks, or editorial review before production use."
-    },
-    {
-      "question": "Does Comment Remover store my input?",
-      "answer": "Comment Remover has no account or saved-history feature. Even so, remove passwords, private keys, session cookies, personal data, and production secrets before using any online tool."
+      "question": "Should all comments be removed from project files?",
+      "answer": "That depends on the project. Review licensing, documentation, and build-tool directives before replacing the original source."
     }
   ],
-  "relatedTools": [
-    "code-converter",
-    "code-generator",
-    "code-explainer",
-    "code-checker",
-    "code-to-pdf",
-    "code-formatter"
+  "examples": [
+    {
+      "title": "URL literal and a trailing comment",
+      "description": "Language: JavaScript. The URL stays intact and the trailing comment becomes spaces.",
+      "input": "const url = \"https://example.com/a\"; // note\nconsole.log(url);",
+      "output": "const url = \"https://example.com/a\";        \nconsole.log(url);",
+      "sourceLanguage": "JavaScript",
+      "targetLanguage": "Python"
+    },
+    {
+      "title": "TypeScript block comment",
+      "description": "Language: TypeScript. The type annotation and the quoted comment markers remain unchanged.",
+      "input": "const label: string = \"/* literal */\"; /* remove */\nexport { label };",
+      "output": "const label: string = \"/* literal */\";             \nexport { label };",
+      "sourceLanguage": "TypeScript",
+      "targetLanguage": "Python"
+    }
   ],
   "keywords": [
-    "comment remover",
-    "comment remover online",
-    "remove source code, structured text, and the destination workflow",
-    "code tool",
-    "browser based tool"
+    "JavaScript comment remover",
+    "TypeScript comment remover",
+    "parsed comment removal",
+    "preserve source literals"
   ],
-  "h1": "Comment Remover",
-  "commonMistakes": [
-    "Running Comment Remover with a sample that does not represent the real input.",
-    "Using the Comment Remover result without comparing it with the original source.",
-    "Skipping validation in the editor, runtime, API, or document that receives the output."
+  "relatedTools": [
+    "json-formatter",
+    "javascript-formatter",
+    "base64-encode"
   ],
-  "updatedAt": "2026-07-28",
-  "seoScore": 100
+  "updatedAt": "2026-11-08",
+  "seoScore": 90
 }

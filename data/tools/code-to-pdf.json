@@ -1,92 +1,88 @@
 {
   "slug": "code-to-pdf",
-  "title": "Code To Pdf",
-  "description": "Code To Pdf helps people convert source code, structured text, and the destination workflow and review the result before using it in another system.",
-  "intro": "Code To Pdf is for a concrete handoff: take source code, structured text, and the destination workflow from a real task, produce the form the next editor, API, document, or workflow expects, and keep enough context to verify what changed.",
-  "audience": "Developers, QA engineers, code reviewers, and technical writers",
-  "input": "A representative sample of source code, structured text, and the destination workflow copied from the API, file, codebase, log, document, or request involved in the task.",
-  "outcome": "A code to pdf result that preserves the intended meaning and is ready to test in its destination.",
-  "review": "Check source code, structured text, and the destination workflow, malformed input, escaped values, and destination-specific rules before relying on the result.",
-  "bestFor": "Small and medium source code, structured text, and the destination workflow samples used for debugging, documentation, migration preparation, review, and reproducible tests.",
+  "title": "Code Text Document Export",
+  "h1": "Code Text Document Export",
+  "description": "Add a language label to your source code and download a plain text document (.txt). PDF generation is not available.",
+  "intro": "Code Text Document Export adds a language label to source text and prepares a .txt download. It does not create PDF bytes, paginate a document, highlight code for print, or render an image. Use the resulting text in your own editor or publishing workflow if another document format is required.",
+  "audience": "Developers and technical writers saving short labelled source excerpts",
+  "input": "A code excerpt and a source-language label that should appear above the text in the downloaded document.",
+  "outcome": "A plain text document with a heading, the chosen language label, and the supplied source; the download has a .txt extension.",
+  "review": "Check the language label and source content before sharing. Any PDF layout, printing, or syntax highlighting must be performed separately.",
+  "bestFor": "Simple text handoffs, small code notes, and documentation drafts that only need a language label rather than a formatted PDF.",
   "steps": [
-    "Paste a representative source code, structured text, and the destination workflow from the task you are working on.",
-    "Run Code To Pdf and compare the first meaningful change with the source.",
-    "Inspect source code, structured text, and the destination workflow plus any destination-specific constraints.",
-    "Copy or download the result, then validate it in the editor, runtime, API, form, or publishing system where it will be used."
+    "Choose the source language used to label the text.",
+    "Paste the source excerpt or load it from a supported text file.",
+    "Choose Prepare Text Document and inspect the labelled output.",
+    "Download code-document.txt or copy it into your own document workflow."
   ],
   "useCases": [
-    "Code To Pdf for a real development or integration task rather than a synthetic keyword example.",
-    "Preparing Code To Pdf input and output for a bug report, documentation page, test fixture, or technical handoff.",
-    "Using Code To Pdf to compare the source and result before a migration, import, release, or review.",
-    "Code To Pdf helps catch structural or meaning-changing mistakes before the output reaches another system."
+    "Attaching a labelled JavaScript excerpt to a text note.",
+    "Saving a SQL example alongside review comments in a local folder.",
+    "Handing a short source sample to a technical writer.",
+    "Preparing raw text for an editor that will handle final document formatting."
   ],
-  "examples": [
-    {
-      "title": "Code To Pdf with a representative sample",
-      "description": "This Code To Pdf example uses source code, structured text, and the destination workflow that resembles a small production fixture, so the main change can be checked line by line.",
-      "input": "export function add(a: number, b: number) {\n  return a + b;\n}",
-      "output": "Code Document\nLanguage: TypeScript\n\nexport function add(a: number, b: number) {\n  return a + b;\n}"
-    },
-    {
-      "title": "Code To Pdf edge-case review",
-      "description": "The second Code To Pdf pass focuses on the part most likely to fail: nested values, escaping, or destination rules.",
-      "input": "export function add(a: number, b: number) {\n  return a + b;\n}\n\nReview case: preserve empty, repeated, or non-ASCII values where applicable.",
-      "output": "Code Document\nLanguage: TypeScript\n\nexport function add(a: number, b: number) {\n  return a + b;\n}\n\nReview note: confirm this result in the destination workflow."
-    }
+  "commonMistakes": [
+    "Expecting the .txt download to be a PDF file.",
+    "Changing the file extension to .pdf without converting its contents.",
+    "Assuming the tool supplies pagination or syntax highlighting for print."
   ],
   "tips": [
-    "Keep the original Code To Pdf input beside the result until the destination check passes.",
-    "Use realistic source code, structured text, and the destination workflow instead of a one-word sample when validating Code To Pdf.",
-    "Do not assume the visual cleanup from Code To Pdf proves that source code, structured text, and the destination workflow is valid.",
-    "Run the normal project, API, schema, browser, or editorial validation after using Code To Pdf."
+    "The language selection adds a label; it does not transform the code.",
+    "Open the downloaded file as plain text.",
+    "Use your document editor for any print layout or PDF export.",
+    "Check the source excerpt again before sharing it outside your project."
   ],
   "faq": [
     {
-      "question": "Who uses Code To Pdf?",
-      "answer": "Developers, QA engineers, code reviewers, and technical writers use Code To Pdf when they need to convert source code, structured text, and the destination workflow before continuing work in another editor, system, or document."
+      "question": "Does this create a PDF?",
+      "answer": "No. It creates plain text and downloads code-document.txt. PDF generation is not implemented."
     },
     {
-      "question": "What should I paste into Code To Pdf?",
-      "answer": "Paste a focused but representative sample of source code, structured text, and the destination workflow into Code To Pdf. Include the nesting, punctuation, characters, or edge cases that affect the real task."
+      "question": "Why does the address still contain code-to-pdf?",
+      "answer": "The existing address is retained for old links, while the visible name and output now describe the available text export."
     },
     {
-      "question": "What does Code To Pdf change?",
-      "answer": "Code To Pdf changes the representation needed for this task. Compare the output with the source to confirm that values and intended meaning remain correct."
+      "question": "Can renaming the download make it a PDF?",
+      "answer": "No. A PDF requires PDF-encoded content. Use a document editor or other conversion tool for that step."
     },
     {
-      "question": "What should I check after using Code To Pdf?",
-      "answer": "After Code To Pdf, review source code, structured text, and the destination workflow, escaped values, malformed input, and the rules enforced by the destination system."
+      "question": "Does choosing a language format the code?",
+      "answer": "No. The selected language is written as a document label; the source is included as text."
     },
     {
-      "question": "Can I use the Code To Pdf output in production?",
-      "answer": "Use the Code To Pdf result as reviewed working output, then run the destination system's normal validation, tests, schema checks, or editorial review before production use."
-    },
-    {
-      "question": "Does Code To Pdf store my input?",
-      "answer": "Code To Pdf has no account or saved-history feature. Even so, remove passwords, private keys, session cookies, personal data, and production secrets before using any online tool."
+      "question": "Is the text stored on a server?",
+      "answer": "The text document is prepared in your browser and downloaded locally. This workspace has no account or saved document history."
     }
   ],
-  "relatedTools": [
-    "code-converter",
-    "code-generator",
-    "code-explainer",
-    "comment-remover",
-    "code-checker",
-    "code-formatter"
+  "examples": [
+    {
+      "title": "Labelled JavaScript text document",
+      "description": "Language: JavaScript. The output is the actual plain text included in the .txt download.",
+      "input": "console.log(\"Hello\");",
+      "output": "Code document\nLanguage: JavaScript\n\nconsole.log(\"Hello\");",
+      "sourceLanguage": "JavaScript",
+      "targetLanguage": "Python"
+    },
+    {
+      "title": "Labelled SQL text document",
+      "description": "Language: SQL. The query is copied into a text document; it is not executed or converted to PDF.",
+      "input": "SELECT 1 AS value;",
+      "output": "Code document\nLanguage: SQL\n\nSELECT 1 AS value;",
+      "sourceLanguage": "SQL",
+      "targetLanguage": "Python"
+    }
   ],
   "keywords": [
-    "code to pdf",
-    "code to pdf online",
-    "convert source code, structured text, and the destination workflow",
-    "code tool",
-    "browser based tool"
+    "code text export",
+    "labelled source document",
+    "plain text code download",
+    "source snippet handoff"
   ],
-  "h1": "Code To Pdf",
-  "commonMistakes": [
-    "Running Code To Pdf with a sample that does not represent the real input.",
-    "Using the Code To Pdf result without comparing it with the original source.",
-    "Skipping validation in the editor, runtime, API, or document that receives the output."
+  "relatedTools": [
+    "json-formatter",
+    "javascript-formatter",
+    "base64-encode"
   ],
-  "updatedAt": "2026-07-28",
-  "seoScore": 100
+  "updatedAt": "2026-11-08",
+  "seoScore": 40
 }

@@ -3,6 +3,7 @@ export type ToolContentExample = {
   description: string;
   input: string;
   output: string;
+  mode?: string;
 };
 
 export type ToolContentFaq = {
@@ -24,7 +25,7 @@ export type ToolPageContent = {
   steps: [string, string, string, string];
   useCases: [string, string, string, string];
   commonMistakes: [string, string, string];
-  examples: [ToolContentExample, ToolContentExample];
+  examples: ToolContentExample[];
   tips: [string, string, string, string];
   faq: ToolContentFaq[];
   relatedTools: string[];

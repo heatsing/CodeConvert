@@ -20,20 +20,7 @@
     "Using Query String Parser to compare the source and result before a migration, import, release, or review.",
     "Using Query String Parser to diagnose escaped, encoded, or unreadable values in requests, URLs, logs, and configuration."
   ],
-  "examples": [
-    {
-      "title": "Query String Parser with a representative sample",
-      "description": "This Query String Parser example uses URL components, query parameters, reserved characters, and percent encoding that resembles a small production fixture, so the main change can be checked line by line.",
-      "input": "utm_source=newsletter&plan=pro&trial=true",
-      "output": "utm_source: newsletter\nplan: pro\ntrial: true"
-    },
-    {
-      "title": "Query String Parser edge-case review",
-      "description": "The second Query String Parser pass focuses on the part most likely to fail: nested values, escaping, or destination rules.",
-      "input": "utm_source=newsletter&plan=pro&trial=true\n\nReview case: preserve empty, repeated, or non-ASCII values where applicable.",
-      "output": "utm_source: newsletter\nplan: pro\ntrial: true\n\nReview note: confirm this result in the destination workflow."
-    }
-  ],
+  "examples": [],
   "tips": [
     "Keep the original Query String Parser input beside the result until the destination check passes.",
     "Use realistic URL components, query parameters, reserved characters, and percent encoding instead of a one-word sample when validating Query String Parser.",
@@ -86,6 +73,6 @@
     "Using the Query String Parser result without comparing it with the original source.",
     "Skipping validation in the editor, runtime, API, or document that receives the output."
   ],
-  "updatedAt": "2026-07-28",
+  "updatedAt": "2026-11-08",
   "seoScore": 100
 }

@@ -20,20 +20,7 @@
     "Using JSON To CSV to compare the source and result before a migration, import, release, or review.",
     "JSON To CSV helps catch structural or meaning-changing mistakes before the output reaches another system."
   ],
-  "examples": [
-    {
-      "title": "JSON To CSV with a representative sample",
-      "description": "This JSON To CSV example uses JSON objects, arrays, keys, and values that resembles a small production fixture, so the main change can be checked line by line.",
-      "input": "[{\"sku\":\"A-1\",\"qty\":2},{\"sku\":\"B-7\",\"qty\":5}]",
-      "output": "sku,qty\nA-1,2\nB-7,5"
-    },
-    {
-      "title": "JSON To CSV edge-case review",
-      "description": "The second JSON To CSV pass focuses on the part most likely to fail: nested values, escaping, or destination rules.",
-      "input": "[{\"sku\":\"A-1\",\"qty\":2},{\"sku\":\"B-7\",\"qty\":5}]\n\nReview case: preserve empty, repeated, or non-ASCII values where applicable.",
-      "output": "sku,qty\nA-1,2\nB-7,5\n\nReview note: confirm this result in the destination workflow."
-    }
-  ],
+  "examples": [],
   "tips": [
     "Keep the original JSON To CSV input beside the result until the destination check passes.",
     "Use realistic JSON objects, arrays, keys, and values instead of a one-word sample when validating JSON To CSV.",
@@ -87,6 +74,6 @@
     "Using the JSON To CSV result without comparing it with the original source.",
     "Skipping validation in the editor, runtime, API, or document that receives the output."
   ],
-  "updatedAt": "2026-07-28",
+  "updatedAt": "2026-11-08",
   "seoScore": 100
 }

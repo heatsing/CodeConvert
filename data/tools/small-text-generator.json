@@ -20,20 +20,7 @@
     "Using Small Text Generator to compare the source and result before a migration, import, release, or review.",
     "Small Text Generator helps catch structural or meaning-changing mistakes before the output reaches another system."
   ],
-  "examples": [
-    {
-      "title": "Small Text Generator with a representative sample",
-      "description": "This Small Text Generator example uses working text copied from documents, forms, spreadsheets, email, or a CMS that resembles a small production fixture, so the main change can be checked line by line.",
-      "input": "Release Notes",
-      "output": "ʀᴇʟᴇᴀꜱᴇ ɴᴏᴛᴇꜱ"
-    },
-    {
-      "title": "Small Text Generator edge-case review",
-      "description": "The second Small Text Generator pass focuses on the part most likely to fail: intentional spacing and punctuation.",
-      "input": "Release Notes\n\nReview case: preserve empty, repeated, or non-ASCII values where applicable.",
-      "output": "ʀᴇʟᴇᴀꜱᴇ ɴᴏᴛᴇꜱ\n\nReview note: confirm this result in the destination workflow."
-    }
-  ],
+  "examples": [],
   "tips": [
     "Keep the original Small Text Generator input beside the result until the destination check passes.",
     "Use realistic working text copied from documents, forms, spreadsheets, email, or a CMS instead of a one-word sample when validating Small Text Generator.",
@@ -87,6 +74,6 @@
     "Using the Small Text Generator result without comparing it with the original source.",
     "Skipping validation in the editor, runtime, API, or document that receives the output."
   ],
-  "updatedAt": "2026-07-28",
+  "updatedAt": "2026-11-08",
   "seoScore": 100
 }

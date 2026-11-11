@@ -23,6 +23,7 @@ import { siteUrl } from "@/lib/site";
 import { getCoreToolHeader, getDirectoryToolHeader, getOnlineToolHeader } from "@/lib/tool-page-copy";
 import { getToolPageContent } from "@/lib/tool-content";
 import { getToolRoute, toolRoutes } from "@/lib/tool-route-inventory";
+import { getToolCapability } from "@/lib/tool-capabilities";
 
 type RootToolPageProps = {
   params: Promise<{
@@ -36,6 +37,10 @@ export function generateStaticParams() {
 
 function getTool(slug: string) {
   return getToolRoute(slug)?.directoryTool;
+}
+
+function structuredDataFor(slug: string, data: Parameters<typeof buildJsonLdScripts>[0]) {
+  return buildJsonLdScripts(getToolCapability(slug).indexable ? data : data.filter((item) => typeof item === "object" && item !== null && "@type" in item && item["@type"] === "BreadcrumbList"));
 }
 
 export async function generateMetadata({ params }: RootToolPageProps): Promise<Metadata> {
@@ -67,7 +72,7 @@ export default async function RootToolPage({ params }: RootToolPageProps) {
 
     return (
       <>
-        {buildJsonLdScripts([
+        {structuredDataFor(normalizedSlug, [
           buildFaqJsonLd(content.faq.length > 0 ? content.faq : coreTool.faqs),
           buildSoftwareApplicationJsonLd({
             name: coreTool.name,
@@ -100,7 +105,7 @@ export default async function RootToolPage({ params }: RootToolPageProps) {
 
     return (
       <>
-        {buildJsonLdScripts([
+        {structuredDataFor(normalizedSlug, [
           buildFaqJsonLd(content.faq.length > 0 ? content.faq : buildToolFaqs(onlineTool.name, "Developer")),
           buildSoftwareApplicationJsonLd({
             name: onlineTool.name,
@@ -129,7 +134,7 @@ export default async function RootToolPage({ params }: RootToolPageProps) {
 
   return (
     <>
-      {buildJsonLdScripts([
+      {structuredDataFor(normalizedSlug, [
         buildFaqJsonLd(faqs),
         buildSoftwareApplicationJsonLd({
           name: tool.name,

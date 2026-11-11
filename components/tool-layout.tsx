@@ -33,7 +33,7 @@ export function ToolLayout({ tool }: ToolLayoutProps) {
   const headerCopy = getCoreToolHeader(tool);
   const capabilityNotice = {
     "code-converter": "This tool prepares a migration worksheet; it does not automatically translate code.",
-    "code-generator": "Generates a starter template only. It does not implement your prompt or call an AI service.",
+    "code-generator": "The label changes a name or comment in a fixed starter template. Add your own logic and tests after downloading it.",
     "code-explainer": "This is a local keyword-based structure summary, not a verified explanation of program behavior.",
     "comment-remover": "Safe comment removal supports JavaScript and TypeScript. String literals and line numbers are preserved.",
     "code-checker": "Local heuristic checks only. This is not a compiler, security audit, or proof that the code is correct.",

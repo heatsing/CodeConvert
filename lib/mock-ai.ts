@@ -8,16 +8,16 @@ export type LocalToolRequest = {
   targetLanguage: string;
 };
 
-function identifierFromPrompt(prompt: string) {
-  const words = prompt.toLowerCase().match(/[a-z0-9]+/g)?.slice(0, 5) ?? ["generated", "task"];
+function identifierFromLabel(label: string) {
+  const words = label.toLowerCase().match(/[a-z0-9]+/g)?.slice(0, 5) ?? ["generated", "task"];
   const [first, ...rest] = words;
   // A prefix also avoids language keywords such as class, return, or def.
   return `generated_${first}${rest.map((word) => word.charAt(0).toUpperCase() + word.slice(1)).join("")}`;
 }
 
-function generateStarterCode(prompt: string, language: string) {
-  const name = identifierFromPrompt(prompt);
-  const summary = prompt.replace(/\s+/g, " ").trim();
+function generateStarterCode(label: string, language: string) {
+  const name = identifierFromLabel(label);
+  const summary = label.replace(/\s+/g, " ").trim();
   const blockCommentSummary = summary.replace(/\*\//g, "* /");
   const normalized = language.toLowerCase();
 
@@ -58,7 +58,7 @@ function explainCode(input: string, language: string) {
   ];
   if (asyncOperations) notes.push(`${asyncOperations} asynchronous operation marker${asyncOperations === 1 ? "" : "s"}`);
 
-  return `Code structure analysis (${language})\n\nOverview\n${notes.map((note) => `- ${note}.`).join("\n")}\n\nLikely flow\n1. Dependencies and declarations are evaluated first.\n2. Functions or types define the reusable behavior.\n3. Conditions and loops control which statements run.\n4. Return values, logging, or mutations produce the observable result.\n\nReview notes\n- Confirm input types and empty-value behavior.\n- Trace each branch with a representative example.\n- Verify side effects and error handling in the target runtime.`;
+  return `Code keyword summary (${language})\n\nOverview\n${notes.map((note) => `- ${note}.`).join("\n")}\n\nThese counts use text patterns, including matches inside strings and comments. They do not establish syntax validity or program behavior.\n\nReview notes\n- Confirm input types and empty-value behavior.\n- Trace each branch with a representative example.\n- Verify side effects and error handling in the target runtime.`;
 }
 
 function checkCode(input: string, language: string) {
@@ -87,11 +87,11 @@ function checkCode(input: string, language: string) {
     if (opens !== closes) issues.push(`Structure: Unbalanced ${open}${close} delimiters (${opens} opening, ${closes} closing).`);
   }
 
-  return `Code check report (${language})\n\n${issues.length ? `${issues.length} issue${issues.length === 1 ? "" : "s"} found:\n${issues.map((issue) => `- ${issue}`).join("\n")}` : "No issues matched the built-in syntax and maintainability rules."}\n\nChecks performed\n- Delimiter balance\n- Risky dynamic execution\n- Loose equality and declaration style\n- Hard-coded credential patterns\n- Maintenance markers and long lines\n\nThis rule-based review does not replace the compiler, tests, or a language-specific linter.`;
+  return `Code check report (${language})\n\n${issues.length ? `${issues.length} issue${issues.length === 1 ? "" : "s"} found:\n${issues.map((issue) => `- ${issue}`).join("\n")}` : "No issues matched the built-in heuristic patterns."}\n\nChecks performed\n- Delimiter balance\n- Risky dynamic execution\n- Loose equality and declaration style\n- Hard-coded credential patterns\n- Maintenance markers and long lines\n\nThis rule-based review does not replace the compiler, tests, or a language-specific linter.`;
 }
 
 function conversionWorksheet(input: string, sourceLanguage: string, targetLanguage: string) {
-  return `Conversion review: ${sourceLanguage} to ${targetLanguage}\n\nA reliable automatic conversion is not available for this language pair. Use the source below as a migration worksheet and verify types, standard-library calls, error handling, and runtime behavior in ${targetLanguage}.\n\nSource\n${input}\n\nMigration checklist\n- Map data types and null behavior.\n- Replace language-specific library calls.\n- Recreate exception and asynchronous control flow.\n- Add tests that compare both implementations.`;
+  return `Migration worksheet: ${sourceLanguage} to ${targetLanguage}\n\nA reliable automatic conversion is not available for this language pair. Use the source below as a migration worksheet and verify types, standard-library calls, error handling, and runtime behavior in ${targetLanguage}.\n\nSource\n${input}\n\nMigration checklist\n- Map data types and null behavior.\n- Replace language-specific library calls.\n- Recreate exception and asynchronous control flow.\n- Add tests that compare both implementations.`;
 }
 
 export async function runLocalTool({ tool, input, sourceLanguage, targetLanguage }: LocalToolRequest) {

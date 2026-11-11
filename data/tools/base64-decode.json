@@ -20,20 +20,7 @@
     "Using Base64 Decode to compare the source and result before a migration, import, release, or review.",
     "Using Base64 Decode to diagnose escaped, encoded, or unreadable values in requests, URLs, logs, and configuration."
   ],
-  "examples": [
-    {
-      "title": "Base64 Decode with a representative sample",
-      "description": "This Base64 Decode example uses Base64 text, UTF-8 characters, and padding that resembles a small production fixture, so the main change can be checked line by line.",
-      "input": "QVBJIHRlc3Q6IG9yZGVyIDQy",
-      "output": "API test: order 42"
-    },
-    {
-      "title": "Base64 Decode edge-case review",
-      "description": "The second Base64 Decode pass focuses on the part most likely to fail: nested values, escaping, or destination rules.",
-      "input": "QVBJIHRlc3Q6IG9yZGVyIDQy\n\nReview case: preserve empty, repeated, or non-ASCII values where applicable.",
-      "output": "API test: order 42\n\nReview note: confirm this result in the destination workflow."
-    }
-  ],
+  "examples": [],
   "tips": [
     "Keep the original Base64 Decode input beside the result until the destination check passes.",
     "Use realistic Base64 text, UTF-8 characters, and padding instead of a one-word sample when validating Base64 Decode.",
@@ -87,6 +74,6 @@
     "Using the Base64 Decode result without comparing it with the original source.",
     "Skipping validation in the editor, runtime, API, or document that receives the output."
   ],
-  "updatedAt": "2026-07-28",
+  "updatedAt": "2026-11-08",
   "seoScore": 100
 }
