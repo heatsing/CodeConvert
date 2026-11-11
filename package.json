@@ -20,28 +20,28 @@
     "node": ">=24.11.0 <25"
   },
   "dependencies": {
-    "@babel/parser": "8.0.8",
-    "@radix-ui/react-dropdown-menu": "^2.1.15",
+    "@babel/parser": "8.1.0",
+    "@radix-ui/react-dropdown-menu": "^2.2.1",
     "@radix-ui/react-slot": "^1.2.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "entities": "9.0.0",
     "lucide-react": "^0.468.0",
-    "next": "16.4.3",
+    "next": "16.4.5",
     "prettier": "3.9.10",
-    "react": "19.2.8",
-    "react-dom": "19.2.8",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
     "tailwind-merge": "^2.6.0",
     "terser": "5.51.2"
   },
   "devDependencies": {
     "@types/node": "^20.19.1",
-    "@types/react": "19.2.18",
-    "@types/react-dom": "19.2.4",
-    "autoprefixer": "^10.4.21",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "autoprefixer": "^10.6.2",
     "eslint": "9.35.0",
-    "eslint-config-next": "16.4.3",
-    "postcss": "^8.5.6",
+    "eslint-config-next": "16.4.5",
+    "postcss": "^8.5.32",
     "tailwindcss": "^3.4.17",
     "typescript": "^5.8.3"
   }
